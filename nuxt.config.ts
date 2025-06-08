@@ -13,6 +13,10 @@ export default defineNuxtConfig({
     // https://nuxt.com/docs/getting-started/seo-meta
     head: {
       title: 'myBudget',
+      htmlAttrs: {
+        lang: 'ru',
+        'data-bs-theme': 'dark',
+      },
       link: [
         {
           rel: 'stylesheet',

@@ -1,7 +1,6 @@
-<script setup>
-const appConfig = useAppConfig()
-</script>
-
 <template>
-  <h1>{{ appConfig.title }}</h1>
+  <div>
+    <h1>Мой Бюджет</h1>
+    <h2>Домашняя бухгалтерия онлайн</h2>
+  </div>
 </template>
