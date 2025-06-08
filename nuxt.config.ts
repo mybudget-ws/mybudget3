@@ -6,15 +6,24 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxt/eslint',
   ],
+  // css: [
+  //   "~/assets/main.css",
+  // ],
   app: {
     // https://nuxt.com/docs/getting-started/seo-meta
     head: {
       title: 'myBudget',
+      link: [
+        {
+          rel: 'stylesheet',
+          href: '/tabler.min.css',
+        }
+      ],
       script: [
-        // {
-        //   src: "https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=...&lang=ru_RU",
-        //   async: true,
-        // },
+        {
+          src: "/tabler.min.js",
+          async: true,
+        },
       ],
     },
     baseURL: '/',
