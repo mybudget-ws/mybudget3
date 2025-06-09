@@ -91,11 +91,11 @@ useHead({
           </div>
           <div class='col-lg-auto ms-lg-auto'>
             <ul class='list-inline list-inline-dots mb-0'>
-              <!--li class='list-inline-item'>
-                <NuxtLink to='license' class='link-secondary'>
-                  License
+              <li class='list-inline-item'>
+                <NuxtLink to='/terms' class='link-secondary'>
+                  Пользовательское соглашение
                 </NuxtLink>
-              </li-->
+              </li>
               <li class='list-inline-item'>
                 <a
                   href='https://github.com/mybudget-ws/mybudget3'
