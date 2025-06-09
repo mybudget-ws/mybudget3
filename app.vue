@@ -1,5 +1,4 @@
 <script setup>
-// import { getData, setData } from 'nuxt-storage';
 import { getData, setData } from 'nuxt-storage/local-storage';
 import IconMoon from '@/components/icons/icon_moon';
 import IconSun from '@/components/icons/icon_sun';
