@@ -1,4 +1,4 @@
-# myBudget 3.0
+# myBudget III
 
 ## Setup
 
