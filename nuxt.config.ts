@@ -25,7 +25,6 @@ export default defineNuxtConfig({
       script: [
         {
           src: "/tabler.min.js",
-          async: true,
         },
       ],
     },

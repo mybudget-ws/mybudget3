@@ -59,7 +59,7 @@ useHead({
         <div id='navbar-menu' class='collapse navbar-collapse'>
           <ul class='navbar-nav'>
             <li class='nav-item'>
-              <a class='nav-link' href='./'>
+              <a class='nav-link' href='/'>
                 <span>i</span>
                 <span class='nav-link-title'>Home</span>
               </a>
