@@ -15,7 +15,6 @@ export default defineNuxtConfig({
       title: 'myBudget',
       htmlAttrs: {
         lang: 'ru',
-        'data-bs-theme': 'dark',
       },
       link: [
         {
@@ -32,7 +31,7 @@ export default defineNuxtConfig({
     },
     baseURL: '/',
   },
-  ssr: true,
+  ssr: false, // true
   experimental: {
     defaults: {
       // https://nuxt.com/docs/api/components/nuxt-link#in-nuxt-config
