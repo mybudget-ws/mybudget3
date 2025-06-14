@@ -1,7 +1,6 @@
 <script setup>
 import { getData, setData } from 'nuxt-storage/local-storage';
-import IconMoon from '@/components/icons/icon_moon';
-import IconSun from '@/components/icons/icon_sun';
+import { IconSun, IconMoon } from '@tabler/icons-vue';
 
 const appConfig = useAppConfig()
 const route = useRoute();
@@ -12,7 +11,7 @@ if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
 } else {
   appConfig.theme.dark = getData('theme') === 'dark';
 }
-console.log('appConfig.theme.dark', appConfig.theme.dark);
+// console.log('appConfig.theme.dark', appConfig.theme.dark);
 const theme = appConfig.theme.dark ? 'dark' : 'light';
 
 useHead({
@@ -41,7 +40,7 @@ useHead({
                 aria-label='Enable dark mode'
                 data-bs-original-title='Enable dark mode'
               >
-                <IconMoon />
+                <IconMoon size=20 />
               </a>
               <a
                 href='?theme=light'
@@ -51,7 +50,7 @@ useHead({
                 aria-label="Enable light mode"
                 data-bs-original-title="Enable light mode"
               >
-                <IconSun />
+                <IconSun size=20 />
               </a>
             </div>
           </div>
@@ -77,37 +76,6 @@ useHead({
       </div>
     </div>
 
-    <footer class='footer footer-transparent'>
-      <div class='container-xl'>
-        <div class='row text-center align-items-center'>
-          <div class='col-12 col-lg-auto mt-3 mt-lg-0'>
-            <ul class='list-inline list-inline-dots mb-0'>
-              <li class='list-inline-item'>
-                © {{ new Date().getFullYear() }}
-                <a href='.' class='link-secondary'>{{ appConfig.title }}</a>.
-                Все права защищены
-              </li>
-            </ul>
-          </div>
-          <div class='col-lg-auto ms-lg-auto'>
-            <ul class='list-inline list-inline-dots mb-0'>
-              <li class='list-inline-item'>
-                <NuxtLink to='/terms' class='link-secondary'>
-                  Пользовательское соглашение
-                </NuxtLink>
-              </li>
-              <li class='list-inline-item'>
-                <a
-                  href='https://github.com/mybudget-ws/mybudget3'
-                  target='_blank'
-                  class='link-secondary'
-                  rel='noopener'
-                >Исходный код</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <Footer />
   </div>
 </template>

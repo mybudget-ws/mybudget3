@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxt/eslint',
   ],
-  // plugins: [{ src: '~/plugins/tabler.client.ts', mode: 'client' }],
+  plugins: [{ src: '~/plugins/tabler.client.ts', mode: 'client' }],
   app: {
     head: {
       title: 'myBudget',
@@ -25,9 +25,9 @@ export default defineNuxtConfig({
       ],
       script: [
         {
-          src: "/tabler.min.js",
+          // src: "/tabler.min.js",
           // src: 'https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js',
-          defer: true
+          // defer: true
         }
       ]
     },
