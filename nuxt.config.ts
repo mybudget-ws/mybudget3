@@ -7,6 +7,9 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxt/eslint',
   ],
+  // css: [
+  //   "~/assets/main.css",
+  // ],
   plugins: [{ src: '~/plugins/tabler.client.ts', mode: 'client' }],
   app: {
     head: {
@@ -20,13 +23,15 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: '/tabler.min.css',
-          // href: 'https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/css/tabler.min.css'
+        },
+        {
+          rel: 'stylesheet',
+          href: '/tabler-themes.css',
         }
       ],
       script: [
         {
           // src: "/tabler.min.js",
-          // src: 'https://cdn.jsdelivr.net/npm/@tabler/core@1.3.2/dist/js/tabler.min.js',
           // defer: true
         }
       ]
