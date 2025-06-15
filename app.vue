@@ -3,6 +3,13 @@ import { getData, setData } from 'nuxt-storage/local-storage';
 import {
   IconSun,
   IconMoon,
+  IconReceipt,
+  IconChartHistogram,
+  IconTags,
+  IconShieldLock,
+  IconBulb,
+  IconTargetArrow,
+  IconWallet,
   IconUserCircle,
 } from '@tabler/icons-vue';
 
@@ -33,11 +40,11 @@ useHead({
   <div class='page'>
     <header class='navbar navbar-expand-md d-print-none'>
       <div class='container-xl'>
-        <NuxtLink to='/' class='navbar-brand navbar-brand-autodark'>
+        <NuxtLink to='/' class='navbar-brand navbar-brand-autodark me-3'>
           {{ appConfig.title }}
         </NuxtLink>
         <div class='navbar-nav flex-row order-md-last'>
-          <div class='d-md-flex'>
+          <div class='d-flex'>
             <div class='nav-item me-2'>
               <a
                 href='?theme=dark'
@@ -62,8 +69,8 @@ useHead({
             </div>
             <div class='nav-item'>
               <NuxtLink to='/' class='btn btn-outline-primary'>
-                <IconUserCircle size=20 />
-                <span class='ms-2'>Вход</span>
+                <IconUserCircle size=20 stroke-width=1 />
+                <span class='ms-2 d-none d-xl-block'>Вход</span>
               </NuxtLink>
             </div>
           </div>
@@ -72,37 +79,44 @@ useHead({
           <ul class='navbar-nav'>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
-                <span class='nav-link-title'>Операции</span>
+                <IconReceipt size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Операции</span>
               </a>
             </li>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
-                <span class='nav-link-title'>Счета</span>
+                <IconWallet size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Счета</span>
               </a>
             </li>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
-                <span class='nav-link-title'>Отчёты</span>
+                <IconChartHistogram size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Отчёты</span>
               </a>
             </li>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
-                <span class='nav-link-title'>Категории</span>
+                <IconTags size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Категории</span>
               </a>
             </li>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
-                <span class='nav-link-title'>Цели</span>
+                <IconTargetArrow size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Цели</span>
               </a>
             </li>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
-                <span class='nav-link-title'>Проекты</span>
+                <IconBulb size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Проекты</span>
               </a>
             </li>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
-                <span class='nav-link-title'>Имущество</span>
+                <IconShieldLock size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Имущество</span>
               </a>
             </li>
           </ul>
