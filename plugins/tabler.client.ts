@@ -1,6 +1,6 @@
 // plugins/tabler.client.ts
 import { defineNuxtPlugin } from '#app'
-import { Tooltip } from '@tabler/core/dist/js/tabler.min.js'
+import { Tooltip, Collapse } from '@tabler/core/dist/js/tabler.min.js'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const initTooltips = () => {
@@ -19,6 +19,16 @@ export default defineNuxtPlugin((nuxtApp) => {
         });
       });
   }
+
+  // const initCollapce = () => {
+  //   document
+  //     .querySelectorAll<HTMLElement>('.collapse')
+  //     .forEach(el => {
+  //       console.log('collapce', el)
+  //       new Collapse(el, { toggle: true });
+  //     });
+  // }
+  // nuxtApp.hook('page:finish', initCollapce)
 
   // 1) Попробовать сразу (на случай, если плагин загрузился после window.load)
   // initTooltips()

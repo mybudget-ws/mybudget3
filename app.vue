@@ -40,9 +40,22 @@ useHead({
   <div class='page'>
     <header class='navbar navbar-expand-md d-print-none'>
       <div class='container-xl'>
+        <button
+          class='navbar-toggler'
+          type='button'
+          data-bs-toggle='collapse'
+          data-bs-target='#navbar-menu'
+          aria-controls='navbar-menu'
+          aria-expanded=false
+          aria-label='Toggle navigation'
+        >
+          <span class="navbar-toggler-icon" />
+        </button>
+
         <NuxtLink to='/' class='navbar-brand navbar-brand-autodark me-3'>
           {{ appConfig.title }}
         </NuxtLink>
+
         <div class='navbar-nav flex-row order-md-last'>
           <div class='d-flex'>
             <div class='nav-item me-2'>
