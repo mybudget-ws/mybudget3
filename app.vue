@@ -81,7 +81,7 @@ useHead({
               </a>
             </div>
             <div class='nav-item'>
-              <NuxtLink to='/' class='btn btn-outline-primary'>
+              <NuxtLink to='/sign_in' class='btn btn-outline-primary'>
                 <IconUserCircle size=20 stroke-width=1 />
                 <span class='ms-2 d-none d-xl-block'>Вход</span>
               </NuxtLink>
