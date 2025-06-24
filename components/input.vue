@@ -17,6 +17,7 @@ const props = defineProps({
     default: 'off',
   },
   required: Boolean,
+  disabled: Boolean,
   class: {
     type: String,
     default: '',
@@ -33,6 +34,7 @@ const inputAttrs = computed(() => ({
   placeholder: props.placeholder,
   autocomplete: props.autocomplete,
   required: props.required,
+  disabled: props.required,
   name: props.name,
   id: props.id,
   value: props.modelValue,

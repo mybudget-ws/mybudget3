@@ -1,6 +1,19 @@
 <script setup>
   const email = ref('');
   const password = ref('');
+  const isSubmitting = ref(false);
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    isSubmitting.value = true
+    try {
+      // ...
+    } catch (err) {
+      console.error(err);
+    } finally {
+      isSubmitting.value = false
+    }
+  }
 </script>
 
 <template>
@@ -9,13 +22,14 @@
       <div class='card card-md'>
         <div class='card-body'>
           <h2 class='h2 text-center mb-4'>Регистрация</h2>
-          <form action='./' method='get' autocomplete='off'>
+          <form @submit='onSubmit' autocomplete='off'>
             <div class='mb-3'>
               <Label required>Email</Label>
               <Input
                 type='email'
                 placeholder='мой@email.ru'
                 required
+                :disabled='isSubmitting'
                 v-model='email'
               />
             </div>
@@ -25,16 +39,18 @@
                 type='password'
                 placeholder='мой пароль'
                 required
+                :disabled='isSubmitting'
                 v-model='password'
               />
             </div>
             <div class='form-footer'>
-              <button
+              <Button
                 type='submit'
-                class='btn btn-primary w-100'
+                class='w-100'
+                :loading='isSubmitting'
               >
                 Создать Мой Бюджет
-              </button>
+              </Button>
             </div>
           </form>
         </div>
