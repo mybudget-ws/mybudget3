@@ -53,7 +53,7 @@
             <div class='form-footer'>
               <Button
                 type='submit'
-                class='w-100'
+                class='btn-primary w-100'
                 :loading='isSubmitting'
               >
                 Войти

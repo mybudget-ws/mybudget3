@@ -32,28 +32,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  variant: {
-    type: String,
-    default: 'primary', // primary, secondary, outline, danger и т.д.
-  },
-});
-
-const variantClass = computed(() => {
-  switch (props.variant) {
-    case 'secondary':
-      return 'btn-secondary'
-    case 'outline':
-      return 'btn-outline-primary'
-    case 'danger':
-      return 'btn-danger'
-    default:
-      return 'btn-primary'
-  }
 });
 
 const buttonClass = computed(() => ([
   'btn',
-  variantClass.value,
   props.class,
 ]));
 </script>
