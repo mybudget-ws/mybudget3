@@ -11,7 +11,7 @@
           </h2>
           <form action='./' method='get' autocomplete='off'>
             <div class='mb-3'>
-              <label class='form-label required'>Email</label>
+              <Label required>Email</Label>
               <input
                 type='email'
                 class='form-control'
@@ -21,12 +21,12 @@
               >
             </div>
             <div class='mb-2'>
-              <label class='form-label required'>
+              <Label required>
                 Пароль
                 <span class='form-label-description'>
                   <a href='/forgot-password'>Не помню пароль</a>
                 </span>
-              </label>
+              </Label>
               <div class='input-group input-group-flat'>
                 <input
                   type='password'
