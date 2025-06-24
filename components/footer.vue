@@ -10,7 +10,7 @@ const appConfig = useAppConfig()
           <ul class='list-inline list-inline-dots mb-0'>
             <li class='list-inline-item'>
               © {{ new Date().getFullYear() }}
-              <a href='.' class='link-secondary'>{{ appConfig.title }}</a>.
+              <a href='/' class='link-secondary'>{{ appConfig.title }}</a>.
               Все права защищены
             </li>
           </ul>
