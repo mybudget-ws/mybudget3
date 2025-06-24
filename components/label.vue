@@ -1,5 +1,5 @@
 <template>
-  <label :class="labelClass">
+  <label :class='labelClass'>
     <slot />
   </label>
 </template>
@@ -13,11 +13,9 @@ const props = defineProps({
   },
 });
 
-const labelClass = computed(() => {
-  return [
-    'form-label',
-    { required: props.required },
-    props.class,
-  ]
-});
+const labelClass = computed(() => ([
+  'form-label',
+  { required: props.required },
+  props.class,
+]));
 </script>

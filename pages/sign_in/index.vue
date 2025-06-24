@@ -1,4 +1,6 @@
 <script setup>
+  const email = ref('');
+  const password = ref('');
 </script>
 
 <template>
@@ -12,13 +14,12 @@
           <form action='./' method='get' autocomplete='off'>
             <div class='mb-3'>
               <Label required>Email</Label>
-              <input
+              <Input
                 type='email'
-                class='form-control'
                 placeholder='мой@email.ru'
-                autocomplete='off'
                 required
-              >
+                v-model='email'
+              />
             </div>
             <div class='mb-2'>
               <Label required>
@@ -27,15 +28,12 @@
                   <a href='/forgot-password'>Не помню пароль</a>
                 </span>
               </Label>
-              <div class='input-group input-group-flat'>
-                <input
-                  type='password'
-                  class='form-control'
-                  placeholder='мой пароль'
-                  autocomplete='off'
-                  required
-                >
-              </div>
+              <Input
+                type='password'
+                placeholder='мой пароль'
+                required
+                v-model='password'
+              />
             </div>
             <div class='form-footer'>
               <button

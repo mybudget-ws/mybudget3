@@ -1,0 +1,46 @@
+<template>
+  <input
+    v-bind='inputAttrs'
+    :class='inputClass'
+  />
+</template>
+
+<script setup>
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'text',
+  },
+  placeholder: String,
+  autocomplete: {
+    type: String,
+    default: 'off',
+  },
+  required: Boolean,
+  class: {
+    type: String,
+    default: '',
+  },
+  modelValue: [String, Number],
+  name: String,
+  id: String,
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+const inputAttrs = computed(() => ({
+  type: props.type,
+  placeholder: props.placeholder,
+  autocomplete: props.autocomplete,
+  required: props.required,
+  name: props.name,
+  id: props.id,
+  value: props.modelValue,
+  onInput: (e) => emit('update:modelValue', e.target.value),
+}))
+
+const inputClass = computed(() => ([
+  'form-control',
+  props.class,
+]));
+</script>
