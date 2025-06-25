@@ -11,6 +11,11 @@ export default defineNuxtConfig({
   //   "~/assets/main.css",
   // ],
   plugins: [{ src: '~/plugins/tabler.client.ts', mode: 'client' }],
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.API_BASE_URL || 'https://api.mybudget.ws',
+    }
+  },
   app: {
     head: {
       title: 'myBudget',
