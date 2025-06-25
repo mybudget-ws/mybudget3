@@ -10,12 +10,12 @@
     </div>
     <div class='row'>
       <div class='col-auto'>
-        <NuxtLink class='btn btn-primary' to='/sign_up'>
+        <NuxtLink to='/sign_up' class='btn btn-primary'>
           Регистрация
         </NuxtLink>
       </div>
       <div class='col-auto'>
-        <NuxtLink class='btn btn-4' to='/sign_in'>
+        <NuxtLink to='/sign_in' class='btn btn-4'>
           Вход
         </NuxtLink>
       </div>

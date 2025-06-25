@@ -1,4 +1,8 @@
 <script setup>
+  import api from '~/lib/api';
+  import { useToken } from '~/composables/use_token';
+
+  const { set } = useToken();
   const email = ref('');
   const password = ref('');
   const isSubmitting = ref(false);
@@ -7,7 +11,12 @@
     event.preventDefault();
     isSubmitting.value = true
     try {
-      // ...
+      const user = await api.login(email.value, password.value);
+      if (user) {
+        set(user.token);
+      } else {
+        console.log('TODO: error');
+      }
     } catch (err) {
       console.error(err);
     } finally {
