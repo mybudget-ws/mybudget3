@@ -34,7 +34,7 @@ const inputAttrs = computed(() => ({
   placeholder: props.placeholder,
   autocomplete: props.autocomplete,
   required: props.required,
-  disabled: props.required,
+  disabled: props.disabled,
   name: props.name,
   id: props.id,
   value: props.modelValue,
