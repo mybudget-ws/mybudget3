@@ -1,4 +1,8 @@
 <script setup>
+  definePageMeta({
+    middleware: ['authenticated']
+  });
+
   const email = ref('');
   const password = ref('');
   const isSubmitting = ref(false);
