@@ -1,4 +1,8 @@
 <script setup>
+  definePageMeta({
+    middleware: ['authenticated']
+  });
+
   import api from '~/lib/api';
   import { useAuth } from '~/composables/use_auth';
 

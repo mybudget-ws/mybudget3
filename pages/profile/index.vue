@@ -1,4 +1,8 @@
 <script setup>
+  definePageMeta({
+    middleware: ['authenticated']
+  });
+
   import { useAuth } from '~/composables/use_auth';
   const { token, isSignedIn, signOut } = useAuth();
 
