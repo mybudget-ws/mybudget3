@@ -15,6 +15,8 @@ import {
 
 const appConfig = useAppConfig()
 const route = useRoute();
+const { isSignedIn } = useAuth();
+
 const queryTheme = route.query.theme;
 if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
   appConfig.theme.dark = queryTheme === 'dark';
@@ -63,26 +65,29 @@ useHead({
                 class='nav-link px-0 hide-theme-dark'
                 data-bs-toggle='tooltip'
                 data-bs-placement='bottom'
-                aria-label='Enable dark mode'
-                data-bs-original-title='Enable dark mode'
+                aria-label='Включить темный режим'
+                data-bs-original-title='Включить темный режим'
               >
-                <IconMoon size=20 />
+                <IconMoon size=20 stroke-width=1 />
               </a>
               <a
                 href='?theme=light'
-                class="nav-link px-0 hide-theme-light"
-                data-bs-toggle="tooltip"
-                data-bs-placement="bottom"
-                aria-label="Enable light mode"
-                data-bs-original-title="Enable light mode"
+                class='nav-link px-0 hide-theme-light'
+                data-bs-toggle='tooltip'
+                data-bs-placement='bottom'
+                aria-label='Включить светлый режим'
+                data-bs-original-title='Включить светлый режим'
               >
-                <IconSun size=20 />
+                <IconSun size=20 stroke-width=1 />
               </a>
             </div>
             <div class='nav-item'>
-              <NuxtLink to='/sign_in' class='btn btn-outline-primary'>
+              <NuxtLink v-if='!isSignedIn' to='/sign_in' class='btn btn-outline-primary'>
                 <IconUserCircle size=20 stroke-width=1 />
                 <span class='ms-2 d-none d-xl-block'>Вход</span>
+              </NuxtLink>
+              <NuxtLink v-if='isSignedIn' to='/profile' class='nav-link'>
+                <IconUserCircle stroke-width=1 />
               </NuxtLink>
             </div>
           </div>
