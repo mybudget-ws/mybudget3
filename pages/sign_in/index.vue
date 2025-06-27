@@ -1,8 +1,8 @@
 <script setup>
   import api from '~/lib/api';
-  import { useToken } from '~/composables/use_token';
+  import { useAuth } from '~/composables/use_auth';
 
-  const { set } = useToken();
+  const { signIn } = useAuth();
   const email = ref('');
   const password = ref('');
   const isSubmitting = ref(false);
@@ -13,7 +13,8 @@
     try {
       const user = await api.login(email.value, password.value);
       if (user) {
-        set(user.token);
+        signIn(user.token);
+        navigateTo('/');
       } else {
         console.log('TODO: error');
       }

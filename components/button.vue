@@ -3,6 +3,7 @@
     :type='type'
     :disabled='loading || disabled'
     :class='buttonClass'
+    @click="$emit('click', $event)"
   >
     <span
       v-if='loading'

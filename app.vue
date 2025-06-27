@@ -33,7 +33,6 @@ useHead({
     'data-bs-theme-radius': '1.5',
   },
 });
-
 </script>
 
 <template>
