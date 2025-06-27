@@ -95,10 +95,10 @@ useHead({
         <div id='navbar-menu' class='collapse navbar-collapse'>
           <ul class='navbar-nav'>
             <li class='nav-item'>
-              <a class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/transactions'>
                 <IconReceipt size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Операции</span>
-              </a>
+              </NuxtLink>
             </li>
             <li class='nav-item'>
               <a class='nav-link' href='/'>
