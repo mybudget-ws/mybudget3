@@ -5,6 +5,54 @@ import {
   IconArrowsRightLeft,
   IconArrowUp,
 } from '@tabler/icons-vue';
+
+import api from '~/lib/api';
+import { useAuth } from '~/composables/use_auth';
+
+const { token } = useAuth();
+const isLoading = ref(false);
+const transactions = ref([]);
+const page = ref(1);
+const PER_PAGE = 100;
+const DATE_LOCALE = 'ru-RU';
+
+const params = computed(() => ({
+  page: page.value,
+  perPage: PER_PAGE,
+  filters: {
+    accountIds: [],
+    categoryIds: [],
+    projectIds: [],
+    propertyIds: []
+  }
+}));
+
+const load = async () => {
+  isLoading.value = true
+  try {
+    const items = await api.transactions(token.value, params.value);
+    if (items) {
+      transactions.value = items
+    } else {
+      console.log('TODO: error');
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    isLoading.value = false
+  }
+};
+
+
+watch(
+  () => token.value,
+  (val) => {
+    if (val) {
+      load();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -24,7 +72,7 @@ import {
                 <span class="input-group-text">
                   <IconSearch size=20 stroke-width=1 />
                 </span>
-                <input id="advanced-table-search" type="text" class="form-control" autocomplete="off">
+                <input id='advanced-table-search' type='text' class='form-control'>
                 <!--span class="input-group-text">
                   <kbd>ctrl + K</kbd>
                 </span-->
@@ -42,33 +90,57 @@ import {
           </div>
         </div>
       </div>
-      <div class='advanced-table'>
+      <div v-if='isLoading' class='card-body text-center'>
+        <Loading />
+      </div>
+      <div v-else class='advanced-table'>
         <div class='table-responsive'>
           <table class='table table-vcenter table-selectable'>
             <thead>
               <tr>
-                <th class="w-1"></th>
-                <th>
-                  <button class="table-sort d-flex justify-content-between" data-sort="sort-name">Name</button>
+                <th class='w-1'>
+                  <button class='table-sort d-flex' data-sort='sort-name'>
+                    Дата
+                  </button>
                 </th>
-                <th>
-                  <button class="table-sort d-flex justify-content-between" data-sort="sort-city">City</button>
+                <th class='d-flex justify-content-end'>
+                  <button class='table-sort d-flex justify-content-end' data-sort='sort-city'>
+                    Величина
+                  </button>
                 </th>
-                <th>
-                  <button class="table-sort d-flex justify-content-between" data-sort="sort-status">Status</button>
-                </th>
-                <th>
-                  <button class="table-sort d-flex justify-content-between" data-sort="sort-date">Start date</button>
-                </th>
-                <th>
-                  <button class="table-sort d-flex justify-content-between" data-sort="sort-tags">Tags</button>
-                </th>
-                <th>
-                  <button class="table-sort d-flex justify-content-between" data-sort="sort-category">Category</button>
-                </th>
+                <th>Категории</th>
+                <th>Описание</th>
               </tr>
             </thead>
             <tbody class='table-tbody'>
+              <tr v-for="tx in transactions" :key="tx.id">
+                <td>
+                  {{ new Date(tx.dateAt).toLocaleDateString(DATE_LOCALE) }}
+                </td>
+                <td class='text-nowrap text-end'>
+                  <span :class="{
+                    'text-success': !tx.isTransfer && tx.amount > 0,
+                    'text-danger': !tx.isTransfer && tx.amount < 0,
+                    'text-muted': tx.isTransfer
+                  }">
+                    {{ tx.amount.toFixed(2) }}
+                    {{ tx.account.currency.name }}
+                  </span>
+                </td>
+                <td>
+                  <div class='badges-list'>
+                    <span
+                      v-for='cat in tx.categories'
+                      :key='cat.id'
+                      class='badge'
+                      :style='{ color: cat.color }'
+                    >
+                      {{ cat.name }}
+                    </span>
+                  </div>
+                </td>
+                <td>{{ tx.description }}</td>
+              </tr>
             </tbody>
           </table>
         </div>
