@@ -140,9 +140,7 @@ watch(
                     'text-success': !tx.isTransfer && tx.amount > 0,
                     'text-danger': !tx.isTransfer && tx.amount < 0
                   }">
-                    <span class='font-monospace'>
-                      {{ formatAmount(tx.amount) }}
-                    </span>
+                    {{ formatAmount(tx.amount) }}
                     <span class='text-secondary fw-light ms-1'>
                       {{ tx.account.currency.name }}
                     </span>
