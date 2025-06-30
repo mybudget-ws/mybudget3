@@ -9,12 +9,13 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
+const appConfig = useAppConfig();
 const { token } = useAuth();
 const isLoading = ref(false);
 const transactions = ref([]);
 const page = ref(1);
 const PER_PAGE = 100;
-const DATE_LOCALE = 'ru-RU';
+const LOCALE = 'ru-RU';
 
 const params = computed(() => ({
   page: page.value,
@@ -43,6 +44,22 @@ const load = async () => {
   }
 };
 
+const formatAmount = (amount) => {
+  const formatter = new Intl.NumberFormat(LOCALE, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: true,
+  });
+
+  const absFormatted = formatter.format(Math.abs(amount));
+  return amount < 0 ? `−${absFormatted}` : absFormatted;
+};
+
+const badgeStyles = (color) => {
+  return appConfig.theme.dark ?
+    { color: color } :
+    { backgroundColor: color };
+};
 
 watch(
   () => token.value,
@@ -115,16 +132,19 @@ watch(
             <tbody class='table-tbody'>
               <tr v-for="tx in transactions" :key="tx.id">
                 <td>
-                  {{ new Date(tx.dateAt).toLocaleDateString(DATE_LOCALE) }}
+                  {{ new Date(tx.dateAt).toLocaleDateString(LOCALE) }}
                 </td>
                 <td class='text-nowrap text-end'>
                   <span :class="{
                     'text-success': !tx.isTransfer && tx.amount > 0,
-                    'text-danger': !tx.isTransfer && tx.amount < 0,
-                    'text-muted': tx.isTransfer
+                    'text-danger': !tx.isTransfer && tx.amount < 0
                   }">
-                    {{ tx.amount.toFixed(2) }}
-                    {{ tx.account.currency.name }}
+                    <span class='font-monospace'>
+                      {{ formatAmount(tx.amount) }}
+                    </span>
+                    <span class='text-secondary fw-light ms-1'>
+                      {{ tx.account.currency.name }}
+                    </span>
                   </span>
                 </td>
                 <td>
@@ -133,7 +153,7 @@ watch(
                       v-for='cat in tx.categories'
                       :key='cat.id'
                       class='badge'
-                      :style='{ color: cat.color }'
+                      :style='badgeStyles(cat.color)'
                     >
                       {{ cat.name }}
                     </span>
