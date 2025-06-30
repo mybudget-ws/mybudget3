@@ -125,6 +125,7 @@ watch(
                     Величина
                   </button>
                 </th>
+                <th class='w-1'>Счёт</th>
                 <th>Категории</th>
                 <th>Описание</th>
               </tr>
@@ -147,6 +148,7 @@ watch(
                     </span>
                   </span>
                 </td>
+                <td class='text-nowrap'>{{ tx.account.name }}</td>
                 <td>
                   <div class='badges-list'>
                     <span
