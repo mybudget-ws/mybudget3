@@ -39,7 +39,7 @@ useHead({
 
 <template>
   <div class='page'>
-    <header class='navbar navbar-expand-md d-print-none'>
+    <header class='navbar navbar-expand-md sticky-top d-print-none'>
       <div class='container-xl'>
         <button
           class='navbar-toggler'
