@@ -91,32 +91,6 @@ watch(
 
 <template>
   <div class='row'>
-    <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <div class='card mb-3'>
-        <div class='card-body'>
-          <div class='subheader'>Счета</div>
-          <div>TODO</div>
-        </div>
-      </div>
-      <div class='card mb-3'>
-        <div class='card-body'>
-          <div class='subheader'>Категории</div>
-          <div>TODO</div>
-        </div>
-      </div>
-      <div class='card mb-3'>
-        <div class='card-body'>
-          <div class='subheader'>Проекты</div>
-          <div>TODO</div>
-        </div>
-      </div>
-      <div class='card mb-3'>
-        <div class='card-body'>
-          <div class='subheader'>Имущество</div>
-          <div>TODO</div>
-        </div>
-      </div>
-    </div>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <!-- https://tabler.io/admin-template/preview -->
       <div class='card'>
@@ -236,6 +210,32 @@ watch(
               -->
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class='col-sm-12 col-lg-3 col-xl-2'>
+      <div class='card mb-3'>
+        <div class='card-body p-3'>
+          <div class='subheader'>Счета</div>
+          <div>TODO</div>
+        </div>
+      </div>
+      <div class='card mb-3'>
+        <div class='card-body p-3'>
+          <div class='subheader'>Категории</div>
+          <div>TODO</div>
+        </div>
+      </div>
+      <div class='card mb-3'>
+        <div class='card-body p-3'>
+          <div class='subheader'>Проекты</div>
+          <div>TODO</div>
+        </div>
+      </div>
+      <div class='card mb-3'>
+        <div class='card-body p-3'>
+          <div class='subheader'>Имущество</div>
+          <div>TODO</div>
         </div>
       </div>
     </div>
