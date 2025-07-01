@@ -55,21 +55,6 @@ const formatAmount = (amount) => {
   return amount < 0 ? `−${absFormatted}` : absFormatted;
 };
 
-// NOTE: Если нужно будет разбить amount по частам и использовать разные
-//       стили для каждой части.
-// const formatAmountParts = (amount: number) => {
-//   const formatter = new Intl.NumberFormat(LOCALE, {
-//     minimumFractionDigits: 2,
-//     maximumFractionDigits: 2,
-//     useGrouping: true,
-//   });
-//   const absFormatted = formatter.format(Math.abs(amount));
-//   const [whole, fraction] = absFormatted.split(/[.,]/); // дробим по точке или запятой
-//   const separator = absFormatted.includes(',') ? ',' : '.';
-//   const sign = amount < 0 ? '−' : '';
-//   return { sign, whole, fraction, separator };
-// };
-
 const badgeStyles = (color) => {
   return {};
   // NOTE: Пока пробую без стилей для цвета у категорий.
