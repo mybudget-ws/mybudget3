@@ -44,17 +44,6 @@ const load = async () => {
   }
 };
 
-const formatAmount = (amount) => {
-  const formatter = new Intl.NumberFormat(LOCALE, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-    useGrouping: true,
-  });
-
-  const absFormatted = formatter.format(Math.abs(amount));
-  return amount < 0 ? `−${absFormatted}` : absFormatted;
-};
-
 const badgeStyles = (color) => {
   return {};
   // NOTE: Пока пробую без стилей для цвета у категорий.
@@ -144,12 +133,10 @@ watch(
                         'text-success': !tx.isTransfer && tx.amount > 0,
                         'text-danger': !tx.isTransfer && tx.amount < 0
                       }">
-                        <span class='font-monospace'>
-                          {{ formatAmount(tx.amount) }}
-                        </span>
-                        <span class='text-secondary fw-light ms-1'>
-                          {{ tx.account.currency.name }}
-                        </span>
+                        <Amount
+                          :value='tx.amount'
+                          :currency='tx.account.currency.name'
+                        />
                       </span>
                     </td>
                     <td class='text-nowrap'>{{ tx.account.name }}</td>

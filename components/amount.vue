@@ -29,9 +29,11 @@ const props = defineProps({
 </script>
 
 <template>
-  <span class='font-monospace' :class='props.class'>
-    {{ formatAmount(props.value) }}
-    <span v-if='props.currency'>
+  <span :class='props.class'>
+    <span class='font-monospace'>
+      {{ formatAmount(props.value) }}
+    </span>
+    <span v-if='props.currency' class='text-secondary fw-light ms-2'>
       {{ props.currency }}
     </span>
   </span>

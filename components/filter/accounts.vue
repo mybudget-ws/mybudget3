@@ -47,7 +47,7 @@ watch(
           <span class="form-check-label">
             {{ item.name }}
             <Amount
-              class=' d-block text-secondary fs-5'
+              class='d-block text-secondary fs-5'
               :value='item.balance'
               :currency='item.currency.name'
             />
