@@ -9,27 +9,34 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
-// const appConfig = useAppConfig();
-const { token } = useAuth();
-const isLoading = ref(false);
-const transactions = ref([]);
-const page = ref(1);
-const PER_PAGE = 100;
 const LOCALE = 'ru-RU';
+const PER_PAGE = 100;
+
+const route = useRoute();
+const { token } = useAuth();
+// const appConfig = useAppConfig();
+
+const isLoading = ref(false);
+const page = ref(1);
+const transactions = ref([]);
+const filters = reactive({
+  accountIds: [],
+  categoryIds: [],
+  projectIds: [],
+  propertyIds: []
+});
 
 const params = computed(() => ({
   page: page.value,
   perPage: PER_PAGE,
-  filters: {
-    accountIds: [],
-    categoryIds: [],
-    projectIds: [],
-    propertyIds: []
-  }
+  filters
 }));
 
-const load = async () => {
-  isLoading.value = true
+const load = async (isQuite = false) => {
+  if (!isQuite) {
+    isLoading.value = true
+  }
+
   try {
     const items = await api.transactions(token.value, params.value);
     if (items) {
@@ -55,9 +62,23 @@ const badgeStyles = (color) => {
 watch(
   () => token.value,
   (val) => {
-    if (val) {
-      load();
+    if (val) load();
+  },
+  { immediate: true }
+);
+
+watch(
+  () => route.query.accounts,
+  (val) => {
+    if (typeof val === 'string' && val.length > 0) {
+      filters.accountIds = val.split(',').map(Number);
+    } else if (Array.isArray(val)) {
+      filters.accountIds = val.map(Number);
+    } else {
+      filters.accountIds = [];
     }
+
+    if (token.value) load(true);
   },
   { immediate: true }
 );

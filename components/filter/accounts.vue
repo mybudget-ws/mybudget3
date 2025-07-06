@@ -1,15 +1,22 @@
 <script setup>
 import api from '~/lib/api';
+
+const route = useRoute();
+const router = useRouter();
 const { token } = useAuth();
+
 const isLoading = ref(true);
 const items = ref([]);
+const selectedIds = ref(new Set());
 
 const load = async () => {
   isLoading.value = true
   try {
     const result = await api.accounts(token.value);
     if (result) {
-      items.value = result
+      items.value = result;
+      const queryIds = route.query.accounts?.toString().split(',') || [];
+      selectedIds.value = new Set(queryIds.map(id => Number(id)));
     } else {
       console.log('TODO: error');
     }
@@ -20,6 +27,21 @@ const load = async () => {
   }
 };
 
+const toggleSelection = (id) => {
+  if (selectedIds.value.has(id)) {
+    selectedIds.value.delete(id);
+  } else {
+    selectedIds.value.add(id);
+  }
+
+  router.replace({
+    query: {
+      ...route.query,
+      accounts: Array.from(selectedIds.value).join(','),
+    },
+  });
+};
+
 const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
@@ -27,9 +49,7 @@ const visibleItems = computed(() => (
 watch(
   () => token.value,
   (val) => {
-    if (val) {
-      load();
-    }
+    if (val) load();
   },
   { immediate: true }
 );
@@ -43,7 +63,12 @@ watch(
       <div class='subheader mb-3'>Счета</div>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class="form-check">
-          <input class="form-check-input" type="checkbox" checked="">
+          <input
+            class='form-check-input'
+            type='checkbox'
+            :checked='selectedIds.has(item.id)'
+            @change='toggleSelection(item.id)'
+          >
           <span class="form-check-label">
             {{ item.name }}
             <Amount
