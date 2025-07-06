@@ -59,7 +59,7 @@ watch(
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body pb-0'>
+    <div v-else class='card-body p-3 pb-0'>
       <div class='subheader mb-3'>Счета</div>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class="form-check">
