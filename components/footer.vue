@@ -4,7 +4,7 @@ const appConfig = useAppConfig()
 
 <template>
   <footer class='footer footer-transparent'>
-    <div class='container-xl'>
+    <div class='container-xxl'>
       <div class='row text-center align-items-center'>
         <div class='col-12 col-lg-auto mt-3 mt-lg-0'>
           <ul class='list-inline list-inline-dots mb-0'>

@@ -40,7 +40,7 @@ useHead({
 <template>
   <div class='page'>
     <header class='navbar navbar-expand-md sticky-top d-print-none'>
-      <div class='container-xl'>
+      <div class='container-xxl'>
         <button
           class='navbar-toggler'
           type='button'
@@ -143,7 +143,7 @@ useHead({
 
     <div class='page-wrapper'>
       <div class='page-body'>
-        <div class='container-xl'>
+        <div class='container-xxl'>
           <NuxtPage />
         </div>
       </div>
