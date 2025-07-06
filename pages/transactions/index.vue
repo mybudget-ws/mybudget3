@@ -9,7 +9,7 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
-const appConfig = useAppConfig();
+// const appConfig = useAppConfig();
 const { token } = useAuth();
 const isLoading = ref(false);
 const transactions = ref([]);
@@ -112,7 +112,7 @@ watch(
             </div>
           </div>
           <div v-if='isLoading' class='card-body text-center'>
-            <Loading />
+            <PlaceholderLoading />
           </div>
           <div v-else class='advanced-table'>
             <div class='table-responsive'>
@@ -199,30 +199,10 @@ watch(
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <div class='card mb-3'>
-        <div class='card-body p-3'>
-          <div class='subheader'>Счета</div>
-          <div>TODO</div>
-        </div>
-      </div>
-      <div class='card mb-3'>
-        <div class='card-body p-3'>
-          <div class='subheader'>Категории</div>
-          <div>TODO</div>
-        </div>
-      </div>
-      <div class='card mb-3'>
-        <div class='card-body p-3'>
-          <div class='subheader'>Проекты</div>
-          <div>TODO</div>
-        </div>
-      </div>
-      <div class='card mb-3'>
-        <div class='card-body p-3'>
-          <div class='subheader'>Имущество</div>
-          <div>TODO</div>
-        </div>
-      </div>
+      <FilterAccounts />
+      <FilterCategories />
+      <FilterProjects />
+      <FilterProperties />
     </div>
   </div>
 </template>
