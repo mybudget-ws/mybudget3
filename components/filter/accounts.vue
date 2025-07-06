@@ -20,6 +20,10 @@ const load = async () => {
   }
 };
 
+const visibleItems = computed(() => (
+  items.value.filter(v => v.isHidden === false)
+));
+
 watch(
   () => token.value,
   (val) => {
@@ -35,10 +39,20 @@ watch(
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body p-3'>
-      <div class='subheader'>Счета</div>
-      <div v-for='item in items' :key='item.id'>
-        {{ item.name }}
+    <div v-else class='card-body pb-0'>
+      <div class='subheader mb-3'>Счета</div>
+      <div v-for='item in visibleItems' :key='item.id'>
+        <label class="form-check">
+          <input class="form-check-input" type="checkbox" checked="">
+          <span class="form-check-label">
+            {{ item.name }}
+            <Amount
+              class=' d-block text-secondary fs-5'
+              :value='item.balance'
+              :currency='item.currency.name'
+            />
+          </span>
+        </label>
       </div>
     </div>
   </div>
