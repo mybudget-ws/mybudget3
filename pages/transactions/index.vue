@@ -94,9 +94,9 @@ watch(
                       <IconSearch size=20 stroke-width=1 />
                     </span>
                     <input id='advanced-table-search' type='text' class='form-control'>
-                    <!--span class="input-group-text">
-                      <kbd>ctrl + K</kbd>
-                    </span-->
+                    <span class="input-group-text">
+                      <kbd>Enter</kbd>
+                    </span>
                   </div>
                   <a href="#" class='btn btn-outline-green'>
                     <IconArrowUp stroke-width=2 />
