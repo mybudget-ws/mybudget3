@@ -19,6 +19,7 @@ const { token } = useAuth();
 const isLoading = ref(false);
 const page = ref(1);
 const transactions = ref([]);
+
 const filters = reactive({
   accountIds: [],
   categoryIds: [],
@@ -59,6 +60,27 @@ const badgeStyles = (color) => {
   //   { backgroundColor: color };
 };
 
+const filterKeys = {
+  accounts: 'accountIds',
+  categories: 'categoryIds',
+  projects: 'projectIds',
+  properties: 'propertyIds'
+};
+
+const applyFiltersFromQuery = () => {
+  for (const [queryKey, filterKey] of Object.entries(filterKeys)) {
+    const val = route.query[queryKey];
+
+    if (typeof val === 'string' && val.length > 0) {
+      filters[filterKey] = val.split(',').map(Number);
+    } else if (Array.isArray(val)) {
+      filters[filterKey] = val.map(Number);
+    } else {
+      filters[filterKey] = [];
+    }
+  }
+};
+
 watch(
   () => token.value,
   (val) => {
@@ -68,17 +90,10 @@ watch(
 );
 
 watch(
-  () => route.query.accounts,
-  (val) => {
-    if (typeof val === 'string' && val.length > 0) {
-      filters.accountIds = val.split(',').map(Number);
-    } else if (Array.isArray(val)) {
-      filters.accountIds = val.map(Number);
-    } else {
-      filters.accountIds = [];
-    }
-
-    if (token.value) load(true);
+  () => route.query,
+  () => {
+    applyFiltersFromQuery();
+    if (token.value) load();
   },
   { immediate: true }
 );

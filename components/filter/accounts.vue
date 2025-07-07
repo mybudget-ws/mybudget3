@@ -69,7 +69,7 @@ watch(
             :checked='selectedIds.has(item.id)'
             @change='toggleSelection(item.id)'
           >
-          <span class="form-check-label">
+          <span class='form-check-label'>
             {{ item.name }}
             <Amount
               class='d-block text-secondary fs-6'
