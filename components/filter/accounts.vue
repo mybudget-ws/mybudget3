@@ -62,7 +62,7 @@ watch(
     <div v-else class='card-body p-3 pb-0'>
       <div class='subheader mb-3'>Счета</div>
       <div v-for='item in visibleItems' :key='item.id'>
-        <label class="form-check">
+        <label class='form-check'>
           <input
             class='form-check-input'
             type='checkbox'
