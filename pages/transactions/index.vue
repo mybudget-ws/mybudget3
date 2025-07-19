@@ -100,6 +100,8 @@ watch(
 </script>
 
 <template>
+  <ModalNewTransaction expense />
+
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <!-- https://tabler.io/admin-template/preview -->
@@ -108,8 +110,8 @@ watch(
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
               <div class='col'>
-                <!--h1 class='card-title mb-0'>Операции</h1-->
                 <h2 class='mb-0'>Операции</h2>
+                <!--h1 class='card-title mb-0'>Операции</h1-->
                 <!--p class="text-secondary m-0">Table description.</p-->
               </div>
               <div class="col-md-auto col-sm-12">
@@ -129,9 +131,9 @@ watch(
                   <a href="#" class='btn btn-outline-secondary'>
                     <IconArrowsRightLeft stroke-width=2 />
                   </a>
-                  <a href="#" class='btn btn-primary'>
+                  <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal-expense'>
                     <IconArrowDown stroke-width=2 />
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
