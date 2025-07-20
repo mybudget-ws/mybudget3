@@ -28,6 +28,7 @@ const load = async () => {
 };
 
 const toggleSelection = (id) => {
+  if (id === 0 || id === '0') return;
   if (selectedIds.value.has(id)) {
     selectedIds.value.delete(id);
   } else {
