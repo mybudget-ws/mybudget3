@@ -82,6 +82,7 @@ const parseDateFromInput = (value) => {
           @input='date.value = parseDateFromInput($event.target.value)'
         />
       </div>
+      <FormCategories />
     </div>
     <div class='modal-footer'>
       <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>
