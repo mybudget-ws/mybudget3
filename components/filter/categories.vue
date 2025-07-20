@@ -15,7 +15,7 @@ const load = async () => {
     const result = await api.categories(token.value);
     if (result) {
       items.value = result;
-      const queryIds = route.query.accounts?.toString().split(',') || [];
+      const queryIds = route.query.categories?.toString().split(',') || [];
       selectedIds.value = new Set(queryIds.map(id => Number(id)));
     } else {
       console.log('TODO: error');
@@ -28,6 +28,7 @@ const load = async () => {
 };
 
 const toggleSelection = (id) => {
+  if (id === 0 || id === '0') return;
   if (selectedIds.value.has(id)) {
     selectedIds.value.delete(id);
   } else {
