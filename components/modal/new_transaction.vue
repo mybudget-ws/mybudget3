@@ -64,8 +64,9 @@ const parseDateFromInput = (value) => {
     </div>
     <div class='modal-body'>
       <div class='mb-3'>
-        <Label required>Величина, TODO: CURRENCY</Label>
-        <Input
+        <Label required>Величина</Label>
+        <InputGroup
+          group-text='TODO: Currency'
           type='text'
           placeholder='Значение или фомрула (например 10 + 3 * 2)'
           required
@@ -82,7 +83,15 @@ const parseDateFromInput = (value) => {
           @input='date.value = parseDateFromInput($event.target.value)'
         />
       </div>
-      <FormCategories />
+
+      <div class='row'>
+        <div class='col'>
+          <FormAccounts />
+        </div>
+        <div class='col'>
+          <FormCategories />
+        </div>
+      </div>
     </div>
     <div class='modal-footer'>
       <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>

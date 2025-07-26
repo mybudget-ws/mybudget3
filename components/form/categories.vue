@@ -59,7 +59,7 @@ watch(() => route, (newRoute) => {
     <div v-else>
       <Label>Категории</Label>
       <div v-for='item in visibleItems' :key='item.id'>
-        <label class="form-check" :title='item.name'>
+        <label class='form-check' :title='item.name'>
           <input
             class='form-check-input'
             type='checkbox'

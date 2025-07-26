@@ -16,7 +16,7 @@ const load = async () => {
     if (result) {
       items.value = result;
       const queryIds = route.query.accounts?.toString().split(',') || [];
-      selectedIds.value = new Set(queryIds.map(id => Number(id)));
+      selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
     } else {
       console.log('TODO: error');
     }
