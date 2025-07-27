@@ -59,12 +59,12 @@ watch(() => route, (newRoute) => {
 </script>
 
 <template>
-  <div class='mb-3'>
-    <PlaceholderLoadingFilters v-if='isLoading' />
+  <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else>
-      <Label>Счёт</Label>
-      <div class="form-selectgroup form-selectgroup-boxes d-flex flex-column">
+  <div v-else>
+    <Label>Счёт</Label>
+    <div class='content-scroll'>
+      <div class='form-selectgroup form-selectgroup-boxes d-flex flex-column'>
         <label v-for='item in visibleItems' :key='item.id' class="form-selectgroup-item flex-fill">
           <input
             type="radio" name="form-payment" value="visa" class="form-selectgroup-input"
@@ -93,3 +93,9 @@ watch(() => route, (newRoute) => {
   </div>
 </template>
 
+<style scoped>
+.content-scroll {
+  max-height: 50vh;
+  overflow: scroll;
+}
+</style>

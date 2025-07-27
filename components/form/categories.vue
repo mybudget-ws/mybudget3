@@ -53,11 +53,11 @@ watch(() => route, (newRoute) => {
 </script>
 
 <template>
-  <div class='mb-3'>
-    <PlaceholderLoadingFilters v-if='isLoading' />
+  <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else>
-      <Label>Категории</Label>
+  <div v-else>
+    <Label>Категории</Label>
+    <div class='content-scroll'>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check' :title='item.name'>
           <input
@@ -75,3 +75,9 @@ watch(() => route, (newRoute) => {
   </div>
 </template>
 
+<style scoped>
+.content-scroll {
+  max-height: 50vh;
+  overflow: scroll;
+}
+</style>
