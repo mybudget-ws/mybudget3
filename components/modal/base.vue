@@ -6,7 +6,7 @@ const props = defineProps({
 
 <template>
   <div class='modal' :id='props.id' tabindex='-1'>
-    <div class='modal-dialog' role='document'>
+    <div class='modal-dialog modal-lg' role='document'>
       <div class='modal-content'>
         <slot />
       </div>

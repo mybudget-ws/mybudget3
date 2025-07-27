@@ -63,17 +63,20 @@ watch(() => route, (newRoute) => {
 
   <div v-else>
     <Label>Счёт</Label>
-    <div class='content-scroll'>
+    <div class='content-scroll pe-1'>
       <div class='form-selectgroup form-selectgroup-boxes d-flex flex-column'>
         <label v-for='item in visibleItems' :key='item.id' class="form-selectgroup-item flex-fill">
           <input
-            type="radio" name="form-payment" value="visa" class="form-selectgroup-input"
+            type='radio'
+            name='form-payment'
+            value='item.id'
+            class='form-selectgroup-input'
             :checked='selectedId == item.id'
             @change='toggleSelection(item.id)'
           />
-          <div class="form-selectgroup-label d-flex align-items-center p-3">
-            <div class="me-3">
-              <span class="form-selectgroup-check"></span>
+          <div class='form-selectgroup-label d-flex align-items-center ps-3 p-2'>
+            <div class='me-3'>
+              <span class='form-selectgroup-check' />
             </div>
             <div>
               <!--span class="payment payment-provider-visa payment-xs me-2"></span>
