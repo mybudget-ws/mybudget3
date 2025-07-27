@@ -1,5 +1,6 @@
 <script setup>
 const amount = ref();
+const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
 
@@ -63,24 +64,35 @@ const parseDateFromInput = (value) => {
       />
     </div>
     <div class='modal-body'>
-      <div class='mb-3'>
-        <Label required>Величина</Label>
-        <InputGroup
-          group-text='TODO: Currency'
-          type='text'
-          placeholder='Значение или фомрула (например 10 + 3 * 2)'
-          required
-          :disabled='isSubmitting'
-          v-model='amount'
-        />
+      <div class='row mb-3'>
+        <div class='col'>
+          <Label required>Величина</Label>
+          <Input
+            type='text'
+            placeholder='10.5 + 3 * 2'
+            required
+            :disabled='isSubmitting'
+            v-model='amount'
+          />
+        </div>
+        <div class='col'>
+          <Label required>Дата</Label>
+          <input
+            type='date'
+            class='form-control'
+            :value='formatDateForInput(date)'
+            :disabled='isSubmitting'
+            @input='date.value = parseDateFromInput($event.target.value)'
+          />
+        </div>
       </div>
       <div class='mb-3'>
-        <Label required>Дата</Label>
-        <input
-          type='date'
+        <Label>Комментарий</Label>
+        <Input
+          type='text'
           class='form-control'
-          :value='formatDateForInput(date)'
-          @input='date.value = parseDateFromInput($event.target.value)'
+          :disabled='isSubmitting'
+          v-model='description'
         />
       </div>
 

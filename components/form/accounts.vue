@@ -6,7 +6,7 @@ const { token } = useAuth();
 
 const isLoading = ref(true);
 const items = ref([]);
-const selectedIds = ref(new Set());
+const selectedId = ref();
 
 const load = async () => {
   isLoading.value = true
@@ -14,11 +14,7 @@ const load = async () => {
     const result = await api.accounts(token.value);
     if (result) {
       items.value = result;
-      const queryIds = route.query.accounts?.toString().split(',') || [];
-      selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
-      if (selectedIds.value.size === 0) {
-        selectedIds.value.add(visibleItems.value[0]?.id);
-      }
+      initSelectedAccountByQuery(route.query.accounts);
     } else {
       console.log('TODO: error');
     }
@@ -30,17 +26,24 @@ const load = async () => {
 };
 
 const toggleSelection = (id) => {
-  selectedIds.value.clear();
-  selectedIds.value.add(id);
+  selectedId.value = id;
 };
 
 const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
 
-// const selectedItem = computed(() => (
-//   items.value.filter(v => v.id === selectedIds.value
-// ));
+const selectedItem = computed(() => (
+  items.value.find(v => v.id === selectedId.value)
+));
+
+const initSelectedAccountByQuery = (accounts = '') => {
+  const queryIds = accounts?.toString().split(',') || [];
+  selectedId.value = queryIds.map(id => Number(id)).filter(id => id > 0)[0];
+  if (selectedId.value === undefined) {
+    selectedId.value = visibleItems.value[0]?.id;
+  }
+}
 
 watch(
   () => token.value,
@@ -51,8 +54,7 @@ watch(
 );
 
 watch(() => route, (newRoute) => {
-  const queryIds = newRoute.query.accounts?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
+  initSelectedAccountByQuery(newRoute.query.accounts);
 }, { immediate: true, deep: true })
 </script>
 
@@ -66,7 +68,7 @@ watch(() => route, (newRoute) => {
         <label v-for='item in visibleItems' :key='item.id' class="form-selectgroup-item flex-fill">
           <input
             type="radio" name="form-payment" value="visa" class="form-selectgroup-input"
-            :checked='selectedIds.has(item.id)'
+            :checked='selectedId == item.id'
             @change='toggleSelection(item.id)'
           />
           <div class="form-selectgroup-label d-flex align-items-center p-3">
@@ -77,6 +79,12 @@ watch(() => route, (newRoute) => {
               <!--span class="payment payment-provider-visa payment-xs me-2"></span>
               ending in <strong>7998</strong-->
               {{item.name}}
+              <!--span class='text-secondary fw-light fs-6'>{{item.currency.name}}</span-->
+              <Amount
+                class='d-block text-secondary fs-6'
+                :value='item.balance'
+                :currency='item.currency.name'
+              />
             </div>
           </div>
         </label>
