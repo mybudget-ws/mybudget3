@@ -1,4 +1,11 @@
 <script setup>
+import api from '~/lib/api';
+import { Modal } from '@tabler/core/dist/js/tabler.min.js'
+
+// const route = useRoute();
+// const router = useRouter();
+const { token } = useAuth();
+
 const amount = ref(undefined);
 const description = ref('');
 const date = ref(new Date());
@@ -65,67 +72,103 @@ const labelAmmount = computed(() => {
     return 'Величина';
   }
 });
+
+const onSubmit = async (event) => {
+  event.preventDefault();
+  isSubmitting.value = true;
+  const result = await api.createTransaction(
+    token.value,
+    {
+      amount: amount.value,
+      isIncome: false,
+      date: date.value,
+      description: description.value,
+      accountId: currentAccount.value.id,
+      categoryIds: [], // TODO
+      projectId: [], // TODO
+      propertyId: [] // TODO
+    }
+  );
+  isSubmitting.value = false;
+  if (result) {
+    // TODO: Reload transactions
+    // router.push({ name: 'transactions1' });
+    document
+      .querySelector(`#${modalId.value} .btn-close`)
+      .dispatchEvent(new Event('click'));
+  }
+  // console.log('modalId', modalId.value);
+  // const modal = new Modal(`#${modalId.value}`);
+  // await modal.hide();
+};
 </script>
 
 <template>
   <ModalBase :id='modalId'>
-    <div class='modal-header'>
-      <h5 class='modal-title'>{{ modalTitle }}</h5>
-      <button
-        type='button'
-        class='btn-close'
-        data-bs-dismiss='modal'
-        aria-label='Close'
-      />
-    </div>
-    <div class='modal-body'>
-      <div class='row mb-3'>
-        <div class='col'>
-          <Label required>{{ labelAmmount }}</Label>
-          <Input
-            type='text'
-            placeholder='10.5 + 3 * 2'
-            required
-            :disabled='isSubmitting'
-            v-model='amount'
-          />
-        </div>
-        <div class='col'>
-          <Label required>Дата</Label>
-          <input
-            type='date'
-            class='form-control'
-            :value='formatDateForInput(date)'
-            :disabled='isSubmitting'
-            @input='date.value = parseDateFromInput($event.target.value)'
-          />
-        </div>
-      </div>
-      <div class='mb-3'>
-        <Label>Комментарий</Label>
-        <Input
-          type='text'
-          class='form-control'
-          :disabled='isSubmitting'
-          v-model='description'
+    <form @submit='onSubmit' autocomplete='off' >
+      <div class='modal-header'>
+        <h5 class='modal-title'>{{ modalTitle }}</h5>
+        <button
+          type='button'
+          class='btn-close'
+          data-bs-dismiss='modal'
+          aria-label='Close'
         />
       </div>
-
-      <div class='row'>
-        <div class='col'>
-          <FormAccounts @toggle-account='toggleAccountCallback' />
+      <div class='modal-body'>
+        <div class='row mb-3'>
+          <div class='col'>
+            <Label required>{{ labelAmmount }}</Label>
+            <Input
+              type='text'
+              placeholder='10.5 + 3 * 2'
+              required
+              :disabled='isSubmitting'
+              v-model='amount'
+            />
+          </div>
+          <div class='col'>
+            <Label required>Дата</Label>
+            <input
+              type='date'
+              class='form-control'
+              :value='formatDateForInput(date)'
+              :disabled='isSubmitting'
+              @input='date.value = parseDateFromInput($event.target.value)'
+            />
+          </div>
         </div>
-        <div class='col'>
-          <FormCategories />
+        <div class='mb-3'>
+          <Label>Комментарий</Label>
+          <Input
+            type='text'
+            class='form-control'
+            :disabled='isSubmitting'
+            v-model='description'
+          />
+        </div>
+
+        <div class='row'>
+          <div class='col'>
+            <FormAccounts @toggle-account='toggleAccountCallback' />
+          </div>
+          <div class='col'>
+            <FormCategories />
+          </div>
         </div>
       </div>
-    </div>
-    <div class='modal-footer'>
-      <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>
-        Отмена
-      </button>
-      <button type="button" class="btn btn-primary"
-        data-bs-dismiss="modal">Save changes</button>
-    </div>
+      <div class='modal-footer'>
+        <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>
+          Отмена
+        </button>
+        <Button
+          type='submit'
+          class='btn-primary'
+          :loading='isSubmitting'
+        >
+          Сохранить
+        </Button>
+      </div>
+    </form>
   </ModalBase>
 </template>
