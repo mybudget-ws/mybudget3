@@ -3,6 +3,7 @@ const amount = ref();
 const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
+const currentAccount = ref(undefined);
 
 const props = defineProps({
   expense: {
@@ -50,6 +51,21 @@ const parseDateFromInput = (value) => {
   const [year, month, day] = value.split('-');
   return new Date(Number(year), Number(month) - 1, Number(day));
 }
+
+const toggleAccountCallback = (account) => {
+  if (account == null) return;
+  currentAccount.value = account;
+  console.log('toggleAccountCallback', account);
+}
+
+const labelAmmount = computed(() => {
+  const account = currentAccount.value;
+  if (account?.currency?.name) {
+    return `Величина, ${account.currency.name}`;
+  } else {
+    return 'Величина';
+  }
+});
 </script>
 
 <template>
@@ -66,7 +82,7 @@ const parseDateFromInput = (value) => {
     <div class='modal-body'>
       <div class='row mb-3'>
         <div class='col'>
-          <Label required>Величина</Label>
+          <Label required>{{ labelAmmount }}</Label>
           <Input
             type='text'
             placeholder='10.5 + 3 * 2'
@@ -98,7 +114,7 @@ const parseDateFromInput = (value) => {
 
       <div class='row'>
         <div class='col'>
-          <FormAccounts />
+          <FormAccounts @toggle-account='toggleAccountCallback' />
         </div>
         <div class='col'>
           <FormCategories />

@@ -27,6 +27,7 @@ const load = async () => {
 
 const toggleSelection = (id) => {
   selectedId.value = id;
+  emit('toggleAccount', selectedItem.value);
 };
 
 const visibleItems = computed(() => (
@@ -43,7 +44,10 @@ const initSelectedAccountByQuery = (accounts = '') => {
   if (selectedId.value === undefined) {
     selectedId.value = visibleItems.value[0]?.id;
   }
+  emit('toggleAccount', selectedItem.value);
 }
+
+const emit = defineEmits(['toggleAccount'])
 
 watch(
   () => token.value,
