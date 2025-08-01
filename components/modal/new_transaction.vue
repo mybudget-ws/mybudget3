@@ -1,5 +1,5 @@
 <script setup>
-const amount = ref();
+const amount = ref(undefined);
 const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
@@ -55,7 +55,6 @@ const parseDateFromInput = (value) => {
 const toggleAccountCallback = (account) => {
   if (account == null) return;
   currentAccount.value = account;
-  console.log('toggleAccountCallback', account);
 }
 
 const labelAmmount = computed(() => {
