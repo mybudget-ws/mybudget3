@@ -119,7 +119,7 @@ watch(
             <div class='row w-full align-items-center'>
               <div class='col d-flex align-items-center'>
                 <h2 class='mb-0'>Операции</h2>
-                <div v-if='isQuiteLoading' class='spinner-border spinner-border-sm text-indigo ms-2' role='status' />
+                <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
                 <!--h1 class='card-title mb-0'>Операции</h1-->
                 <!--p class="text-secondary m-0">Table description.</p-->
               </div>
