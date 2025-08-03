@@ -17,6 +17,7 @@ const { token } = useAuth();
 // const appConfig = useAppConfig();
 
 const isLoading = ref(false);
+const isQuiteLoading = ref(false);
 const page = ref(1);
 const transactions = ref([]);
 
@@ -34,7 +35,9 @@ const params = computed(() => ({
 }));
 
 const load = async (isQuite = false) => {
-  if (!isQuite) {
+  if (isQuite) {
+    isQuiteLoading.value = true
+  } else {
     isLoading.value = true
   }
 
@@ -48,11 +51,12 @@ const load = async (isQuite = false) => {
   } catch (err) {
     console.error(err);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
+    isQuiteLoading.value = false;
   }
 };
 
-const reloadTransactions = async () => {
+const quiteLoading = async () => {
   await load(true);
 }
 
@@ -104,7 +108,7 @@ watch(
 </script>
 
 <template>
-  <ModalNewTransaction expense @newTransaction='reloadTransactions' />
+  <ModalNewTransaction expense @newTransaction='quiteLoading' />
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
@@ -113,8 +117,9 @@ watch(
         <div class='card-table'>
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
-              <div class='col'>
+              <div class='col d-flex align-items-center'>
                 <h2 class='mb-0'>Операции</h2>
+                <div v-if='isQuiteLoading' class='spinner-border spinner-border-sm text-indigo ms-2' role='status' />
                 <!--h1 class='card-title mb-0'>Операции</h1-->
                 <!--p class="text-secondary m-0">Table description.</p-->
               </div>
