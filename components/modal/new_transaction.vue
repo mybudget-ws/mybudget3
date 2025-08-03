@@ -48,6 +48,9 @@ const modalTitle = computed(() => {
   }
   return 'Новый расход';
 });
+const isDisabledInput = computed(() => (
+  isSubmitting.value || !token.value
+));
 
 const formatDateForInput = (date) => {
   const year = date.getFullYear();
@@ -121,7 +124,7 @@ const onSubmit = async (event) => {
               type='text'
               placeholder='10.5 + 3 * 2'
               required
-              :disabled='isSubmitting'
+              :disabled='isDisabledInput'
               v-model='amount'
             />
           </div>
@@ -131,7 +134,7 @@ const onSubmit = async (event) => {
               type='date'
               class='form-control'
               :value='formatDateForInput(date)'
-              :disabled='isSubmitting'
+              :disabled='isDisabledInput'
               @input='date.value = parseDateFromInput($event.target.value)'
             />
           </div>
@@ -141,7 +144,7 @@ const onSubmit = async (event) => {
           <Input
             type='text'
             class='form-control'
-            :disabled='isSubmitting'
+            :disabled='isDisabledInput'
             v-model='description'
           />
         </div>
@@ -163,6 +166,7 @@ const onSubmit = async (event) => {
           type='submit'
           class='btn-primary'
           :loading='isSubmitting'
+          :disabled='!token'
         >
           Сохранить
         </Button>
