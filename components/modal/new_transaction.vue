@@ -69,13 +69,9 @@ const toggleAccountCallback = (account) => {
   currentAccount.value = account;
 }
 
-const labelAmmount = computed(() => {
+const currentCurrencyName = computed(() => {
   const account = currentAccount.value;
-  if (account?.currency?.name) {
-    return `Величина, ${account.currency.name}`;
-  } else {
-    return 'Величина';
-  }
+  return account?.currency?.name || '';
 });
 
 const onSubmit = async (event) => {
@@ -119,14 +115,17 @@ const onSubmit = async (event) => {
       <div class='modal-body'>
         <div class='row mb-3'>
           <div class='col'>
-            <Label required>{{ labelAmmount }}</Label>
-            <Input
-              type='text'
-              placeholder='10.5 + 3 * 2'
-              required
-              :disabled='isDisabledInput'
-              v-model='amount'
-            />
+            <Label required>Величина</Label>
+            <div class='input-group input-group-flat'>
+              <Input
+                type='text'
+                placeholder='10.5 + 3 * 2'
+                required
+                :disabled='isDisabledInput'
+                v-model='amount'
+              />
+              <span class='input-group-text'>{{ currentCurrencyName }}</span>
+            </div>
           </div>
           <div class='col'>
             <Label required>Дата</Label>
