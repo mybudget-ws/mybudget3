@@ -160,7 +160,7 @@ watch(
                         Дата
                       </button>
                     </th>
-                    <th class='d-flex justify-content-end'>
+                    <th>
                       <button class='table-sort d-flex justify-content-end' data-sort='sort-city'>
                         Величина
                       </button>
