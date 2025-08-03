@@ -27,6 +27,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['newTransaction'])
+
 const modalId = computed(() => (`modal-${modalType.value}`));
 const modalType = computed(() => {
   if (props.expense) {
@@ -91,15 +93,11 @@ const onSubmit = async (event) => {
   );
   isSubmitting.value = false;
   if (result) {
-    // TODO: Reload transactions
-    // router.push({ name: 'transactions1' });
     document
       .querySelector(`#${modalId.value} .btn-close`)
       .dispatchEvent(new Event('click'));
+    emit('newTransaction');
   }
-  // console.log('modalId', modalId.value);
-  // const modal = new Modal(`#${modalId.value}`);
-  // await modal.hide();
 };
 </script>
 

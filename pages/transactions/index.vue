@@ -52,6 +52,10 @@ const load = async (isQuite = false) => {
   }
 };
 
+const reloadTransactions = async () => {
+  await load(true);
+}
+
 const badgeStyles = (color) => {
   return {};
   // NOTE: Пока пробую без стилей для цвета у категорий.
@@ -100,7 +104,7 @@ watch(
 </script>
 
 <template>
-  <ModalNewTransaction expense />
+  <ModalNewTransaction expense @newTransaction='reloadTransactions' />
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
