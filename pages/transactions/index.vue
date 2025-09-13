@@ -1,6 +1,8 @@
 <script setup>
 import {
   IconSearch,
+  IconTrash,
+  IconPencil,
   IconArrowDown,
   IconArrowsRightLeft,
   IconArrowUp,
@@ -89,6 +91,14 @@ const applyFiltersFromQuery = () => {
   }
 };
 
+const deleteTransaction = async (id) => {
+  if (confirm('Вы уверены, что хотите удалить операцию?')) {
+    isQuiteLoading.value = true;
+    await api.destroyTransaction(token.value, id);
+    load(true);
+  }
+};
+
 watch(
   () => token.value,
   (val) => {
@@ -168,6 +178,7 @@ watch(
                     <th class='w-1'>Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
+                    <th class='w-1'></th>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
@@ -200,6 +211,16 @@ watch(
                       </div>
                     </td>
                     <td>{{ tx.description }}</td>
+                    <td>
+                      <div class='btn-actions'>
+                        <a class='btn btn-action'>
+                          <IconPencil size=20 stroke-width=1 />
+                        </a>
+                        <a class='btn btn-action' @click.prevent='() => deleteTransaction(tx.id)'>
+                          <IconTrash size=20 stroke-width=1 />
+                        </a>
+                      </div>
+                    </td>
                   </tr>
                 </tbody>
               </table>
