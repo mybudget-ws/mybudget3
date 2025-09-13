@@ -79,5 +79,7 @@ watch(() => route, (newRoute) => {
 .content-scroll {
   max-height: 50vh;
   overflow: scroll;
+  padding-top: 4px;
+  padding-left: 4px;
 }
 </style>

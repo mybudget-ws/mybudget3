@@ -2,8 +2,6 @@
 import api from '~/lib/api';
 import { Modal } from '@tabler/core/dist/js/tabler.min.js'
 
-// const route = useRoute();
-// const router = useRouter();
 const { token } = useAuth();
 
 const amount = ref(undefined);
@@ -81,7 +79,7 @@ const onSubmit = async (event) => {
     token.value,
     {
       amount: amount.value,
-      isIncome: false,
+      isIncome: props.income,
       date: date.value,
       description: description.value,
       accountId: currentAccount.value.id,
@@ -95,6 +93,7 @@ const onSubmit = async (event) => {
     document
       .querySelector(`#${modalId.value} .btn-close`)
       .dispatchEvent(new Event('click'));
+    amount.value = undefined;
     emit('newTransaction');
   }
 };

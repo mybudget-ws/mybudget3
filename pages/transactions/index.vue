@@ -95,7 +95,7 @@ const deleteTransaction = async (id) => {
   if (confirm('Вы уверены, что хотите удалить операцию?')) {
     isQuiteLoading.value = true;
     await api.destroyTransaction(token.value, id);
-    load(true);
+    await quiteLoading();
   }
 };
 
@@ -118,6 +118,7 @@ watch(
 </script>
 
 <template>
+  <ModalNewTransaction income @newTransaction='quiteLoading' />
   <ModalNewTransaction expense @newTransaction='quiteLoading' />
 
   <div class='row'>
@@ -144,9 +145,9 @@ watch(
                       <kbd>Enter</kbd>
                     </span>
                   </div>
-                  <a href="#" class='btn btn-outline-green'>
+                  <button class='btn btn-outline-green' data-bs-toggle='modal' data-bs-target='#modal-income'>
                     <IconArrowUp stroke-width=2 />
-                  </a>
+                  </button>
                   <a href="#" class='btn btn-outline-secondary'>
                     <IconArrowsRightLeft stroke-width=2 />
                   </a>
