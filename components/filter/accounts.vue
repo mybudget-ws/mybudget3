@@ -9,8 +9,12 @@ const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref(new Set());
 
-const load = async () => {
-  isLoading.value = true
+const props = defineProps({
+  reload: Number,
+});
+
+const load = async (isQuite = false) => {
+  if (!isQuite) isLoading.value = true
   try {
     const result = await api.accounts(token.value);
     if (result) {
@@ -26,6 +30,7 @@ const load = async () => {
     isLoading.value = false
   }
 };
+defineExpose({ load });
 
 const toggleSelection = (id) => {
   if (id === 0 || id === '0') return;
@@ -53,6 +58,12 @@ watch(
     if (val) load();
   },
   { immediate: true }
+);
+watch(
+  () => props.reload,
+  () => {
+    if (props.reload > 1) load(true);
+  }
 );
 </script>
 

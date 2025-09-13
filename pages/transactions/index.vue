@@ -22,6 +22,7 @@ const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const page = ref(1);
 const transactions = ref([]);
+const transactionEventTicks = ref(1);
 
 const filters = reactive({
   accountIds: [],
@@ -60,6 +61,7 @@ const load = async (isQuite = false) => {
 
 const quiteLoading = async () => {
   await load(true);
+  transactionEventTicks.value++;
 }
 
 const badgeStyles = (color) => {
@@ -255,7 +257,7 @@ watch(
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterAccounts />
+      <FilterAccounts :reload='transactionEventTicks' />
       <FilterCategories />
       <FilterProjects />
       <FilterProperties />
