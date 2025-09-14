@@ -81,6 +81,7 @@ const currentCurrencyName = computed(() => {
 const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
+  console.log('currentCategoriesIds.value', currentCategoriesIds.value);
   const result = await api.createTransaction(
     token.value,
     {

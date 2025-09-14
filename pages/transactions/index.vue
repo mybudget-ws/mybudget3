@@ -84,9 +84,9 @@ const applyFiltersFromQuery = () => {
     const val = route.query[queryKey];
 
     if (typeof val === 'string' && val.length > 0) {
-      filters[filterKey] = val.split(',').map(Number);
+      filters[filterKey] = val.split(',').map(Number).filter(id => id > 0);
     } else if (Array.isArray(val)) {
-      filters[filterKey] = val.map(Number);
+      filters[filterKey] = val.map(Number).filter(id => id > 0);
     } else {
       filters[filterKey] = [];
     }

@@ -19,8 +19,7 @@ const load = async () => {
     const result = await api.categories(token.value);
     if (result) {
       items.value = result;
-      const queryIds = route.query.categories?.toString().split(',') || [];
-      selectedIds.value = new Set(queryIds.map(id => Number(id)));
+      fetchCategoryIdsFromUrl();
     } else {
       console.log('TODO: error');
     }
@@ -29,6 +28,12 @@ const load = async () => {
   } finally {
     isLoading.value = false
   }
+};
+
+const fetchCategoryIdsFromUrl = (query = route.query) => {
+  const queryIds = query.categories?.toString().split(',') || [];
+  selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
+  emit('toggleCategory', selectedIds.value);
 };
 
 const toggleSelection = (id) => {
@@ -55,13 +60,15 @@ watch(
 watch(
   () => props.reload,
   () => {
-    if (props.reload > 1) selectedIds.value.clear();
+    if (props.reload > 1) {
+      selectedIds.value.clear();
+      fetchCategoryIdsFromUrl();
+    }
   }
 );
 
 watch(() => route, (newRoute) => {
-  const queryIds = newRoute.query.categories?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.map(id => Number(id)));
+  fetchCategoryIdsFromUrl(newRoute.query);
 }, { immediate: true, deep: true })
 </script>
 
