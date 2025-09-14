@@ -7,6 +7,7 @@ const { token } = useAuth();
 const isLoading = ref(true);
 const items = ref([]);
 const selectedId = ref();
+const emit = defineEmits(['toggleAccount'])
 
 const load = async () => {
   isLoading.value = true
@@ -46,8 +47,6 @@ const initSelectedAccountByQuery = (accounts = '') => {
   }
   emit('toggleAccount', selectedItem.value);
 }
-
-const emit = defineEmits(['toggleAccount'])
 
 watch(
   () => token.value,

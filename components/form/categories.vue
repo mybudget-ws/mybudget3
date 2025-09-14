@@ -7,6 +7,11 @@ const { token } = useAuth();
 const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref(new Set());
+const emit = defineEmits(['toggleCategory'])
+
+const props = defineProps({
+  reload: Number,
+});
 
 const load = async () => {
   isLoading.value = true
@@ -32,6 +37,7 @@ const toggleSelection = (id) => {
   } else {
     selectedIds.value.add(id);
   }
+  emit('toggleCategory', selectedIds.value);
 };
 
 const visibleItems = computed(() => (
@@ -44,6 +50,13 @@ watch(
     if (val) load();
   },
   { immediate: true }
+);
+
+watch(
+  () => props.reload,
+  () => {
+    if (props.reload > 1) selectedIds.value.clear();
+  }
 );
 
 watch(() => route, (newRoute) => {

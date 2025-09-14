@@ -9,6 +9,8 @@ const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
 const currentAccount = ref(undefined);
+const currentCategoriesIds = ref([]);
+const transactionEventTicks = ref(1);
 
 const props = defineProps({
   expense: {
@@ -67,6 +69,10 @@ const toggleAccountCallback = (account) => {
   currentAccount.value = account;
 }
 
+const toggleCategoryCallback = (categoryIds) => {
+  currentCategoriesIds.value = [...categoryIds];
+}
+
 const currentCurrencyName = computed(() => {
   const account = currentAccount.value;
   return account?.currency?.name || '';
@@ -83,7 +89,7 @@ const onSubmit = async (event) => {
       date: date.value,
       description: description.value,
       accountId: currentAccount.value.id,
-      categoryIds: [], // TODO
+      categoryIds: currentCategoriesIds.value,
       projectId: [], // TODO
       propertyId: [] // TODO
     }
@@ -94,6 +100,8 @@ const onSubmit = async (event) => {
       .querySelector(`#${modalId.value} .btn-close`)
       .dispatchEvent(new Event('click'));
     amount.value = undefined;
+    currentCategoriesIds.value = [];
+    transactionEventTicks.value++;
     emit('newTransaction');
   }
 };
@@ -152,7 +160,10 @@ const onSubmit = async (event) => {
             <FormAccounts @toggle-account='toggleAccountCallback' />
           </div>
           <div class='col'>
-            <FormCategories />
+            <FormCategories
+              @toggle-category='toggleCategoryCallback'
+              :reload='transactionEventTicks'
+            />
           </div>
         </div>
       </div>
