@@ -122,6 +122,7 @@ watch(
 <template>
   <ModalNewTransaction income @newTransaction='quiteLoading' />
   <ModalNewTransaction expense @newTransaction='quiteLoading' />
+  <ModalNewTransfer @newTransaction='quiteLoading' />
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
