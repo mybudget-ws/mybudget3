@@ -150,9 +150,9 @@ watch(
                   <button class='btn btn-outline-green' data-bs-toggle='modal' data-bs-target='#modal-income'>
                     <IconArrowUp stroke-width=2 />
                   </button>
-                  <a href="#" class='btn btn-outline-secondary'>
+                  <button class='btn btn-outline-secondary' data-bs-toggle='modal' data-bs-target='#modal-transfer'>
                     <IconArrowsRightLeft stroke-width=2 />
-                  </a>
+                  </button>
                   <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal-expense'>
                     <IconArrowDown stroke-width=2 />
                   </button>

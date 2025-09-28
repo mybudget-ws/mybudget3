@@ -21,10 +21,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  transfer: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emit = defineEmits(['newTransaction'])
@@ -35,18 +31,11 @@ const modalType = computed(() => {
     return 'expense';
   } else if (props.income) {
     return 'income';
-  } else if (props.transfer) {
-    return 'transfer';
   }
   return 'unknown';
 });
 const modalTitle = computed(() => {
-  if (props.income) {
-    return 'Новый доход';
-  } else if (props.transfer) {
-    return 'Новый перевод';
-  }
-  return 'Новый расход';
+  return props.income ? 'Новый доход' : 'Новый расход';
 });
 const isDisabledInput = computed(() => (
   isSubmitting.value || !token.value
@@ -81,7 +70,6 @@ const currentCurrencyName = computed(() => {
 const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
-  console.log('currentCategoriesIds.value', currentCategoriesIds.value);
   const result = await api.createTransaction(
     token.value,
     {
