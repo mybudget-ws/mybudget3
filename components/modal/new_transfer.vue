@@ -44,23 +44,23 @@ const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
 
-  // const transferData = {
-  //   amountSrc: evalAmountSrc,
-  //   amountDst: evalAmountDst,
-  //   date: moment(date).format(),
-  //   accountIdSrc,
-  //   accountIdDst,
-  //   description
-  // };
+  const transferData = {
+    amountSrc: amountFrom.value,
+    amountDst: amountTo.value,
+    date: date.value,
+    accountIdSrc: currentAccountFrom.value.id,
+    accountIdDst: currentAccountTo.value.id,
+    description: description.value,
+  };
 
-  const result = await api.createTransaction(
+  const result = await api.createTransactionTransfer(
     token.value,
     transferData
   );
   isSubmitting.value = false;
   if (result) {
     document
-      .querySelector(`#${modalId.value} .btn-close`)
+      .querySelector(`#${modalId} .btn-close`)
       .dispatchEvent(new Event('click'));
     amountFrom.value = undefined;
     amountTo.value = undefined;
@@ -69,6 +69,19 @@ const onSubmit = async (event) => {
     emit('newTransaction');
   }
 };
+
+const onCloseCallback = () => {
+  amountFrom.value = undefined;
+  amountTo.value = undefined;
+  description.value = '';
+}
+
+watch(amountFrom, (newValue) => {
+  if (newValue !== undefined && newValue !== '') {
+    amountTo.value = newValue;
+  }
+});
+
 </script>
 
 <template>
@@ -81,6 +94,7 @@ const onSubmit = async (event) => {
           class='btn-close'
           data-bs-dismiss='modal'
           aria-label='Close'
+          @click='onCloseCallback'
         />
       </div>
       <div class='modal-body'>
