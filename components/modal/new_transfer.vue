@@ -4,23 +4,14 @@ import { Modal } from '@tabler/core/dist/js/tabler.min.js'
 
 const { token } = useAuth();
 
-const amount = ref(undefined);
+const amountFrom = ref(undefined);
+const amountTo = ref(undefined);
 const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
-const currentAccount = ref(undefined);
+const currentAccountFrom = ref(undefined);
+const currentAccountTo = ref(undefined);
 const transactionEventTicks = ref(1);
-
-const props = defineProps({
-  expense: {
-    type: Boolean,
-    default: false,
-  },
-  income: {
-    type: Boolean,
-    default: false,
-  },
-});
 
 const emit = defineEmits(['newTransaction'])
 
@@ -29,37 +20,51 @@ const isDisabledInput = computed(() => (
   isSubmitting.value || !token.value
 ));
 
-const toggleAccountCallback = (account) => {
+const toggleAccountFromCallback = (account) => {
   if (account == null) return;
-  currentAccount.value = account;
+  currentAccountFrom.value = account;
 }
 
-const currentCurrencyName = computed(() => {
-  const account = currentAccount.value;
+const toggleAccountToCallback = (account) => {
+  if (account == null) return;
+  currentAccountTo.value = account;
+}
+
+const currentCurrencyNameFrom = computed(() => {
+  const account = currentAccountFrom.value;
+  return account?.currency?.name || '';
+});
+
+const currentCurrencyNameTo = computed(() => {
+  const account = currentAccountTo.value;
   return account?.currency?.name || '';
 });
 
 const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
+
+  // const transferData = {
+  //   amountSrc: evalAmountSrc,
+  //   amountDst: evalAmountDst,
+  //   date: moment(date).format(),
+  //   accountIdSrc,
+  //   accountIdDst,
+  //   description
+  // };
+
   const result = await api.createTransaction(
     token.value,
-    {
-      amount: amount.value,
-      isIncome: props.income,
-      date: date.value,
-      description: description.value,
-      accountId: currentAccount.value.id,
-      projectId: [], // TODO
-      propertyId: [] // TODO
-    }
+    transferData
   );
   isSubmitting.value = false;
   if (result) {
     document
       .querySelector(`#${modalId.value} .btn-close`)
       .dispatchEvent(new Event('click'));
-    amount.value = undefined;
+    amountFrom.value = undefined;
+    amountTo.value = undefined;
+    description.value = '';
     transactionEventTicks.value++;
     emit('newTransaction');
   }
@@ -81,33 +86,51 @@ const onSubmit = async (event) => {
       <div class='modal-body'>
         <div class='row mb-3'>
           <div class='col'>
-            <Label required>Величина</Label>
+            <FormAccounts
+              label='Откуда'
+              radioGroupName='accountFrom'
+              @toggle-account='toggleAccountFromCallback'
+            />
+          </div>
+          <div class='col'>
+            <FormAccounts
+              label='Куда'
+              radioGroupName='accountTo'
+              @toggle-account='toggleAccountToCallback'
+            />
+          </div>
+        </div>
+
+        <div class='row mb-3'>
+          <div class='col'>
+            <Label required>Величина (источник)</Label>
             <div class='input-group input-group-flat'>
               <Input
                 type='text'
-                placeholder='10.5 + 3 * 2'
+                placeholder='0.00'
                 required
                 :disabled='isDisabledInput'
-                v-model='amount'
+                v-model='amountFrom'
               />
-              <span class='input-group-text'>{{ currentCurrencyName }}</span>
+              <span class='input-group-text'>{{ currentCurrencyNameFrom }}</span>
             </div>
           </div>
           <div class='col'>
-            <Label required>Величина</Label>
+            <Label required>Величина (получатель)</Label>
             <div class='input-group input-group-flat'>
               <Input
                 type='text'
-                placeholder='10.5 + 3 * 2'
+                placeholder='0.00'
                 required
                 :disabled='isDisabledInput'
-                v-model='amount'
+                v-model='amountTo'
               />
-              <span class='input-group-text'>{{ currentCurrencyName }}</span>
+              <span class='input-group-text'>{{ currentCurrencyNameTo }}</span>
             </div>
           </div>
         </div>
-        <div class='row mb-3'>
+
+        <div class='row'>
           <div class='col'>
             <Label required>Дата</Label>
             <InputDate v-model='date' :disabled='isDisabledInput' />
@@ -120,15 +143,6 @@ const onSubmit = async (event) => {
               :disabled='isDisabledInput'
               v-model='description'
             />
-          </div>
-        </div>
-
-        <div class='row'>
-          <div class='col'>
-            <FormAccounts @toggle-account='toggleAccountCallback' />
-          </div>
-          <div class='col'>
-            <FormAccounts @toggle-account='toggleAccountCallback' />
           </div>
         </div>
       </div>

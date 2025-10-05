@@ -9,6 +9,17 @@ const items = ref([]);
 const selectedId = ref();
 const emit = defineEmits(['toggleAccount'])
 
+const props = defineProps({
+  label: {
+    type: String,
+    default: 'Счёт',
+  },
+  radioGroupName: {
+    type: String,
+    default: 'form-account',
+  },
+});
+
 const load = async () => {
   isLoading.value = true
   try {
@@ -65,13 +76,13 @@ watch(() => route, (newRoute) => {
   <PlaceholderLoadingFilters v-if='isLoading' />
 
   <div v-else>
-    <Label>Счёт</Label>
+    <Label>{{props.label}}</Label>
     <div class='content-scroll pe-1'>
       <div class='form-selectgroup form-selectgroup-boxes d-flex flex-column'>
         <label v-for='item in visibleItems' :key='item.id' class="form-selectgroup-item flex-fill">
           <input
             type='radio'
-            name='form-payment'
+            :name='radioGroupName'
             value='item.id'
             class='form-selectgroup-input'
             :checked='selectedId == item.id'
