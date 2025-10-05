@@ -111,10 +111,8 @@ watch(() => route, (newRoute) => {
 </template>
 
 <style scoped>
-/*
 .content-scroll {
   max-height: 50vh;
   overflow: scroll;
 }
-*/
 </style>
