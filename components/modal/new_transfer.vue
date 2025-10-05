@@ -45,8 +45,8 @@ const onSubmit = async (event) => {
   isSubmitting.value = true;
 
   const transferData = {
-    amountSrc: amountFrom.value,
-    amountDst: amountTo.value,
+    amountSrc: amountFrom.value.replace(/,/g, '.'),
+    amountDst: amountTo.value.replace(/,/g, '.'),
     date: date.value,
     accountIdSrc: currentAccountFrom.value.id,
     accountIdDst: currentAccountTo.value.id,
@@ -81,7 +81,6 @@ watch(amountFrom, (newValue) => {
     amountTo.value = newValue;
   }
 });
-
 </script>
 
 <template>

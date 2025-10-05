@@ -1,10 +1,13 @@
 <script setup>
 import api from '~/lib/api';
 import { Modal } from '@tabler/core/dist/js/tabler.min.js'
+import { evaluate } from 'mathjs';
 
 const { token } = useAuth();
 
 const amount = ref(undefined);
+const evaluatedAmount = ref(undefined);
+const calculationError = ref('');
 const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
@@ -55,13 +58,38 @@ const currentCurrencyName = computed(() => {
   return account?.currency?.name || '';
 });
 
+watch(amount, (newExpression) => {
+  if (!newExpression || newExpression.trim() === '') {
+    evaluatedAmount.value = undefined;
+    calculationError.value = '';
+    return;
+  }
+
+  try {
+    const result = evaluate(newExpression.replace(/,/g, '.'));
+    evaluatedAmount.value = Number.isFinite(result) ? result : undefined;
+    calculationError.value = '';
+  } catch (error) {
+    console.warn('Invalid expression:', error.message);
+    evaluatedAmount.value = undefined;
+    calculationError.value = 'Неверное выражение';
+  }
+});
+
 const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
+
+  if (!evaluatedAmount.value && calculationError.value) {
+    alert(calculationError.value);
+    isSubmitting.value = false;
+    return;
+  }
+
   const result = await api.createTransaction(
     token.value,
     {
-      amount: amount.value,
+      amount: evaluatedAmount.value.toString() || amount.value,
       isIncome: props.income,
       date: date.value,
       description: description.value,
