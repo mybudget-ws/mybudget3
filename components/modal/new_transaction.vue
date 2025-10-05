@@ -76,6 +76,31 @@ watch(amount, (newExpression) => {
   }
 });
 
+const handleModalShown = () => {
+  const modalElement = document.getElementById(modalId.value);
+  const amountInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
+  if (amountInput) {
+    amountInput.focus();
+    // Для выделения текста, если это будте нужно в будущем,
+    // например, при редактировании операции.
+    // amountInput.select();
+  }
+};
+
+onMounted(() => {
+  const modalElement = document.getElementById(modalId.value);
+  if (modalElement) {
+    modalElement.addEventListener('shown.bs.modal', handleModalShown);
+  }
+});
+
+onUnmounted(() => {
+  const modalElement = document.getElementById(modalId.value);
+  if (modalElement) {
+    modalElement.removeEventListener('shown.bs.modal', handleModalShown);
+  }
+});
+
 const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
