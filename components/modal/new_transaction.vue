@@ -130,11 +130,18 @@ const onSubmit = async (event) => {
       .querySelector(`#${modalId.value} .btn-close`)
       .dispatchEvent(new Event('click'));
     amount.value = undefined;
+    description.value = '';
     currentCategoriesIds.value = [];
     transactionEventTicks.value++;
     emit('newTransaction');
   }
 };
+
+const onCloseCallback = () => {
+  amount.value = undefined;
+  description.value = '';
+  currentCategoriesIds.value = [];
+}
 </script>
 
 <template>
@@ -147,6 +154,7 @@ const onSubmit = async (event) => {
           class='btn-close'
           data-bs-dismiss='modal'
           aria-label='Close'
+          @click='onCloseCallback'
         />
       </div>
       <div class='modal-body'>
