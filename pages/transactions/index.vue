@@ -1,11 +1,12 @@
 <script setup>
 import {
+  IconArrowDown,
+  IconArrowUp,
+  IconArrowsRightLeft,
+  IconCopy,
+  IconPencil,
   IconSearch,
   IconTrash,
-  IconPencil,
-  IconArrowDown,
-  IconArrowsRightLeft,
-  IconArrowUp,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -91,6 +92,10 @@ const applyFiltersFromQuery = () => {
       filters[filterKey] = [];
     }
   }
+};
+
+const copyTransaction = async (transaction) => {
+  console.log('copy', transaction);
 };
 
 const deleteTransaction = async (id) => {
@@ -219,6 +224,9 @@ watch(
                       <div class='btn-actions'>
                         <a class='btn btn-action'>
                           <IconPencil size=20 stroke-width=1 />
+                        </a>
+                        <a class='btn btn-action' @click.prevent='() => copyTransaction(tx)'>
+                          <IconCopy size=20 stroke-width=1 />
                         </a>
                         <a class='btn btn-action' @click.prevent='() => deleteTransaction(tx.id)'>
                           <IconTrash size=20 stroke-width=1 />
