@@ -13,6 +13,7 @@ const date = ref(new Date());
 const isSubmitting = ref(false);
 const currentAccount = ref(undefined);
 const currentCategoriesIds = ref([]);
+const currentPropertyId = ref(undefined);
 const transactionEventTicks = ref(1);
 
 const props = defineProps({
@@ -51,6 +52,10 @@ const toggleAccountCallback = (account) => {
 
 const toggleCategoryCallback = (categoryIds) => {
   currentCategoriesIds.value = [...categoryIds];
+}
+
+const togglePropertyCallback = (id) => {
+  currentPropertyId.value = id;
 }
 
 const currentCurrencyName = computed(() => {
@@ -121,7 +126,7 @@ const onSubmit = async (event) => {
       accountId: currentAccount.value.id,
       categoryIds: currentCategoriesIds.value,
       projectId: [], // TODO
-      propertyId: [] // TODO
+      propertyId: currentPropertyId.value,
     }
   );
   isSubmitting.value = false;
@@ -196,6 +201,13 @@ const onCloseCallback = () => {
               @toggle-category='toggleCategoryCallback'
               :reload='transactionEventTicks'
             />
+          </div>
+        </div>
+        <div class='row'>
+          <div class='col'>
+            <FormProperties @toggle-property='togglePropertyCallback' />
+          </div>
+          <div class='col'>
           </div>
         </div>
       </div>
