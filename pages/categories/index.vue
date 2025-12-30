@@ -70,6 +70,8 @@ watch(
 </script>
 
 <template>
+  <ModalNewCategory income @newCategory='quiteLoading' />
+
   <div class='row'>
     <div class='col-12'>
       <div class='card'>
