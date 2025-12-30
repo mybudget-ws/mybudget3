@@ -70,7 +70,7 @@ watch(
 </script>
 
 <template>
-  <ModalNewCategory income @newCategory='quiteLoading' />
+  <ModalNewCategory @newCategory='quiteLoading' />
 
   <div class='row'>
     <div class='col-12'>
@@ -84,7 +84,11 @@ watch(
               </div>
               <div class="col-md-auto col-sm-12">
                 <div class="ms-auto d-flex flex-wrap btn-list">
-                  <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal-income'>
+                  <button
+                    class='btn btn-primary'
+                    data-bs-toggle='modal'
+                    data-bs-target='#modal-category'
+                  >
                     <IconPlus stroke-width=2 />
                   </button>
                 </div>

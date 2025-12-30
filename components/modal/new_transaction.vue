@@ -92,20 +92,6 @@ const handleModalShown = () => {
   }
 };
 
-onMounted(() => {
-  const modalElement = document.getElementById(modalId.value);
-  if (modalElement) {
-    modalElement.addEventListener('shown.bs.modal', handleModalShown);
-  }
-});
-
-onUnmounted(() => {
-  const modalElement = document.getElementById(modalId.value);
-  if (modalElement) {
-    modalElement.removeEventListener('shown.bs.modal', handleModalShown);
-  }
-});
-
 const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
@@ -150,7 +136,7 @@ const onCloseCallback = () => {
 </script>
 
 <template>
-  <ModalBase :id='modalId'>
+  <ModalBase :id='modalId' :showCallback='handleModalShown'>
     <form @submit='onSubmit' autocomplete='off' >
       <div class='modal-header'>
         <h5 class='modal-title'>{{ modalTitle }}</h5>

@@ -23,12 +23,7 @@ const emit = defineEmits(['newCategory'])
 
 const modalId = computed(() => (`modal-${modalType.value}`));
 const modalType = computed(() => {
-  if (props.expense) {
-    return 'expense';
-  } else if (props.income) {
-    return 'income';
-  }
-  return 'unknown';
+  return 'category';
 });
 const modalTitle = computed(() => {
   return props.income ? 'Новый доход' : 'Новый расход';
@@ -44,20 +39,6 @@ const handleModalShown = () => {
     firstInput.focus();
   }
 };
-
-onMounted(() => {
-  const modalElement = document.getElementById(modalId.value);
-  if (modalElement) {
-    modalElement.addEventListener('shown.bs.modal', handleModalShown);
-  }
-});
-
-onUnmounted(() => {
-  const modalElement = document.getElementById(modalId.value);
-  if (modalElement) {
-    modalElement.removeEventListener('shown.bs.modal', handleModalShown);
-  }
-});
 
 const onSubmit = async (event) => {
   event.preventDefault();
@@ -87,7 +68,7 @@ const onCloseCallback = () => {
 </script>
 
 <template>
-  <ModalBase :id='modalId'>
+  <ModalBase :id='modalId' :showCallback='handleModalShown'>
     <form @submit='onSubmit' autocomplete='off' >
       <div class='modal-header'>
         <h5 class='modal-title'>{{ modalTitle }}</h5>
