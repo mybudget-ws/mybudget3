@@ -8,6 +8,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (to.path === '/sign_up') return navigateTo('/')
 
   } else {
+    if (to.path === '/categories/') return navigateTo('/sign_in/')
+    if (to.path === '/categories') return navigateTo('/sign_in/')
     if (to.path === '/profile/') return navigateTo('/sign_in/')
     if (to.path === '/profile') return navigateTo('/sign_in/')
   }

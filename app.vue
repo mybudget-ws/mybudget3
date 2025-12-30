@@ -101,40 +101,40 @@ useHead({
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <a class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/'>
                 <IconWallet size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Счета</span>
-              </a>
+              </NuxtLink>
             </li>
             <li class='nav-item'>
-              <a class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/'>
                 <IconChartHistogram size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Отчёты</span>
-              </a>
+              </NuxtLink>
             </li>
             <li class='nav-item'>
-              <a class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/categories'>
                 <IconTags size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Категории</span>
-              </a>
+              </NuxtLink>
             </li>
             <li class='nav-item'>
-              <a class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/'>
                 <IconTargetArrow size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Цели</span>
-              </a>
+              </NuxtLink>
             </li>
             <li class='nav-item'>
-              <a class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/'>
                 <IconBulb size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Проекты</span>
-              </a>
+              </NuxtLink>
             </li>
             <li class='nav-item'>
-              <a class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/'>
                 <IconShieldLock size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Имущество</span>
-              </a>
+              </NuxtLink>
             </li>
           </ul>
         </div>
