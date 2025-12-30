@@ -63,20 +63,14 @@ useHead({
               <a
                 href='?theme=dark'
                 class='nav-link px-0 hide-theme-dark'
-                data-bs-toggle='tooltip'
-                data-bs-placement='bottom'
-                aria-label='Включить темный режим'
-                data-bs-original-title='Включить темный режим'
+                v-tooltip:bottom="'Включить темный режим'"
               >
                 <IconMoon size=20 stroke-width=1 />
               </a>
               <a
                 href='?theme=light'
                 class='nav-link px-0 hide-theme-light'
-                data-bs-toggle='tooltip'
-                data-bs-placement='bottom'
-                aria-label='Включить светлый режим'
-                data-bs-original-title='Включить светлый режим'
+                v-tooltip:bottom="'Включить светлый режим'"
               >
                 <IconSun size=20 stroke-width=1 />
               </a>

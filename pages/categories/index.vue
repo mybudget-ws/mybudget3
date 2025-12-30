@@ -2,6 +2,7 @@
 import {
   IconPlus,
   IconPencil,
+  IconEyeOff,
   IconTrash,
 } from '@tabler/icons-vue';
 
@@ -44,11 +45,11 @@ const quiteLoading = async () => {
   itemsEventTicks.value++;
 }
 
-const filterKeys = {
-  accounts: 'accountIds',
-  categories: 'categoryIds',
-  projects: 'projectIds',
-  properties: 'propertyIds'
+const hideCategory = async (id) => {
+  isQuiteLoading.value = true;
+  alert('TODO')
+  // await api.hideCategory(token.value, id);
+  await quiteLoading();
 };
 
 const deleteCategory = async (id) => {
@@ -107,6 +108,13 @@ watch(
                       <div class='btn-actions'>
                         <a class='btn btn-action'>
                           <IconPencil size=20 stroke-width=1 />
+                        </a>
+                        <a
+                            class='btn btn-action'
+                            @click.prevent='() => hideCategory(item.id)'
+                            v-tooltip:bottom="'Скрыть категорию'"
+                        >
+                          <IconEyeOff size=20 stroke-width=1 />
                         </a>
                         <a class='btn btn-action' @click.prevent='() => deleteCategory(item.id)'>
                           <IconTrash size=20 stroke-width=1 />
