@@ -35,9 +35,7 @@ const isDisabledInput = computed(() => (
 const handleModalShown = () => {
   const modalElement = document.getElementById(modalId.value);
   const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
-  if (firstInput) {
-    firstInput.focus();
-  }
+  if (firstInput) firstInput.focus();
 };
 
 const onSubmit = async (event) => {
