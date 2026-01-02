@@ -81,14 +81,14 @@ watch(amount, (newExpression) => {
   }
 });
 
-const handleModalShown = () => {
-  const modalElement = document.getElementById(modalId.value);
-  const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
-  // Для выделения текста, если это будте нужно в будущем,
-  // например, при редактировании операции дополнительно:
-  // `firstInput.select();`
-  if (firstInput) firstInput.focus();
-};
+// const handleModalShown = () => {
+//   const modalElement = document.getElementById(modalId.value);
+//   const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
+//   // Для выделения текста, если это будте нужно в будущем,
+//   // например, при редактировании операции дополнительно:
+//   // `firstInput.select();`
+//   if (firstInput) firstInput.focus();
+// };
 
 const onSubmit = async (event) => {
   event.preventDefault();
@@ -134,7 +134,7 @@ const onCloseCallback = () => {
 </script>
 
 <template>
-  <ModalBase :id='modalId' :showCallback='handleModalShown'>
+  <ModalBase :id='modalId' is-focus>
     <form @submit='onSubmit' autocomplete='off' >
       <div class='modal-header'>
         <h5 class='modal-title'>{{ modalTitle }}</h5>

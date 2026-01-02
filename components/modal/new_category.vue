@@ -32,12 +32,6 @@ const isDisabledInput = computed(() => (
   isSubmitting.value || !token.value
 ));
 
-const handleModalShown = () => {
-  const modalElement = document.getElementById(modalId.value);
-  const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
-  if (firstInput) firstInput.focus();
-};
-
 const onSubmit = async (event) => {
   event.preventDefault();
   isSubmitting.value = true;
@@ -66,7 +60,7 @@ const onCloseCallback = () => {
 </script>
 
 <template>
-  <ModalBase :id='modalId' :showCallback='handleModalShown'>
+  <ModalBase :id='modalId' is-focus>
     <form @submit='onSubmit' autocomplete='off' >
       <div class='modal-header'>
         <h5 class='modal-title'>{{ modalTitle }}</h5>
