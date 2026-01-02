@@ -84,12 +84,10 @@ watch(amount, (newExpression) => {
 const handleModalShown = () => {
   const modalElement = document.getElementById(modalId.value);
   const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
-  if (firstInput) {
-    firstInput.focus();
-    // Для выделения текста, если это будте нужно в будущем,
-    // например, при редактировании операции.
-    // firstInput.select();
-  }
+  // Для выделения текста, если это будте нужно в будущем,
+  // например, при редактировании операции дополнительно:
+  // `firstInput.select();`
+  if (firstInput) firstInput.focus();
 };
 
 const onSubmit = async (event) => {
