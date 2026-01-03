@@ -20,7 +20,7 @@ const { isSignedIn } = useAuth();
 const queryTheme = route.query.theme;
 if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
   appConfig.theme.dark = queryTheme === 'dark';
-  setData('theme', queryTheme);
+  setData('theme', queryTheme, { expire: null });
 } else {
   appConfig.theme.dark = getData('theme') === 'dark';
 }
