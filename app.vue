@@ -96,14 +96,14 @@ useHead({
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/'>
-                <IconWallet size=20 stroke-width=1 />
-                <span class='nav-link-title ms-1'>Счета</span>
+                <IconChartHistogram size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Отчёты</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/'>
-                <IconChartHistogram size=20 stroke-width=1 />
-                <span class='nav-link-title ms-1'>Отчёты</span>
+                <IconWallet size=20 stroke-width=1 />
+                <span class='nav-link-title ms-1'>Счета</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
