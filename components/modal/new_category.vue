@@ -4,7 +4,6 @@ import api from '~/lib/api';
 const { token } = useAuth();
 const categoryName = ref('');
 const isSubmitting = ref(false);
-const itemEventTicks = ref(1);
 
 const props = defineProps({
   item: {
@@ -13,58 +12,52 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['newItem'])
-const modalId = computed(() => ('modal-category'));
-const modalTitle = computed(() => {
-  return props.item ?
-    'Редактирование категории' :
-    'Новая категория';
-});
+const emit = defineEmits(['saved', 'close']);
+const isEdit = computed(() => !!props.item);
 
-const isDisabledInput = computed(() => (
-  isSubmitting.value || !token.value
-));
+const onSubmit = async () => {
+  if (!token.value) return;
 
-const onSubmit = async (event) => {
-  event.preventDefault();
-  isSubmitting.value = true;
-
-  const result = await api.createCategory(
-    token.value,
-    {
-      name: categoryName.value,
-      color: 'blue'
+  isSubmitting.value = true
+  try {
+    if (isEdit.value) {
+      await api.updateCategory(token.value, {
+        id: props.item.id,
+        name: categoryName.value,
+        color: 'blue',
+      });
+    } else {
+      await api.createCategory(token.value, {
+        name: categoryName.value,
+        color: 'blue',
+      });
     }
-  );
-  isSubmitting.value = false;
-  if (result) {
-    document
-      .querySelector(`#${modalId.value} .btn-close`)
-      .dispatchEvent(new Event('click'));
-    onCloseCallback();
-    itemEventTicks.value++;
-    emit('newItem');
+
+    emit('saved');
+  } finally {
+    isSubmitting.value = false
   }
 };
 
-const onCloseCallback = () => {
-  categoryName.value = '';
-}
+watch(
+  () => props.item,
+  (val) => {
+    categoryName.value = val?.name ?? ''
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <ModalBase :id='modalId' is-focus>
-    <form @submit='onSubmit' autocomplete='off' >
+  <ModalBaseV2 id='modal-category' is-focus @close="emit('close')">
+    <form @submit.prevent='onSubmit' autocomplete='off'>
       <div class='modal-header'>
-        <h5 class='modal-title'>{{ modalTitle }}</h5>
-        <button
-          type='button'
-          class='btn-close'
-          data-bs-dismiss='modal'
-          aria-label='Close'
-          @click='onCloseCallback'
-        />
+        <h5 class="modal-title">
+          {{ isEdit ? 'Редактирование категории' : 'Новая категория' }}
+        </h5>
+        <button class="btn-close" type="button" @click="emit('close')" />
       </div>
+
       <div class='modal-body'>
         <div class='mb-3'>
           <Label required>Название</Label>
@@ -72,14 +65,14 @@ const onCloseCallback = () => {
             required
             type='text'
             class='form-control'
-            :disabled='isDisabledInput'
+            :disabled='isSubmitting'
             v-model='categoryName'
           />
         </div>
       </div>
+
       <div class='modal-footer'>
-        <!-- btn btn-outline-secondary -->
-        <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>
+        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
           Отмена
         </button>
         <Button
@@ -92,5 +85,5 @@ const onCloseCallback = () => {
         </Button>
       </div>
     </form>
-  </ModalBase>
+  </ModalBaseV2>
 </template>

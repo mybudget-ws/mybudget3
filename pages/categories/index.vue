@@ -60,6 +60,24 @@ const deleteCategory = async (id) => {
   }
 };
 
+const showModal = ref(false)
+const currentCategory = ref(null)
+
+const openCreate = () => {
+  currentCategory.value = null
+  showModal.value = true
+}
+
+const openEdit = (item) => {
+  currentCategory.value = { ...item }
+  showModal.value = true
+}
+
+const onSaved = async () => {
+  showModal.value = false
+  await quiteLoading()
+}
+
 watch(
   () => token.value,
   (val) => {
@@ -70,7 +88,13 @@ watch(
 </script>
 
 <template>
-  <ModalNewCategory @newItem='quiteLoading' />
+  <ModalNewCategory
+    @newItem='quiteLoading'
+    v-if='showModal'
+    :item='currentCategory'
+    @saved='onSaved'
+    @close="showModal = false"
+  />
 
   <div class='row'>
     <div class='col-12'>
@@ -86,8 +110,7 @@ watch(
                 <div class="ms-auto d-flex flex-wrap btn-list">
                   <button
                     class='btn btn-primary'
-                    data-bs-toggle='modal'
-                    data-bs-target='#modal-category'
+                    @click='openCreate'
                   >
                     <IconPlus stroke-width=2 />
                   </button>
@@ -112,12 +135,14 @@ watch(
                     <td>{{ item.name }}</td>
                     <td>
                       <div class='btn-actions'>
-                        <a class='btn btn-action'>
+                        <a class='btn btn-action'
+                          @click.prevent='openEdit(item)'
+                        >
                           <IconPencil size=20 stroke-width=1 />
                         </a>
                         <a
                             class='btn btn-action'
-                            @click.prevent='() => hideCategory(item.id)'
+                            @click.prevent='hideCategory(item.id)'
                             v-tooltip:bottom.delay="{ title: 'Скрыть категорию', delay: 400 }"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
