@@ -17,8 +17,10 @@
     <h1>Мой профиль</h1>
     <h2>Is signed in:</h2>
     <div>{{ isSignedIn }}</div>
+    <!--
     <h2>Token:</h2>
     <div>{{ token }}</div>
+    -->
 
     <Button
       class='btn-primary'
