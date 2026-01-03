@@ -175,12 +175,12 @@ watch(
                 <thead>
                   <tr>
                     <th class='w-1'>
-                      <button class='table-sort d-flex' data-sort='sort-name'>
+                      <button class='table-sort d-flex' data-sort='sort-date'>
                         Дата
                       </button>
                     </th>
                     <th>
-                      <button class='table-sort d-flex justify-content-end' data-sort='sort-city'>
+                      <button class='table-sort d-flex justify-content-end' data-sort='sort-amount'>
                         Величина
                       </button>
                     </th>

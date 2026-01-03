@@ -15,11 +15,11 @@ const { token } = useAuth();
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const page = ref(1);
-const categories = ref([]);
+const accounts = ref([]);
 const isShowModal = ref(false)
 const currentItem = ref(null)
-const visibleItems = computed(() => categories.value.filter(v => !v.isHidden));
-const hiddenItems = computed(() => categories.value.filter(v => v.isHidden));
+const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
+const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
 
 const load = async (isQuite = false) => {
   if (isQuite) {
@@ -29,9 +29,9 @@ const load = async (isQuite = false) => {
   }
 
   try {
-    const items = await api.categories(token.value);
+    const items = await api.accounts(token.value);
     if (items) {
-      categories.value = items
+      accounts.value = items
     } else {
       console.log('TODO: error');
     }
@@ -45,14 +45,14 @@ const load = async (isQuite = false) => {
 
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
-  await api.toggleIsHidden(token.value, id, 'category');
+  await api.toggleIsHidden(token.value, id, 'account');
   await load(true);
 };
 
 const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить категорию?')) {
+  if (confirm('Вы уверены, что хотите удалить счёт, операция необратима?')) {
     isQuiteLoading.value = true;
-    await api.destroyCategory(token.value, id);
+    await api.destroyAccount(token.value, id);
     await load(true);
   }
 };
@@ -72,6 +72,14 @@ const onSaved = async () => {
   await load(true)
 }
 
+const isShowKind = ({ kind }) => {
+  return kind == 'credit';
+};
+
+const kindDisplayName = ({ kind }) => {
+  return kind == 'credit' ? 'Кредит' : '';
+}
+
 watch(
   () => token.value,
   (val) => {
@@ -82,7 +90,7 @@ watch(
 </script>
 
 <template>
-  <ModalNewCategory
+  <ModalNewAccount
     @newItem='load(true)'
     v-if='isShowModal'
     :item='currentItem'
@@ -97,7 +105,7 @@ watch(
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
               <div class='col d-flex align-items-center'>
-                <h2 class='mb-0'>Категории</h2>
+                <h2 class='mb-0'>Счета</h2>
                 <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
               </div>
               <div class='col-auto'>
@@ -121,12 +129,27 @@ watch(
                 <thead>
                   <tr>
                     <th>Название</th>
+                    <th class='text-end'>Баланс</th>
                     <th class='w-1'></th>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
-                    <td>{{ item.name }}</td>
+                    <td>
+                      {{ item.name }}
+                      <span v-if='isShowKind(item)' class='badge ms-2'>{{ kindDisplayName(item) }}</span>
+                    </td>
+                    <td class='text-nowrap text-end'>
+                      <span :class="{
+                        'text-success': item.balance > 0,
+                        'text-danger': item.balance < 0
+                      }">
+                        <Amount
+                          :value='item.balance'
+                          :currency='item.currency.name'
+                        />
+                      </span>
+                    </td>
                     <td>
                       <div class='btn-actions'>
                         <a class='btn btn-action'
@@ -137,7 +160,7 @@ watch(
                         <a
                             class='btn btn-action'
                             @click.prevent='toggleHidden(item)'
-                            v-tooltip:bottom="'Скрыть категорию'"
+                            v-tooltip:bottom="'Скрыть счёт'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
@@ -158,9 +181,7 @@ watch(
                 </thead>
                 <tbody class='opacity-30'>
                   <tr v-for="item in hiddenItems" :key="item.id">
-                    <td>
-                      {{ item.name }}
-                    </td>
+                    <td>{{ item.name }}</td>
                     <td>
                       <div class='btn-actions justify-content-end'>
                         <a class='btn btn-action' @click.prevent='toggleHidden(item)'>

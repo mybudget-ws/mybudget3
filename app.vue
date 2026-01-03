@@ -101,7 +101,7 @@ useHead({
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/accounts'>
                 <IconWallet size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Счета</span>
               </NuxtLink>
