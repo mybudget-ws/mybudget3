@@ -1,4 +1,6 @@
 <script setup>
+import { Modal } from '@tabler/core/dist/js/tabler.min.js'
+
 const props = defineProps({
   id: String,
   isFocus: Boolean,

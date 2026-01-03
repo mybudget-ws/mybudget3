@@ -1,6 +1,5 @@
 <script setup>
 import api from '~/lib/api';
-import { Modal } from '@tabler/core/dist/js/tabler.min.js'
 import { evaluate } from 'mathjs';
 
 const { token } = useAuth();

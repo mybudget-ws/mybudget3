@@ -1,9 +1,7 @@
 <script setup>
 import api from '~/lib/api';
-import { Modal } from '@tabler/core/dist/js/tabler.min.js'
 
 const { token } = useAuth();
-
 const categoryName = ref('');
 const isSubmitting = ref(false);
 const itemEventTicks = ref(1);
@@ -40,7 +38,7 @@ const onSubmit = async (event) => {
     token.value,
     {
       name: categoryName.value,
-      color: 'white'
+      color: 'blue'
     }
   );
   isSubmitting.value = false;
