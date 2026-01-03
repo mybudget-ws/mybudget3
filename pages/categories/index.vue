@@ -149,14 +149,14 @@ watch(
                   </tr>
                 </tbody>
               </table>
-              <table class='table table-vcenter table-selectable opacity-30'>
+              <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
                     <th>Архив</th>
                     <th class='w-1'></th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody class='opacity-30'>
                   <tr v-for="item in hiddenItems" :key="item.id">
                     <td>
                       {{ item.name }}
