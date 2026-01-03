@@ -100,8 +100,8 @@ watch(
                 <h2 class='mb-0'>Категории</h2>
                 <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
               </div>
-              <div class="col-md-auto col-sm-12">
-                <div class="ms-auto d-flex flex-wrap btn-list">
+              <div class='col-auto'>
+                <div class='ms-auto d-flex flex-wrap btn-list'>
                   <button
                     class='btn btn-primary'
                     @click='openCreate'
