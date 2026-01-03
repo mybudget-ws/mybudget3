@@ -16,7 +16,6 @@ const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const page = ref(1);
 const categories = ref([]);
-const itemsEventTicks = ref(1);
 const isShowModal = ref(false)
 const currentCategory = ref(null)
 
@@ -42,23 +41,18 @@ const load = async (isQuite = false) => {
   }
 };
 
-const quiteLoading = async () => {
-  await load(true);
-  itemsEventTicks.value++;
-}
-
 const hideCategory = async (id) => {
   isQuiteLoading.value = true;
   alert('TODO')
   // await api.hideCategory(token.value, id);
-  await quiteLoading();
+  await load(true);
 };
 
 const deleteCategory = async ({ id }) => {
   if (confirm('Вы уверены, что хотите удалить категорию?')) {
     isQuiteLoading.value = true;
     await api.destroyCategory(token.value, id);
-    await quiteLoading();
+    await load(true);
   }
 };
 
@@ -74,7 +68,7 @@ const openEdit = (item) => {
 
 const onSaved = async () => {
   isShowModal.value = false
-  await quiteLoading()
+  await load(true)
 }
 
 watch(
@@ -88,7 +82,7 @@ watch(
 
 <template>
   <ModalNewCategory
-    @newItem='quiteLoading'
+    @newItem='load(true)'
     v-if='isShowModal'
     :item='currentCategory'
     @saved='onSaved'
