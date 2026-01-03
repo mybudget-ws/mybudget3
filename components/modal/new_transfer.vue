@@ -83,7 +83,7 @@ watch(amountFrom, (newValue) => {
 </script>
 
 <template>
-  <ModalBase :id='modalId'>
+  <ModalBaseOld :id='modalId'>
     <form @submit='onSubmit' autocomplete='off' >
       <div class='modal-header'>
         <h5 class='modal-title'>Новый перевод</h5>
@@ -172,5 +172,5 @@ watch(amountFrom, (newValue) => {
         </Button>
       </div>
     </form>
-  </ModalBase>
+  </ModalBaseOld>
 </template>

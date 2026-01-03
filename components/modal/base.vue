@@ -1,58 +1,51 @@
 <script setup>
-import { Modal } from '@tabler/core/dist/js/tabler.min.js'
+import { onMounted, onUnmounted, nextTick, ref } from 'vue';
 
 const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
   isFocus: {
     type: Boolean,
-    required: false,
-    default: false,
-  },
-  showCallback: {
-    type: Function,
-    required: false,
-    default: null,
-  },
+    default: false
+  }
 });
 
-const MODAL_SHOW = 'shown.bs.modal'
+const emit = defineEmits(['close']);
+const modalRef = ref(null);
 
-const focusOnFirstInput = () => {
-  const modalElement = document.getElementById(props.id);
-  const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
-  if (firstInput) firstInput.focus();
+onMounted(async () => {
+  if (!props.isFocus) return;
+  await nextTick();
+
+  modalRef.value
+    ?.querySelector('input, textarea, select')
+    ?.focus();
+});
+
+const onKeyDown = (e) => {
+  if (e.key === 'Escape') {
+    emit('close');
+  }
 };
 
 onMounted(() => {
-  const modalElement = document.getElementById(props.id);
-  if (modalElement) {
-    if (props.showCallback) {
-      modalElement.addEventListener(MODAL_SHOW, props.showCallback);
-    } else if (props.isFocus) {
-      modalElement.addEventListener(MODAL_SHOW, focusOnFirstInput);
-    }
-  }
+  window.addEventListener('keydown', onKeyDown);
 });
 
 onUnmounted(() => {
-  const modalElement = document.getElementById(props.id);
-  if (modalElement) {
-    if (props.showCallback) {
-      modalElement.removeEventListener(MODAL_SHOW, props.showCallback);
-    } else if (props.isFocus) {
-      modalElement.addEventListener(MODAL_SHOW, focusOnFirstInput);
-    }
-  }
+  window.removeEventListener('keydown', onKeyDown);
 });
 </script>
 
 <template>
-  <div class='modal' :id='props.id' tabindex='-1'>
-    <div class='modal-dialog modal-lg' role='document'>
-      <div class='modal-content'>
+  <div
+    class='modal show d-block'
+    @click="emit('close')"
+  >
+    <div class='modal-dialog modal-lg' tabindex='-1'>
+      <div
+        class='modal-content'
+        ref='modalRef'
+        @click.stop
+      >
         <slot />
       </div>
     </div>

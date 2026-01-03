@@ -133,7 +133,7 @@ const onCloseCallback = () => {
 </script>
 
 <template>
-  <ModalBase :id='modalId' is-focus>
+  <ModalBaseOld :id='modalId' is-focus>
     <form @submit='onSubmit' autocomplete='off' >
       <div class='modal-header'>
         <h5 class='modal-title'>{{ modalTitle }}</h5>
@@ -208,5 +208,5 @@ const onCloseCallback = () => {
         </Button>
       </div>
     </form>
-  </ModalBase>
+  </ModalBaseOld>
 </template>

@@ -49,7 +49,7 @@ watch(
 </script>
 
 <template>
-  <ModalBaseV2 id='modal-category' is-focus @close="emit('close')">
+  <ModalBase id='modal-category' is-focus @close="emit('close')">
     <form @submit.prevent='onSubmit' autocomplete='off'>
       <div class='modal-header'>
         <h5 class="modal-title">
@@ -85,5 +85,5 @@ watch(
         </Button>
       </div>
     </form>
-  </ModalBaseV2>
+  </ModalBase>
 </template>

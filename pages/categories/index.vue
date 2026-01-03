@@ -17,6 +17,8 @@ const isQuiteLoading = ref(false);
 const page = ref(1);
 const categories = ref([]);
 const itemsEventTicks = ref(1);
+const isShowModal = ref(false)
+const currentCategory = ref(null)
 
 const load = async (isQuite = false) => {
   if (isQuite) {
@@ -52,29 +54,26 @@ const hideCategory = async (id) => {
   await quiteLoading();
 };
 
-const deleteCategory = async (id) => {
+const deleteCategory = async ({ id }) => {
   if (confirm('Вы уверены, что хотите удалить категорию?')) {
     isQuiteLoading.value = true;
-    // await api.destroyTransaction(token.value, id);
+    await api.destroyCategory(token.value, id);
     await quiteLoading();
   }
 };
 
-const showModal = ref(false)
-const currentCategory = ref(null)
-
 const openCreate = () => {
   currentCategory.value = null
-  showModal.value = true
+  isShowModal.value = true
 }
 
 const openEdit = (item) => {
   currentCategory.value = { ...item }
-  showModal.value = true
+  isShowModal.value = true
 }
 
 const onSaved = async () => {
-  showModal.value = false
+  isShowModal.value = false
   await quiteLoading()
 }
 
@@ -90,10 +89,10 @@ watch(
 <template>
   <ModalNewCategory
     @newItem='quiteLoading'
-    v-if='showModal'
+    v-if='isShowModal'
     :item='currentCategory'
     @saved='onSaved'
-    @close="showModal = false"
+    @close="isShowModal = false"
   />
 
   <div class='row'>
@@ -147,7 +146,7 @@ watch(
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
-                        <a class='btn btn-action' @click.prevent='() => deleteCategory(item.id)'>
+                        <a class='btn btn-action' @click.prevent='deleteCategory(item)'>
                           <IconTrash size=20 stroke-width=1 />
                         </a>
                       </div>
