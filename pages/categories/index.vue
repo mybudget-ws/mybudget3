@@ -17,7 +17,9 @@ const isQuiteLoading = ref(false);
 const page = ref(1);
 const categories = ref([]);
 const isShowModal = ref(false)
-const currentCategory = ref(null)
+const currentItem = ref(null)
+const visibleItems = computed(() => categories.value.filter(v => !v.isHidden));
+const hiddenItems = computed(() => categories.value.filter(v => v.isHidden));
 
 const load = async (isQuite = false) => {
   if (isQuite) {
@@ -41,14 +43,13 @@ const load = async (isQuite = false) => {
   }
 };
 
-const hideCategory = async (id) => {
+const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
-  alert('TODO')
-  // await api.hideCategory(token.value, id);
+  await api.toggleIsHidden(token.value, id, 'category');
   await load(true);
 };
 
-const deleteCategory = async ({ id }) => {
+const destroy = async ({ id }) => {
   if (confirm('Вы уверены, что хотите удалить категорию?')) {
     isQuiteLoading.value = true;
     await api.destroyCategory(token.value, id);
@@ -57,12 +58,12 @@ const deleteCategory = async ({ id }) => {
 };
 
 const openCreate = () => {
-  currentCategory.value = null
+  currentItem.value = null
   isShowModal.value = true
 }
 
 const openEdit = (item) => {
-  currentCategory.value = { ...item }
+  currentItem.value = { ...item }
   isShowModal.value = true
 }
 
@@ -84,7 +85,7 @@ watch(
   <ModalNewCategory
     @newItem='load(true)'
     v-if='isShowModal'
-    :item='currentCategory'
+    :item='currentItem'
     @saved='onSaved'
     @close="isShowModal = false"
   />
@@ -124,7 +125,7 @@ watch(
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="item in categories" :key="item.id">
+                  <tr v-for="item in visibleItems" :key="item.id">
                     <td>{{ item.name }}</td>
                     <td>
                       <div class='btn-actions'>
@@ -135,12 +136,37 @@ watch(
                         </a>
                         <a
                             class='btn btn-action'
-                            @click.prevent='hideCategory(item.id)'
+                            @click.prevent='toggleHidden(item)'
                             v-tooltip:bottom="'Скрыть категорию'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
-                        <a class='btn btn-action' @click.prevent='deleteCategory(item)'>
+                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                          <IconTrash size=20 stroke-width=1 />
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <table class='table table-vcenter table-selectable opacity-30'>
+                <thead>
+                  <tr>
+                    <th>Архив</th>
+                    <th class='w-1'></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in hiddenItems" :key="item.id">
+                    <td>
+                      {{ item.name }}
+                    </td>
+                    <td>
+                      <div class='btn-actions justify-content-end'>
+                        <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
+                          <IconEyeOff size=20 stroke-width=1 />
+                        </a>
+                        <a class='btn btn-action' @click.prevent='destroy(item)'>
                           <IconTrash size=20 stroke-width=1 />
                         </a>
                       </div>
