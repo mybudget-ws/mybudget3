@@ -2,9 +2,20 @@
 import { Modal } from '@tabler/core/dist/js/tabler.min.js'
 
 const props = defineProps({
-  id: String,
-  isFocus: Boolean,
-  showCallback: Function,
+  id: {
+    type: String,
+    required: true,
+  },
+  isFocus: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  showCallback: {
+    type: Function,
+    required: false,
+    default: null,
+  },
 });
 
 const MODAL_SHOW = 'shown.bs.modal'
@@ -20,7 +31,7 @@ onMounted(() => {
   if (modalElement) {
     if (props.showCallback) {
       modalElement.addEventListener(MODAL_SHOW, props.showCallback);
-    } else if (!!props.isFocus) {
+    } else if (props.isFocus) {
       modalElement.addEventListener(MODAL_SHOW, focusOnFirstInput);
     }
   }
@@ -31,7 +42,7 @@ onUnmounted(() => {
   if (modalElement) {
     if (props.showCallback) {
       modalElement.removeEventListener(MODAL_SHOW, props.showCallback);
-    } else if (!!props.isFocus) {
+    } else if (props.isFocus) {
       modalElement.addEventListener(MODAL_SHOW, focusOnFirstInput);
     }
   }

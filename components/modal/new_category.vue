@@ -7,25 +7,20 @@ const isSubmitting = ref(false);
 const itemEventTicks = ref(1);
 
 const props = defineProps({
-  expense: {
-    type: Boolean,
-    default: false,
-  },
-  income: {
-    type: Boolean,
-    default: false,
+  item: {
+    type: Object,
+    default: null,
   },
 });
 
-const emit = defineEmits(['newCategory'])
-
-const modalId = computed(() => (`modal-${modalType.value}`));
-const modalType = computed(() => {
-  return 'category';
-});
+const emit = defineEmits(['newItem'])
+const modalId = computed(() => ('modal-category'));
 const modalTitle = computed(() => {
-  return props.income ? 'Новый доход' : 'Новый расход';
+  return props.item ?
+    'Редактирование категории' :
+    'Новая категория';
 });
+
 const isDisabledInput = computed(() => (
   isSubmitting.value || !token.value
 ));
@@ -46,9 +41,9 @@ const onSubmit = async (event) => {
     document
       .querySelector(`#${modalId.value} .btn-close`)
       .dispatchEvent(new Event('click'));
-    categoryName.value = '';
+    onCloseCallback();
     itemEventTicks.value++;
-    emit('newCategory');
+    emit('newItem');
   }
 };
 

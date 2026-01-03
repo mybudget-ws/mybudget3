@@ -70,7 +70,7 @@ watch(
 </script>
 
 <template>
-  <ModalNewCategory @newCategory='quiteLoading' />
+  <ModalNewCategory @newItem='quiteLoading' />
 
   <div class='row'>
     <div class='col-12'>
