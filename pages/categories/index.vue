@@ -142,7 +142,7 @@ watch(
                         <a
                             class='btn btn-action'
                             @click.prevent='hideCategory(item.id)'
-                            v-tooltip:bottom.delay="{ title: 'Скрыть категорию', delay: 400 }"
+                            v-tooltip:bottom="'Скрыть категорию'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>

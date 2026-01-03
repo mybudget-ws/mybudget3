@@ -63,14 +63,14 @@ useHead({
               <a
                 href='?theme=dark'
                 class='nav-link px-0 hide-theme-dark'
-                v-tooltip:bottom="'Включить темный режим'"
+                v-tooltip="'Включить темный режим'"
               >
                 <IconMoon size=20 stroke-width=1 />
               </a>
               <a
                 href='?theme=light'
                 class='nav-link px-0 hide-theme-light'
-                v-tooltip:bottom="'Включить светлый режим'"
+                v-tooltip="'Включить светлый режим'"
               >
                 <IconSun size=20 stroke-width=1 />
               </a>

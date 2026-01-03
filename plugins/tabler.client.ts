@@ -2,7 +2,7 @@
 import { defineNuxtPlugin } from '#app'
 import { Tooltip, Collapse } from '@tabler/core/dist/js/tabler.min.js'
 
-const DEFAULT_TOOLTIP_SHOW = 200;
+const DEFAULT_TOOLTIP_SHOW = 1000;
 const DEFAULT_TOOLTIP_HIDE = 100;
 
 export default defineNuxtPlugin(nuxtApp => {
@@ -25,16 +25,19 @@ export default defineNuxtPlugin(nuxtApp => {
         } else if (typeof binding.value === 'object' && binding.value && binding.value.delay) {
           const d = binding.value.delay
           if (typeof d === 'number') {
-            options.delay = d
+            options.delay = {
+              show: d,
+              hide: d.hide ?? DEFAULT_TOOLTIP_HIDE,
+            }
           } else if (typeof d === 'object') {
             options.delay = {
               show: d.show ?? DEFAULT_TOOLTIP_SHOW,
               hide: d.hide ?? DEFAULT_TOOLTIP_HIDE,
             }
           }
-        } else {
-          options.delay = { show: DEFAULT_TOOLTIP_SHOW, hide: DEFAULT_TOOLTIP_HIDE }
         }
+      } else {
+        options.delay = { show: DEFAULT_TOOLTIP_SHOW, hide: DEFAULT_TOOLTIP_HIDE }
       }
 
       el._tooltip = new Tooltip(el, options)
