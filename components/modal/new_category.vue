@@ -65,6 +65,7 @@ watch(
             required
             type='text'
             class='form-control'
+            placeholder='Новая категория'
             :disabled='isSubmitting'
             v-model='categoryName'
           />

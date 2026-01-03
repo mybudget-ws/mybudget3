@@ -65,6 +65,7 @@ watch(
             required
             type='text'
             class='form-control'
+            placeholder='Новый счёт'
             :disabled='isSubmitting'
             v-model='accountName'
           />
