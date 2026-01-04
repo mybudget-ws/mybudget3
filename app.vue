@@ -20,7 +20,8 @@ const { isSignedIn } = useAuth();
 const queryTheme = route.query.theme;
 if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
   appConfig.theme.dark = queryTheme === 'dark';
-  setData('theme', queryTheme, { expire: null });
+  // https://nuxt.com/modules/storage#api
+  setData('theme', queryTheme, 100, 'd');
 } else {
   appConfig.theme.dark = getData('theme') === 'dark';
 }
