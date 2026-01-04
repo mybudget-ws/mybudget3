@@ -136,8 +136,8 @@ watch(
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
                     <td>
-                      {{ item.name }}
-                      <span v-if='isShowKind(item)' class='badge ms-2'>{{ kindDisplayName(item) }}</span>
+                      <span class='me-2'>{{ item.name }}</span>
+                      <span v-if='isShowKind(item)' class='badge'>{{ kindDisplayName(item) }}</span>
                     </td>
                     <td class='text-nowrap text-end'>
                       <span :class="{
