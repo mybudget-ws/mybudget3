@@ -114,7 +114,7 @@ useHead({
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/goals'>
                 <IconTargetArrow size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Цели</span>
               </NuxtLink>
