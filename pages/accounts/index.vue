@@ -14,7 +14,6 @@ const { token } = useAuth();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
-const page = ref(1);
 const accounts = ref([]);
 const isShowModal = ref(false)
 const currentItem = ref(null)
