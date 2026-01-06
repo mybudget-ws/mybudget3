@@ -147,3 +147,19 @@ useHead({
     <Footer />
   </div>
 </template>
+
+<!-- tabler.io fixes -->
+<style>
+.table-responsive {
+  border-bottom-right-radius: var(--tblr-border-radius-lg);
+  border-bottom-left-radius: var(--tblr-border-radius-lg);
+}
+
+tbody {
+  tr {
+    &:last-child {
+      border-bottom-color: transparent;
+    }
+  }
+}
+</style>
