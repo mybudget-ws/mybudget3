@@ -35,7 +35,7 @@ const onSubmit = async () => {
       await api.updateGoal(token.value, {
         id: props.item.id,
         name: goalName.value,
-        amount: goalAmount.value,
+        amount: (goalAmount.value || '').toString(),
         dueDateOn: goalDate.value,
         accountIds: goalAccountIds.value,
         position: parseInt(goalPosition.value),
@@ -43,7 +43,7 @@ const onSubmit = async () => {
     } else {
       await api.createGoal(token.value, {
         name: goalName.value,
-        amount: goalAmount.value,
+        amount: (goalAmount.value || '').toString(),
         dueDateOn: goalDate.value,
         accountIds: goalAccountIds.value,
         position: parseInt(goalPosition.value),

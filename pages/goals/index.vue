@@ -55,6 +55,10 @@ const rest = ({ amount, balance }) => {
   return amount - balance;
 };
 
+const displayCurrency = ({ currency }) => {
+  return currency ? currency.name : '';
+};
+
 const isGoalFinish = ({ percentage }) => {
   return percentage >= 100;
 };
@@ -156,7 +160,7 @@ watch(
                           'text-success': isGoalFinish(item),
                           'text-secondary': !isGoalFinish(item),
                         }"
-                        v-tooltip:bottom="`Прогресс: ${ item.balance } ${ item.currency.name }`"
+                        v-tooltip:bottom="`Прогресс: ${ item.balance } ${ displayCurrency(item) }`"
                       >
                         {{ item.percentage }} %
                       </span>
@@ -181,21 +185,24 @@ watch(
                       }">
                         <Amount
                           :value='item.amount'
-                          :currency='item.currency.name'
+                          :currency='displayCurrency(item)'
                         />
                       </span>
                     </td>
                     <td class='text-nowrap text-end'>
                       <Amount
-                        v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ item.currency.name }`"
+                        v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ displayCurrency(item) }`"
                         :value='item.amountPerMonth'
-                        :currency='item.currency.name'
+                        :currency='displayCurrency(item)'
                       />
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
                         v-if='!isGoalFinish(item)'
                         v-tooltip:bottom="'Месяцев в запасе'"
+                        :class="{
+                          'text-danger': new Date(item.dueDateOn) < new Date(),
+                        }"
                       >
                         {{ item.dueMonths }} м
                       </span>
