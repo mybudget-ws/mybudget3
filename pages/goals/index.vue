@@ -50,6 +50,11 @@ const badgePercentageClasses = ({ percentage }) => {
     'badge';
 };
 
+const rest = ({ amount, balance }) => {
+  if (balance >= amount) { return 0.0; }
+  return amount - balance;
+};
+
 const isGoalFinish = ({ percentage }) => {
   return percentage >= 100;
 };
@@ -142,13 +147,17 @@ watch(
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
-                    <td class='text-nowrap text-end'>
+                    <td class='text-nowrap text-end font-monospace'>
                       <!--span :class='badgePercentageClasses(item)'>
                         {{ item.percentage }}%
                       </span-->
-                      <span :class="{
-                        'text-success': isGoalFinish(item),
-                      }">
+                      <span
+                        :class="{
+                          'text-success': isGoalFinish(item),
+                          'text-secondary': !isGoalFinish(item),
+                        }"
+                        v-tooltip:bottom="`Прогресс: ${ item.balance } ${ item.currency.name }`"
+                      >
                         {{ item.percentage }} %
                       </span>
                     </td>
@@ -178,6 +187,7 @@ watch(
                     </td>
                     <td class='text-nowrap text-end'>
                       <Amount
+                        v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ item.currency.name }`"
                         :value='item.amountPerMonth'
                         :currency='item.currency.name'
                       />
