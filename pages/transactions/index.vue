@@ -13,7 +13,7 @@ import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
 const LOCALE = 'ru-RU';
-const PER_PAGE = 100;
+const PER_PAGE = 50;
 
 const route = useRoute();
 const { token } = useAuth();
