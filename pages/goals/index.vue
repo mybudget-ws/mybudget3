@@ -205,7 +205,8 @@ watch(
                         v-if='!isGoalFinish(item)'
                         v-tooltip:bottom="'Месяцев в запасе'"
                         :class="{
-                          'text-danger': new Date(item.dueDateOn) < new Date(),
+                          'text-danger': new Date(item.dueDateOn) <= new Date(),
+                          'text-secondary': new Date(item.dueDateOn) > new Date(),
                         }"
                       >
                         {{ item.dueMonths }} м
