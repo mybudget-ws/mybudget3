@@ -190,11 +190,15 @@ watch(
                       </span>
                     </td>
                     <td class='text-nowrap text-end'>
-                      <Amount
-                        v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ displayCurrency(item) }`"
-                        :value='item.amountPerMonth'
-                        :currency='displayCurrency(item)'
-                      />
+                      <span :class="{
+                        'text-success': isGoalFinish(item),
+                      }">
+                        <Amount
+                          v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ displayCurrency(item) }`"
+                          :value='item.amountPerMonth'
+                          :currency='displayCurrency(item)'
+                        />
+                      </span>
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
