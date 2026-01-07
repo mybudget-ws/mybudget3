@@ -44,12 +44,6 @@ const load = async (isQuite = false) => {
   }
 };
 
-const badgePercentageClasses = ({ percentage }) => {
-  return percentage >= 100 ?
-    'badge bg-green text-green-fg' :
-    'badge';
-};
-
 const rest = ({ amount, balance }) => {
   if (balance >= amount) { return 0.0; }
   return Math.round(amount - balance);
@@ -139,8 +133,8 @@ watch(
               <table class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
-                    <th class='w-1 text-end'></th>
                     <th class='w-1'>Название</th>
+                    <th class='w-1'></th>
                     <th>Счёт</th>
                     <th class='text-end'>Величина</th>
                     <th class='w-1 text-end'>В месяц</th>
@@ -151,10 +145,10 @@ watch(
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
+                    <td class='text-nowrap'>
+                      <span class='me-2'>{{ item.name }}</span>
+                    </td>
                     <td class='text-nowrap text-end font-monospace'>
-                      <!--span :class='badgePercentageClasses(item)'>
-                        {{ item.percentage }}%
-                      </span-->
                       <span
                         :class="{
                           'text-success': isGoalFinish(item),
@@ -164,9 +158,6 @@ watch(
                       >
                         {{ item.percentage }} %
                       </span>
-                    </td>
-                    <td class='text-nowrap'>
-                      <span class='me-2'>{{ item.name }}</span>
                     </td>
                     <td>
                       <div class='badges-list'>
