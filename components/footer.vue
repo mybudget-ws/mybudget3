@@ -10,7 +10,9 @@ const appConfig = useAppConfig()
           <ul class='list-inline list-inline-dots mb-0'>
             <li class='list-inline-item'>
               © {{ new Date().getFullYear() }}
-              <a href='/' class='link-secondary'>{{ appConfig.title }}</a>.
+              <a href='/' class='link-secondary'>{{ appConfig.title }}</a>
+            </li>
+            <li class='list-inline-item ms-1'>
               Все права защищены
             </li>
           </ul>
@@ -22,7 +24,7 @@ const appConfig = useAppConfig()
                 Пользовательское соглашение
               </NuxtLink>
             </li>
-            <li class='list-inline-item'>
+            <li class='list-inline-item ms-1'>
               <a
                 href='https://github.com/mybudget-ws/mybudget3'
                 target='_blank'
