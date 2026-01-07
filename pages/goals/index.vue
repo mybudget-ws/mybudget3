@@ -52,7 +52,7 @@ const badgePercentageClasses = ({ percentage }) => {
 
 const rest = ({ amount, balance }) => {
   if (balance >= amount) { return 0.0; }
-  return amount - balance;
+  return Math.round(amount - balance);
 };
 
 const displayCurrency = ({ currency }) => {
@@ -160,7 +160,7 @@ watch(
                           'text-success': isGoalFinish(item),
                           'text-secondary': !isGoalFinish(item),
                         }"
-                        v-tooltip:bottom="`Прогресс: ${ item.balance } ${ displayCurrency(item) }`"
+                        v-tooltip:bottom="`Прогресс: ${ Math.round(item.balance) } ${ displayCurrency(item) }`"
                       >
                         {{ item.percentage }} %
                       </span>
