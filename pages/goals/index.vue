@@ -44,6 +44,12 @@ const load = async (isQuite = false) => {
   }
 };
 
+const badgePercentageClasses = ({ percentage }) => {
+  return percentage >= 1000 ?
+    'badge bg-green text-green-fg' :
+    'badge';
+};
+
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
   await api.toggleIsHidden(token.value, id, 'goal');
@@ -121,8 +127,11 @@ watch(
                 <thead>
                   <tr>
                     <th class='w-1 text-end'>%</th>
-                    <th>Название</th>
+                    <th class='w-1'>Название</th>
+                    <th>Счёт</th>
                     <th class='text-end'>Величина</th>
+                    <th class='w-1 text-end'>В месяц</th>
+                    <th class='w-1'></th>
                     <th class='w-1'>Дата</th>
                     <th class='w-1'></th>
                   </tr>
@@ -130,23 +139,46 @@ watch(
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
                     <td class='text-end'>
-                      <span :class="{
-                        'text-success': item.percentage >= 100,
-                      }">
-                        {{ item.percentage }}
+                      <span :class='badgePercentageClasses(item)'>
+                        {{ item.percentage }}%
                       </span>
                     </td>
-                    <td>
+                    <td class='text-nowrap'>
                       <span class='me-2'>{{ item.name }}</span>
+                    </td>
+                    <td>
+                      <div class='badges-list'>
+                        <span
+                          v-for='v in item.accounts'
+                          :key='v.id'
+                          class='badge'
+                        >
+                          {{ v.name }}
+                        </span>
+                      </div>
                     </td>
                     <td class='text-nowrap text-end'>
                       <span :class="{
                         'text-success': item.percentage >= 100,
                       }">
+                        <Amount
+                          :value='item.amount'
+                          :currency='item.currency.name'
+                        />
+                      </span>
+                    </td>
+                    <td class='text-nowrap text-end'>
                       <Amount
-                        :value='item.balance'
+                        :value='item.amountPerMonth'
                         :currency='item.currency.name'
                       />
+                    </td>
+                    <td class='text-nowrap text-end'>
+                      <span
+                        v-if='item.percentage < 100'
+                        v-tooltip:bottom="'Месяцев в запасе'"
+                      >
+                        {{ item.dueMonths }} м
                       </span>
                     </td>
                     <td>
