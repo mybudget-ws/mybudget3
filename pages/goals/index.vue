@@ -45,7 +45,7 @@ const load = async (isQuite = false) => {
 };
 
 const badgePercentageClasses = ({ percentage }) => {
-  return percentage >= 1000 ?
+  return percentage >= 100 ?
     'badge bg-green text-green-fg' :
     'badge';
 };
