@@ -50,6 +50,10 @@ const badgePercentageClasses = ({ percentage }) => {
     'badge';
 };
 
+const isGoalFinish = ({ percentage }) => {
+  return percentage >= 100;
+};
+
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
   await api.toggleIsHidden(token.value, id, 'goal');
@@ -126,7 +130,7 @@ watch(
               <table class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
-                    <th class='w-1 text-end'>%</th>
+                    <th class='w-1 text-end'></th>
                     <th class='w-1'>Название</th>
                     <th>Счёт</th>
                     <th class='text-end'>Величина</th>
@@ -138,9 +142,14 @@ watch(
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
-                    <td class='text-end'>
-                      <span :class='badgePercentageClasses(item)'>
+                    <td class='text-nowrap text-end'>
+                      <!--span :class='badgePercentageClasses(item)'>
                         {{ item.percentage }}%
+                      </span-->
+                      <span :class="{
+                        'text-success': isGoalFinish(item),
+                      }">
+                        {{ item.percentage }} %
                       </span>
                     </td>
                     <td class='text-nowrap'>
@@ -159,7 +168,7 @@ watch(
                     </td>
                     <td class='text-nowrap text-end'>
                       <span :class="{
-                        'text-success': item.percentage >= 100,
+                        'text-success': isGoalFinish(item),
                       }">
                         <Amount
                           :value='item.amount'
@@ -175,7 +184,7 @@ watch(
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
-                        v-if='item.percentage < 100'
+                        v-if='!isGoalFinish(item)'
                         v-tooltip:bottom="'Месяцев в запасе'"
                       >
                         {{ item.dueMonths }} м
