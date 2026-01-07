@@ -1,7 +1,7 @@
 <script setup>
 import api from '~/lib/api';
 
-const DEFAULT_COLOR = 'blue';
+const DEFAULT_COLOR = 'teal';
 const DEFAULT_CURRENCY = 'RUB';
 const DEFAULT_POSITION = 1;
 const KINDS = [

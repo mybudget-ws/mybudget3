@@ -82,7 +82,6 @@ watch(
 
 <template>
   <ModalNewCategory
-    @newItem='load(true)'
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'

@@ -9,14 +9,16 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
+const LOCALE = 'ru-RU';
+
 const route = useRoute();
 const { token } = useAuth();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const items = ref([]);
-const isShowModal = ref(false)
-const currentItem = ref(null)
+const isShowModal = ref(false);
+const currentItem = ref(null);
 const visibleItems = computed(() => items.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => items.value.filter(v => v.isHidden));
 
@@ -81,8 +83,7 @@ watch(
 </script>
 
 <template>
-  <ModalNewAccount
-    @newItem='load(true)'
+  <ModalNewGoal
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
@@ -119,14 +120,41 @@ watch(
               <table class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
+                    <th class='w-1 text-end'>%</th>
                     <th>Название</th>
+                    <th class='text-end'>Величина</th>
+                    <th class='w-1'>Дата</th>
                     <th class='w-1'></th>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
+                    <td class='text-end'>
+                      <span :class="{
+                        'text-success': item.percentage >= 100,
+                      }">
+                        {{ item.percentage }}
+                      </span>
+                    </td>
                     <td>
                       <span class='me-2'>{{ item.name }}</span>
+                    </td>
+                    <td class='text-nowrap text-end'>
+                      <span :class="{
+                        'text-success': item.percentage >= 100,
+                      }">
+                      <Amount
+                        :value='item.balance'
+                        :currency='item.currency.name'
+                      />
+                      </span>
+                    </td>
+                    <td>
+                      <span :class="{
+                        'text-danger': new Date(item.dueDateOn) < new Date(),
+                      }">
+                        {{ new Date(item.dueDateOn).toLocaleDateString(LOCALE) }}
+                      </span>
                     </td>
                     <td>
                       <div class='btn-actions'>

@@ -1,9 +1,15 @@
 <script setup>
 import api from '~/lib/api';
 
-const DEFAULT_COLOR = 'teal';
+const DEFAULT_AMOUNT = 100000;
+const DEFAULT_POSITION = 1;
+
 const { token } = useAuth();
-const categoryName = ref('');
+const goalName = ref('');
+const goalAmount = ref(DEFAULT_AMOUNT);
+const goalDate = ref(new Date());
+const goalAccountIds = ref([]);
+const goalPosition = ref(DEFAULT_POSITION);
 const isSubmitting = ref(false);
 
 const props = defineProps({
@@ -16,21 +22,31 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close']);
 const isEdit = computed(() => !!props.item);
 
+const toggleAccountCallback = (accountIds) => {
+  goalAccountIds.value = [...accountsIds];
+}
+
 const onSubmit = async () => {
   if (!token.value) return;
 
   isSubmitting.value = true
   try {
     if (isEdit.value) {
-      await api.updateCategory(token.value, {
+      await api.updateGoal(token.value, {
         id: props.item.id,
-        name: categoryName.value,
-        color: DEFAULT_COLOR,
+        name: goalName.value,
+        amount: goalAmount.value,
+        dueDateOn: goalDate.value,
+        accountIds: goalAccountIds.value,
+        position: parseInt(goalPosition.value),
       });
     } else {
-      await api.createCategory(token.value, {
-        name: categoryName.value,
-        color: DEFAULT_COLOR,
+      await api.createGoal(token.value, {
+        name: goalName.value,
+        amount: goalAmount.value,
+        dueDateOn: goalDate.value,
+        accountIds: goalAccountIds.value,
+        position: parseInt(goalPosition.value),
       });
     }
 
@@ -43,18 +59,22 @@ const onSubmit = async () => {
 watch(
   () => props.item,
   (val) => {
-    categoryName.value = val?.name ?? ''
+    goalName.value = val?.name ?? '';
+    goalAmount.value = val?.amount ?? DEFAULT_AMOUNT;
+    goalDate.value = val?.dueDateOn ?? new Date();
+    goalAccountIds.value = val?.accountIds ?? [];
+    goalPosition.value = val?.position ?? DEFAULT_POSITION;
   },
   { immediate: true }
 )
 </script>
 
 <template>
-  <ModalBase id='modal-category' is-focus @close="emit('close')">
+  <ModalBase id='modal-goal' is-focus @close="emit('close')">
     <form @submit.prevent='onSubmit' autocomplete='off'>
       <div class='modal-header'>
         <h5 class="modal-title">
-          {{ isEdit ? 'Редактирование категории' : 'Новая категория' }}
+          {{ isEdit ? 'Редактирование цели' : 'Новая цель' }}
         </h5>
         <button class="btn-close" type="button" @click="emit('close')" />
       </div>
@@ -66,9 +86,9 @@ watch(
             required
             type='text'
             class='form-control'
-            placeholder='Новая категория'
+            placeholder='Новая цель'
             :disabled='isSubmitting'
-            v-model='categoryName'
+            v-model='goalName'
           />
         </div>
       </div>
