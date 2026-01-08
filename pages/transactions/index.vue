@@ -144,7 +144,7 @@ watch(
               </div>
               <div class="col-md-auto col-sm-12">
                 <div class="ms-auto d-flex flex-wrap btn-list">
-                  <div class="input-group input-group-flat w-auto">
+                  <!--div class="input-group input-group-flat w-auto">
                     <span class="input-group-text">
                       <IconSearch size=20 stroke-width=1 />
                     </span>
@@ -152,7 +152,7 @@ watch(
                     <span class="input-group-text">
                       <kbd>Enter</kbd>
                     </span>
-                  </div>
+                  </div-->
                   <button class='btn btn-outline-green' data-bs-toggle='modal' data-bs-target='#modal-income'>
                     <IconArrowUp stroke-width=2 />
                   </button>
