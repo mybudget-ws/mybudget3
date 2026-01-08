@@ -1,13 +1,15 @@
 <script setup>
 import api from '~/lib/api';
 
+const TYPE_RADIO = 'radio';
+
 const route = useRoute();
 const { token } = useAuth();
 
 const isLoading = ref(true);
 const items = ref([]);
-const selectedId = ref();
-const emit = defineEmits(['toggleAccount'])
+const selectedIds = ref([]);
+const emit = defineEmits(['toggleAccount', 'toggleAccountIds']);
 
 const props = defineProps({
   label: {
@@ -17,6 +19,14 @@ const props = defineProps({
   radioGroupName: {
     type: String,
     default: 'form-account',
+  },
+  type: {
+    type: String,
+    default: TYPE_RADIO,
+  },
+  ids: {
+    type: Array,
+    default: [],
   },
 });
 
@@ -38,25 +48,47 @@ const load = async () => {
 };
 
 const toggleSelection = (id) => {
-  selectedId.value = id;
-  emit('toggleAccount', selectedItem.value);
+  if (props.type == TYPE_RADIO) {
+    selectedIds.value = [id];
+    emit('toggleAccount', findItem(id));
+
+  } else {
+    if (isSelected(id)) {
+      selectedIds.value = selectedIds.value.filter(v => v !== id);
+    } else {
+      selectedIds.value = Array.from(new Set([id, ...selectedIds.value]));
+    }
+    // console.log('toggleSelection', selectedIds.value);
+    emit('toggleAccountIds', selectedIds.value);
+  }
 };
 
 const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
 
-const selectedItem = computed(() => (
-  items.value.find(v => v.id === selectedId.value)
-));
+const findItem = (id) => items.value.find(v => v.id === id);
+const isSelected = (id) => (
+  !!selectedIds.value.find(v => v === id)
+);
 
 const initSelectedAccountByQuery = (accounts = '') => {
-  const queryIds = accounts?.toString().split(',') || [];
-  selectedId.value = queryIds.map(id => Number(id)).filter(id => id > 0)[0];
-  if (selectedId.value === undefined) {
-    selectedId.value = visibleItems.value[0]?.id;
+  const queryIds = accounts?.toString().split(',').filter(v => v !== '') || props.ids;
+  // console.log('props.ids', props.ids);
+  // console.log('queryIds', queryIds);
+  if (queryIds.length > 0) {
+    selectedIds.value = queryIds.map(id => Number(id)).filter(id => id > 0);
+  } else {
+    selectedIds.value = props.ids;
   }
-  emit('toggleAccount', selectedItem.value);
+  // console.log('selectedIds', selectedIds.value);
+  // console.log('visibleItems.value.length', visibleItems.value.length);
+  if (selectedIds.value.length === 0 && visibleItems.value.length > 0) {
+    selectedIds.value = [visibleItems.value[0].id];
+    // console.log('selectedIds.value', selectedIds.value);
+  }
+  emit('toggleAccount', findItem(selectedIds.value[0]));
+  emit('toggleAccountIds', selectedIds.value);
 }
 
 watch(
@@ -81,11 +113,11 @@ watch(() => route, (newRoute) => {
       <div class='form-selectgroup form-selectgroup-boxes d-flex flex-column'>
         <label v-for='item in visibleItems' :key='item.id' class="form-selectgroup-item flex-fill">
           <input
-            type='radio'
+            :type='type'
             :name='radioGroupName'
             value='item.id'
             class='form-selectgroup-input'
-            :checked='selectedId == item.id'
+            :checked='isSelected(item.id)'
             @change='toggleSelection(item.id)'
           />
           <div class='form-selectgroup-label d-flex align-items-center ps-3 p-2'>

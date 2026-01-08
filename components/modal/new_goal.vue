@@ -21,8 +21,9 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close']);
 const isEdit = computed(() => !!props.item);
 
-const toggleAccountCallback = (accountIds) => {
-  goalAccountIds.value = [...accountsIds];
+const toggleAccountsCallback = (accountIds) => {
+  // console.log('accounts', accountIds);
+  goalAccountIds.value = [...accountIds];
 }
 
 const onSubmit = async () => {
@@ -61,7 +62,7 @@ watch(
     goalName.value = val?.name ?? '';
     goalAmount.value = val?.amount ?? '';
     goalDate.value = val?.dueDateOn ?? new Date();
-    goalAccountIds.value = val?.accountIds ?? [];
+    goalAccountIds.value = val?.accounts?.map(v => v.id) ?? [];
     goalPosition.value = val?.position ?? DEFAULT_POSITION;
   },
   { immediate: true }
@@ -121,6 +122,16 @@ watch(
               placeholder='1'
               :disabled='isSubmitting'
               v-model='goalPosition'
+            />
+          </div>
+        </div>
+
+        <div class='row'>
+          <div class='col-md-12 col-lg-6 mb-3'>
+            <FormAccounts
+              type='checkbox'
+              :ids='goalAccountIds'
+              @toggle-account-ids='toggleAccountsCallback'
             />
           </div>
         </div>
