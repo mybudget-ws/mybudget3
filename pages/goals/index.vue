@@ -154,7 +154,7 @@ watch(
                           'text-success': isGoalFinish(item),
                           'text-secondary': !isGoalFinish(item),
                         }"
-                        v-tooltip:bottom="`Прогресс: ${ Math.round(item.balance) } ${ displayCurrency(item) }`"
+                        v-tooltip:bottom="`Прогресс: ${ Math.round(item.balance) } ${ displayCurrency(item) }`"
                       >
                         {{ item.percentage }} %
                       </span>
@@ -185,7 +185,7 @@ watch(
                         'text-success': isGoalFinish(item),
                       }">
                         <Amount
-                          v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ displayCurrency(item) }`"
+                          v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ displayCurrency(item) }`"
                           :value='item.amountPerMonth'
                           :currency='displayCurrency(item)'
                         />
