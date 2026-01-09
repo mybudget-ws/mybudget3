@@ -140,6 +140,7 @@ watch(
                     <td class='text-nowrap text-end'>
                       <span :class="{
                         'text-success': sumBalance(item) > 0,
+                        'text-danger': sumBalance(item) < 0
                       }">
                         <Amount
                           :value='sumBalance(item)'
