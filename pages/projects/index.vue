@@ -42,6 +42,14 @@ const load = async (isQuite = false) => {
   }
 };
 
+const displayCurrency = ({ balances }) => {
+  return balances[0]?.currencyBase?.name ?? '';
+};
+
+const sumBalance = ({ balances }) => {
+  return balances.map(v => v.amountBase).reduce((a, b) => a + b);
+};
+
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
   await api.toggleIsHidden(token.value, id, 'project');
@@ -119,6 +127,7 @@ watch(
                 <thead>
                   <tr>
                     <th>Название</th>
+                    <th class='text-end'>Баланс</th>
                     <th class='w-1'></th>
                   </tr>
                 </thead>
@@ -126,6 +135,16 @@ watch(
                   <tr v-for="item in visibleItems" :key="item.id">
                     <td>
                       {{ item.name }}
+                    </td>
+                    <td class='text-nowrap text-end'>
+                      <span :class="{
+                        'text-success': sumBalance(item) > 0,
+                      }">
+                        <Amount
+                          :value='sumBalance(item)'
+                          :currency='displayCurrency(item)'
+                        />
+                      </span>
                     </td>
                     <td>
                       <div class='btn-actions'>
