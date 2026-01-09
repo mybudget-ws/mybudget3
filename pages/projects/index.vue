@@ -47,6 +47,7 @@ const displayCurrency = ({ balances }) => {
 };
 
 const sumBalance = ({ balances }) => {
+  if (balances.length === 0) return 0.0;
   return balances.map(v => v.amountBase).reduce((a, b) => a + b);
 };
 
@@ -89,7 +90,7 @@ watch(
 </script>
 
 <template>
-  <ModalNewGoal
+  <ModalNewProject
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
@@ -103,7 +104,7 @@ watch(
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
               <div class='col d-flex align-items-center'>
-                <h2 class='mb-0'>Цели</h2>
+                <h2 class='mb-0'>Проекты</h2>
                 <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
               </div>
               <div class='col-auto'>
