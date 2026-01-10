@@ -13,7 +13,6 @@ const isSubmitting = ref(false);
 const currentAccount = ref(undefined);
 const currentAccountIds = ref([]);
 const currentCategoryIds = ref([]);
-const passCategoryIds = ref([]);
 const currentPropertyId = ref(undefined);
 
 const props = defineProps({
@@ -105,24 +104,12 @@ watch(
     currentCategoryIds.value = val?.categories?.length > 0 ?
       val.categories.map(v => v.id) :
       [];
-    passCategoryIds.value = currentCategoryIds.value;
-    // console.log('currentCategoryIds', currentCategoryIds.value);
-    // console.log('finish -- init');
 
     // TODO: init: project, property
     // const currentPropertyId = ref(undefined);
   },
   { immediate: true }
 );
-
-// const handleModalShown = () => {
-//   const modalElement = document.getElementById(modalId.value);
-//   const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
-//   // Для выделения текста, если это будте нужно в будущем,
-//   // например, при редактировании операции дополнительно:
-//   // `firstInput.select();`
-//   if (firstInput) firstInput.focus();
-// };
 
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
@@ -216,7 +203,7 @@ const onSubmit = async () => {
           <div class='col'>
             <FormCategories
               @toggle-category='toggleCategoryCallback'
-              :ids='passCategoryIds'
+              :ids='currentCategoryIds'
             />
           </div>
         </div>
