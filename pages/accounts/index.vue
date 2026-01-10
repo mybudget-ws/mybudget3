@@ -15,8 +15,8 @@ const { token } = useAuth();
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const accounts = ref([]);
-const isShowModal = ref(false)
-const currentItem = ref(null)
+const isShowModal = ref(false);
+const currentItem = ref(null);
 const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
 
