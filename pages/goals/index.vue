@@ -85,14 +85,6 @@ const onSaved = async () => {
   isShowModal.value = false
   await load(true)
 }
-
-watch(
-  () => token.value,
-  (val) => {
-    if (val) load();
-  },
-  { immediate: true }
-);
 </script>
 
 <template>

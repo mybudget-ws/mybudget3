@@ -78,14 +78,6 @@ const isShowKind = ({ kind }) => {
 const kindDisplayName = ({ kind }) => {
   return kind == 'credit' ? 'Кредит' : '';
 }
-
-watch(
-  () => token.value,
-  (val) => {
-    if (val) load();
-  },
-  { immediate: true }
-);
 </script>
 
 <template>

@@ -145,15 +145,7 @@ const onSaved = async () => {
   isShowModalTransfer.value = false;
   isCopyItem.value = false;
   await load(true);
-}
-
-watch(
-  () => token.value,
-  (val) => {
-    if (val) load();
-  },
-  { immediate: true }
-);
+};
 
 watch(
   () => route.query,
