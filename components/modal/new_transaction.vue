@@ -228,6 +228,7 @@ const onSubmit = async () => {
           </div>
         </div>
       </div>
+
       <div class='modal-footer'>
         <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
           Отмена

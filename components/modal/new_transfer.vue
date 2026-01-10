@@ -12,12 +12,7 @@ const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
 const transactionEventTicks = ref(1);
 
-const emit = defineEmits(['newTransaction'])
-
-const modalId = 'modal-transfer';
-const isDisabledInput = computed(() => (
-  isSubmitting.value || !token.value
-));
+const emit = defineEmits(['saved', 'close']);
 
 const toggleAccountFromCallback = (account) => {
   if (account == null) return;
@@ -39,10 +34,10 @@ const currentCurrencyNameTo = computed(() => {
   return account?.currency?.name || '';
 });
 
-const onSubmit = async (event) => {
-  event.preventDefault();
-  isSubmitting.value = true;
+const onSubmit = async () => {
+  if (isSubmitting.value || !token.value) return;
 
+  isSubmitting.value = true;
   const transferData = {
     amountSrc: amountFrom.value.replace(/,/g, '.'),
     amountDst: amountTo.value.replace(/,/g, '.'),
@@ -52,28 +47,17 @@ const onSubmit = async (event) => {
     description: description.value,
   };
 
-  const result = await api.createTransactionTransfer(
-    token.value,
-    transferData
-  );
-  isSubmitting.value = false;
-  if (result) {
-    document
-      .querySelector(`#${modalId} .btn-close`)
-      .dispatchEvent(new Event('click'));
-    amountFrom.value = undefined;
-    amountTo.value = undefined;
-    description.value = '';
-    transactionEventTicks.value++;
-    emit('newTransaction');
+  try {
+    await api.createTransactionTransfer(
+      token.value,
+      transferData
+    );
+
+    emit('saved');
+  } finally {
+    isSubmitting.value = false
   }
 };
-
-const onCloseCallback = () => {
-  amountFrom.value = undefined;
-  amountTo.value = undefined;
-  description.value = '';
-}
 
 watch(amountFrom, (newValue) => {
   if (newValue !== undefined && newValue !== '') {
@@ -83,18 +67,13 @@ watch(amountFrom, (newValue) => {
 </script>
 
 <template>
-  <ModalBaseOld :id='modalId'>
-    <form @submit='onSubmit' autocomplete='off' >
+  <ModalBase id='modal-transaction' @close="emit('close')">
+    <form @submit.prevent='onSubmit' autocomplete='off'>
       <div class='modal-header'>
         <h5 class='modal-title'>Новый перевод</h5>
-        <button
-          type='button'
-          class='btn-close'
-          data-bs-dismiss='modal'
-          aria-label='Close'
-          @click='onCloseCallback'
-        />
+        <button class='btn-close' type='button' @click="emit('close')" />
       </div>
+
       <div class='modal-body'>
         <div class='row mb-3'>
           <div class='col'>
@@ -121,7 +100,7 @@ watch(amountFrom, (newValue) => {
                 type='text'
                 placeholder='0.00'
                 required
-                :disabled='isDisabledInput'
+                :disabled='isSubmitting'
                 v-model='amountFrom'
               />
               <span class='input-group-text'>{{ currentCurrencyNameFrom }}</span>
@@ -134,7 +113,7 @@ watch(amountFrom, (newValue) => {
                 type='text'
                 placeholder='0.00'
                 required
-                :disabled='isDisabledInput'
+                :disabled='isSubmitting'
                 v-model='amountTo'
               />
               <span class='input-group-text'>{{ currentCurrencyNameTo }}</span>
@@ -145,21 +124,22 @@ watch(amountFrom, (newValue) => {
         <div class='row'>
           <div class='col'>
             <Label required>Дата</Label>
-            <InputDate v-model='date' :disabled='isDisabledInput' />
+            <InputDate v-model='date' :disabled='isSubmitting' />
           </div>
           <div class='col'>
             <Label>Комментарий</Label>
             <Input
               type='text'
               class='form-control'
-              :disabled='isDisabledInput'
+              :disabled='isSubmitting'
               v-model='description'
             />
           </div>
         </div>
       </div>
+
       <div class='modal-footer'>
-        <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>
+        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
           Отмена
         </button>
         <Button
@@ -172,5 +152,5 @@ watch(amountFrom, (newValue) => {
         </Button>
       </div>
     </form>
-  </ModalBaseOld>
+  </ModalBase>
 </template>

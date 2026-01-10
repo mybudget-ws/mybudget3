@@ -24,6 +24,7 @@ const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const isCopyItem = ref(false);
 const isShowModal = ref(false);
+const isShowModalTransfer = ref(false);
 const currentKind = ref(KIND_EXPENSE);
 const currentItem = ref(null);
 const page = ref(1);
@@ -135,8 +136,13 @@ const openCopy = (item) => {
   isShowModal.value = true;
 };
 
+const openCreateTransfer = () => {
+  isShowModalTransfer.value = true;
+};
+
 const onSaved = async () => {
   isShowModal.value = false;
+  isShowModalTransfer.value = false;
   isCopyItem.value = false;
   await load(true);
 }
@@ -168,8 +174,11 @@ watch(
     @saved='onSaved'
     @close="isShowModal = false"
   />
-  <!--ModalNewTransaction expense @newTransaction='quiteLoading' />
-  <ModalNewTransfer @newTransaction='quiteLoading' /-->
+  <ModalNewTransfer
+    v-if='isShowModalTransfer'
+    @saved='onSaved'
+    @close="isShowModalTransfer = false"
+  />
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
@@ -201,9 +210,12 @@ watch(
                   >
                     <IconArrowUp stroke-width=2 />
                   </button>
-                  <!--button class='btn btn-outline-secondary' data-bs-toggle='modal' data-bs-target='#modal-transfer'>
+                  <button
+                    class='btn btn-outline-secondary'
+                    @click="openCreateTransfer()"
+                  >
                     <IconArrowsRightLeft stroke-width=2 />
-                  </button-->
+                  </button>
                   <button
                     class='btn btn-primary'
                     @click="openCreate(KIND_EXPENSE)"
@@ -228,12 +240,7 @@ watch(
                       </button-->
                       Дата
                     </th>
-                    <th class='text-end'>
-                      <!--button class='table-sort d-flex justify-content-end' data-sort='sort-amount'>
-                        Величина
-                      </button-->
-                      Величина
-                    </th>
+                    <th class='text-end'>Величина</th>
                     <th class='w-1'>Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
