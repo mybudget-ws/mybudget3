@@ -70,6 +70,10 @@ const onSaved = async () => {
   isShowModal.value = false
   await load(true)
 }
+
+watchEffect(() => {
+  if (token.value) load();
+});
 </script>
 
 <template>

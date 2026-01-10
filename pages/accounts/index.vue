@@ -73,11 +73,15 @@ const onSaved = async () => {
 
 const isShowKind = ({ kind }) => {
   return kind == 'credit';
-};
+}
 
 const kindDisplayName = ({ kind }) => {
   return kind == 'credit' ? 'Кредит' : '';
 }
+
+watchEffect(() => {
+  if (token.value) load();
+});
 </script>
 
 <template>

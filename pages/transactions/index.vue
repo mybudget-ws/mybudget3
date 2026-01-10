@@ -147,6 +147,12 @@ const onSaved = async () => {
   await load(true);
 };
 
+// Тут watchEffect не использую, т.к. похоже
+// watch на route.query срабатывает.
+//
+// watchEffect(() => {
+//   if (token.value) load();
+// });
 watch(
   () => route.query,
   () => {
