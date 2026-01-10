@@ -11,7 +11,11 @@ const emit = defineEmits(['toggleCategory'])
 
 // TODO: Remove `reload` if unnecessary.
 const props = defineProps({
-  reload: Number,
+  // reload: Number,
+  ids: {
+    type: Array,
+    default: [],
+  },
 });
 
 const load = async () => {
@@ -32,8 +36,15 @@ const load = async () => {
 };
 
 const fetchCategoryIdsFromUrl = (query = route.query) => {
-  const queryIds = query.categories?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
+  console.log('props', props);
+  const queryIds = query.categories?.toString().split(',').filter(v => v !== '') || [];
+  if (queryIds.length > 0) {
+    selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
+  } else {
+    selectedIds.value = new Set(props.ids);
+  }
+
+  console.log('selectedIds.value', selectedIds.value);
   emit('toggleCategory', selectedIds.value);
 };
 
@@ -58,15 +69,15 @@ watch(
   { immediate: true }
 );
 
-watch(
-  () => props.reload,
-  () => {
-    if (props.reload > 1) {
-      selectedIds.value.clear();
-      fetchCategoryIdsFromUrl();
-    }
-  }
-);
+// watch(
+//   () => props.reload,
+//   () => {
+//     if (props.reload > 1) {
+//       selectedIds.value.clear();
+//       fetchCategoryIdsFromUrl();
+//     }
+//   }
+// );
 
 watch(() => route, (newRoute) => {
   fetchCategoryIdsFromUrl(newRoute.query);

@@ -36,7 +36,7 @@ const load = async () => {
     const result = await api.accounts(token.value);
     if (result) {
       items.value = result;
-      initSelectedAccountByQuery(route.query.accounts);
+      initSelectedAccountByQuery();
     } else {
       console.log('TODO: error');
     }
@@ -46,6 +46,25 @@ const load = async () => {
     isLoading.value = false
   }
 };
+
+const initSelectedAccountByQuery = (query = route.query) => {
+  const queryIds = query.accounts?.toString().split(',').filter(v => v !== '') || [];
+  // console.log('props.ids', props.ids);
+  // console.log('queryIds', queryIds);
+  if (queryIds.length > 0) {
+    selectedIds.value = queryIds.map(id => Number(id)).filter(id => id > 0);
+  } else {
+    selectedIds.value = props.ids;
+  }
+  // console.log('selectedIds', selectedIds.value);
+  // console.log('visibleItems.value.length', visibleItems.value.length);
+  if (selectedIds.value.length === 0 && visibleItems.value.length > 0) {
+    selectedIds.value = [visibleItems.value[0].id];
+    // console.log('selectedIds.value', selectedIds.value);
+  }
+  emit('toggleAccount', findItem(selectedIds.value[0]));
+  emit('toggleAccountIds', selectedIds.value);
+}
 
 const toggleSelection = (id) => {
   if (props.type == TYPE_RADIO) {
@@ -71,25 +90,6 @@ const findItem = (id) => items.value.find(v => v.id === id);
 const isSelected = (id) => (
   !!selectedIds.value.find(v => v === id)
 );
-
-const initSelectedAccountByQuery = (accounts = '') => {
-  const queryIds = accounts?.toString().split(',').filter(v => v !== '') || props.ids;
-  // console.log('props.ids', props.ids);
-  // console.log('queryIds', queryIds);
-  if (queryIds.length > 0) {
-    selectedIds.value = queryIds.map(id => Number(id)).filter(id => id > 0);
-  } else {
-    selectedIds.value = props.ids;
-  }
-  // console.log('selectedIds', selectedIds.value);
-  // console.log('visibleItems.value.length', visibleItems.value.length);
-  if (selectedIds.value.length === 0 && visibleItems.value.length > 0) {
-    selectedIds.value = [visibleItems.value[0].id];
-    // console.log('selectedIds.value', selectedIds.value);
-  }
-  emit('toggleAccount', findItem(selectedIds.value[0]));
-  emit('toggleAccountIds', selectedIds.value);
-}
 
 watch(
   () => token.value,

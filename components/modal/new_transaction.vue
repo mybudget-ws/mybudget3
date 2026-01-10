@@ -12,7 +12,8 @@ const date = ref(new Date());
 const isSubmitting = ref(false);
 const currentAccount = ref(undefined);
 const currentAccountIds = ref([]);
-const currentCategoriesIds = ref([]);
+const currentCategoryIds = ref([]);
+const passCategoryIds = ref([]);
 const currentPropertyId = ref(undefined);
 
 const props = defineProps({
@@ -51,7 +52,7 @@ const toggleAccountCallback = (account) => {
 }
 
 const toggleCategoryCallback = (categoryIds) => {
-  currentCategoriesIds.value = [...categoryIds];
+  currentCategoryIds.value = [...categoryIds];
 }
 
 const togglePropertyCallback = (id) => {
@@ -92,15 +93,23 @@ watch(
       amount.value = Math.abs(parsedAmount).toString();
     }
     description.value = val?.description ?? '';
-    date.value = val?.date ?? new Date();
+    date.value = val?.dateAt ?
+      new Date(val.dateAt) :
+      new Date();
     currentAccount.value = val?.account ?? undefined;
     if (currentAccount.value) {
       currentAccountIds.value = [currentAccount.value.id];
     }
-    // console.log('item.Account', val?.account);
-    // console.log('currentAccount', currentAccount.value);
-    // TODO: Init account, categories, project, property
-    // const currentCategoriesIds = ref([]);
+    // console.log('val?.categories', val?.categories);
+    // console.log('val?.categories?.length', val?.categories?.length);
+    currentCategoryIds.value = val?.categories?.length > 0 ?
+      val.categories.map(v => v.id) :
+      [];
+    passCategoryIds.value = currentCategoryIds.value;
+    // console.log('currentCategoryIds', currentCategoryIds.value);
+    // console.log('finish -- init');
+
+    // TODO: init: project, property
     // const currentPropertyId = ref(undefined);
   },
   { immediate: true }
@@ -128,12 +137,13 @@ const onSubmit = async () => {
   try {
     if (isEdit.value) {
       await api.updateTransaction(token.value, {
+        id: props.item.id,
         amount: evaluatedAmount.value.toString() || amount.value,
         isIncome,
         date: date.value,
         description: description.value,
         accountId: currentAccount.value.id,
-        categoryIds: currentCategoriesIds.value,
+        categoryIds: currentCategoryIds.value,
         projectId: [], // TODO
         propertyId: currentPropertyId.value,
       });
@@ -145,7 +155,7 @@ const onSubmit = async () => {
         date: date.value,
         description: description.value,
         accountId: currentAccount.value.id,
-        categoryIds: currentCategoriesIds.value,
+        categoryIds: currentCategoryIds.value,
         projectId: [], // TODO
         propertyId: currentPropertyId.value,
       });
@@ -206,6 +216,7 @@ const onSubmit = async () => {
           <div class='col'>
             <FormCategories
               @toggle-category='toggleCategoryCallback'
+              :ids='passCategoryIds'
             />
           </div>
         </div>
@@ -218,7 +229,7 @@ const onSubmit = async () => {
         </div>
       </div>
       <div class='modal-footer'>
-        <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>
+        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
           Отмена
         </button>
         <Button

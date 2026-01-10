@@ -61,7 +61,9 @@ watch(
   (val) => {
     goalName.value = val?.name ?? '';
     goalAmount.value = val?.amount ?? '';
-    goalDate.value = val?.dueDateOn ?? new Date();
+    goalDate.value = val?.dueDateOn ?
+      new Date(val.dueDateOn) :
+      new Date();
     goalAccountIds.value = val?.accounts?.map(v => v.id) ?? [];
     goalPosition.value = val?.position ?? DEFAULT_POSITION;
   },
