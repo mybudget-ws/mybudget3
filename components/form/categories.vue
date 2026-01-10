@@ -36,7 +36,7 @@ const load = async () => {
 };
 
 const fetchCategoryIdsFromUrl = (query = route.query) => {
-  console.log('props', props);
+  // console.log('props', props);
   const queryIds = query.categories?.toString().split(',').filter(v => v !== '') || [];
   if (queryIds.length > 0) {
     selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
@@ -44,7 +44,7 @@ const fetchCategoryIdsFromUrl = (query = route.query) => {
     selectedIds.value = new Set(props.ids);
   }
 
-  console.log('selectedIds.value', selectedIds.value);
+  // console.log('selectedIds.value', selectedIds.value);
   emit('toggleCategory', selectedIds.value);
 };
 
