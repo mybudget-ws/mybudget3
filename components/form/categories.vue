@@ -9,6 +9,7 @@ const items = ref([]);
 const selectedIds = ref(new Set());
 const emit = defineEmits(['toggleCategory'])
 
+// TODO: Remove `reload` if unnecessary.
 const props = defineProps({
   reload: Number,
 });

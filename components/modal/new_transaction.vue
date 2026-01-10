@@ -14,8 +14,6 @@ const currentAccount = ref(undefined);
 const currentAccountIds = ref([]);
 const currentCategoriesIds = ref([]);
 const currentPropertyId = ref(undefined);
-// TODO: Try to remove transactionEventTicks
-const transactionEventTicks = ref(1);
 
 const props = defineProps({
   kind: {
@@ -208,7 +206,6 @@ const onSubmit = async () => {
           <div class='col'>
             <FormCategories
               @toggle-category='toggleCategoryCallback'
-              :reload='transactionEventTicks'
             />
           </div>
         </div>
