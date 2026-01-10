@@ -93,7 +93,7 @@ watch(
       amount.value = Math.abs(parsedAmount).toString();
     }
     description.value = val?.description ?? '';
-    date.value = val?.dateAt ?
+    date.value = val?.dateAt && !props.isCopy ?
       new Date(val.dateAt) :
       new Date();
     currentAccount.value = val?.account ?? undefined;
