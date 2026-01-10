@@ -11,46 +11,47 @@ const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
 const currentAccount = ref(undefined);
-const currentCategoriesIds = ref([]);
+const currentAccountIds = ref([]);
+const currentCategoryIds = ref([]);
 const currentPropertyId = ref(undefined);
-const transactionEventTicks = ref(1);
 
 const props = defineProps({
-  expense: {
+  kind: {
+    type: String,
+    default: 'expense',
+  },
+  isCopy: {
     type: Boolean,
     default: false,
   },
-  income: {
-    type: Boolean,
-    default: false,
+  item: {
+    type: Object,
+    default: null,
   },
 });
 
-const emit = defineEmits(['newTransaction'])
+const emit = defineEmits(['saved', 'close']);
 
-const modalId = computed(() => (`modal-${modalType.value}`));
-const modalType = computed(() => {
-  if (props.expense) {
-    return 'expense';
-  } else if (props.income) {
-    return 'income';
-  }
-  return 'unknown';
-});
+const isEdit = computed(() => !!props.item && !props.isCopy);
 const modalTitle = computed(() => {
-  return props.income ? 'Новый доход' : 'Новый расход';
+  // console.log(props);
+  // console.log('isEdit', isEdit.value.toString());
+  if (props.kind === 'income') {
+    return isEdit.value ? 'Редактировать доход' : 'Новый доход';
+  } else {
+    return isEdit.value ? 'Редактировать расход' : 'Новый расход';
+  }
 });
-const isDisabledInput = computed(() => (
-  isSubmitting.value || !token.value
-));
 
 const toggleAccountCallback = (account) => {
+  // console.log('toggleAccountCallback', account);
   if (account == null) return;
   currentAccount.value = account;
+  currentAccountIds.value = [account.id];
 }
 
 const toggleCategoryCallback = (categoryIds) => {
-  currentCategoriesIds.value = [...categoryIds];
+  currentCategoryIds.value = [...categoryIds];
 }
 
 const togglePropertyCallback = (id) => {
@@ -80,71 +81,88 @@ watch(amount, (newExpression) => {
   }
 });
 
-// const handleModalShown = () => {
-//   const modalElement = document.getElementById(modalId.value);
-//   const firstInput = modalElement.querySelector('input[type="text"]:not([type="hidden"])');
-//   // Для выделения текста, если это будте нужно в будущем,
-//   // например, при редактировании операции дополнительно:
-//   // `firstInput.select();`
-//   if (firstInput) firstInput.focus();
-// };
+watch(
+  () => props.item,
+  (val) => {
+    amount.value = val?.amount.toString() ?? '';
+    const parsedAmount = parseFloat(amount.value);
+    // console.log('item', val);
+    // console.log('parsedAmount', parsedAmount);
+    if (parsedAmount !== NaN && parsedAmount < 0) {
+      amount.value = Math.abs(parsedAmount).toString();
+    }
+    description.value = val?.description ?? '';
+    date.value = val?.dateAt && !props.isCopy ?
+      new Date(val.dateAt) :
+      new Date();
+    currentAccount.value = val?.account ?? undefined;
+    if (currentAccount.value) {
+      currentAccountIds.value = [currentAccount.value.id];
+    }
+    // console.log('val?.categories', val?.categories);
+    // console.log('val?.categories?.length', val?.categories?.length);
+    currentCategoryIds.value = val?.categories?.length > 0 ?
+      val.categories.map(v => v.id) :
+      [];
 
-const onSubmit = async (event) => {
-  event.preventDefault();
-  isSubmitting.value = true;
+    // TODO: init: project, property
+    // const currentPropertyId = ref(undefined);
+  },
+  { immediate: true }
+);
+
+const onSubmit = async () => {
+  if (isSubmitting.value || !token.value) return;
 
   if (!evaluatedAmount.value && calculationError.value) {
     alert(calculationError.value);
-    isSubmitting.value = false;
     return;
   }
 
-  const result = await api.createTransaction(
-    token.value,
-    {
-      amount: evaluatedAmount.value.toString() || amount.value,
-      isIncome: props.income,
-      date: date.value,
-      description: description.value,
-      accountId: currentAccount.value.id,
-      categoryIds: currentCategoriesIds.value,
-      projectId: [], // TODO
-      propertyId: currentPropertyId.value,
+  isSubmitting.value = true;
+  const isIncome = props.kind === 'income';
+  try {
+    if (isEdit.value) {
+      await api.updateTransaction(token.value, {
+        id: props.item.id,
+        amount: evaluatedAmount.value.toString() || amount.value,
+        isIncome,
+        date: date.value,
+        description: description.value,
+        accountId: currentAccount.value.id,
+        categoryIds: currentCategoryIds.value,
+        projectId: [], // TODO
+        propertyId: currentPropertyId.value,
+      });
+
+    } else {
+      await api.createTransaction(token.value, {
+        amount: evaluatedAmount.value.toString() || amount.value,
+        isIncome,
+        date: date.value,
+        description: description.value,
+        accountId: currentAccount.value.id,
+        categoryIds: currentCategoryIds.value,
+        projectId: [], // TODO
+        propertyId: currentPropertyId.value,
+      });
     }
-  );
-  isSubmitting.value = false;
-  if (result) {
-    document
-      .querySelector(`#${modalId.value} .btn-close`)
-      .dispatchEvent(new Event('click'));
-    amount.value = undefined;
-    description.value = '';
-    currentCategoriesIds.value = [];
-    transactionEventTicks.value++;
-    emit('newTransaction');
+
+    emit('saved');
+  } finally {
+    isSubmitting.value = false
   }
 };
-
-const onCloseCallback = () => {
-  amount.value = undefined;
-  description.value = '';
-  currentCategoriesIds.value = [];
-}
 </script>
 
 <template>
-  <ModalBaseOld :id='modalId' is-focus>
-    <form @submit='onSubmit' autocomplete='off' >
+  <ModalBase id='modal-transaction' is-focus @close="emit('close')">
+    <form @submit.prevent='onSubmit' autocomplete='off'>
       <div class='modal-header'>
         <h5 class='modal-title'>{{ modalTitle }}</h5>
-        <button
-          type='button'
-          class='btn-close'
-          data-bs-dismiss='modal'
-          aria-label='Close'
-          @click='onCloseCallback'
-        />
+        <button class='btn-close' type='button' @click="emit('close')" />
       </div>
+
       <div class='modal-body'>
         <div class='row mb-3'>
           <div class='col'>
@@ -152,9 +170,9 @@ const onCloseCallback = () => {
             <div class='input-group input-group-flat'>
               <Input
                 type='text'
-                placeholder='10.5 + 3 * 2'
+                placeholder='10.2 + 3 * 6'
                 required
-                :disabled='isDisabledInput'
+                :disabled='isSubmitting'
                 v-model='amount'
               />
               <span class='input-group-text'>{{ currentCurrencyName }}</span>
@@ -162,7 +180,7 @@ const onCloseCallback = () => {
           </div>
           <div class='col'>
             <Label required>Дата</Label>
-            <InputDate v-model='date' :disabled='isDisabledInput' />
+            <InputDate v-model='date' :disabled='isSubmitting' />
           </div>
         </div>
         <div class='mb-3'>
@@ -170,19 +188,22 @@ const onCloseCallback = () => {
           <Input
             type='text'
             class='form-control'
-            :disabled='isDisabledInput'
+            :disabled='isSubmitting'
             v-model='description'
           />
         </div>
 
         <div class='row'>
           <div class='col'>
-            <FormAccounts @toggle-account='toggleAccountCallback' />
+            <FormAccounts
+              @toggle-account='toggleAccountCallback'
+              :ids='currentAccountIds'
+            />
           </div>
           <div class='col'>
             <FormCategories
               @toggle-category='toggleCategoryCallback'
-              :reload='transactionEventTicks'
+              :ids='currentCategoryIds'
             />
           </div>
         </div>
@@ -194,8 +215,9 @@ const onCloseCallback = () => {
           </div>
         </div>
       </div>
+
       <div class='modal-footer'>
-        <button type='button' class='btn-link link-secondary me-auto' data-bs-dismiss='modal'>
+        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
           Отмена
         </button>
         <Button
@@ -208,5 +230,5 @@ const onCloseCallback = () => {
         </Button>
       </div>
     </form>
-  </ModalBaseOld>
+  </ModalBase>
 </template>

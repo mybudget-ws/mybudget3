@@ -14,13 +14,19 @@ import { useAuth } from '~/composables/use_auth';
 
 const LOCALE = 'ru-RU';
 const PER_PAGE = 50;
+const KIND_EXPENSE = 'expense';
+const KIND_INCOME = 'income';
 
 const route = useRoute();
 const { token } = useAuth();
-// const appConfig = useAppConfig();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
+const isCopyItem = ref(false);
+const isShowModal = ref(false);
+const isShowModalTransfer = ref(false);
+const currentKind = ref(KIND_EXPENSE);
+const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
@@ -55,14 +61,15 @@ const load = async (isQuite = false) => {
   } catch (err) {
     console.error(err);
   } finally {
+    if (isQuite) transactionEventTicks.value++;
     isLoading.value = false;
     isQuiteLoading.value = false;
   }
 };
 
+// TODO: Remove
 const quiteLoading = async () => {
   await load(true);
-  transactionEventTicks.value++;
 }
 
 const badgeStyles = (color) => {
@@ -71,6 +78,8 @@ const badgeStyles = (color) => {
   // return appConfig.theme.dark ?
   //   { color: color } :
   //   { backgroundColor: color };
+  // Если это будет нужно, тогда сверху ещё инициализировать конфиг:
+  // const appConfig = useAppConfig();
 };
 
 const filterKeys = {
@@ -98,22 +107,52 @@ const copyTransaction = async (transaction) => {
   console.log('copy', transaction);
 };
 
-const deleteTransaction = async (id) => {
+const destroy = async ({ id }) => {
   if (confirm('Вы уверены, что хотите удалить операцию?')) {
     isQuiteLoading.value = true;
     await api.destroyTransaction(token.value, id);
-    await quiteLoading();
+    await load(true);
   }
 };
 
-watch(
-  () => token.value,
-  (val) => {
-    if (val) load();
-  },
-  { immediate: true }
-);
+const openCreate = (kind, isCopy = false) => {
+  currentKind.value = kind;
+  currentItem.value = null;
+  isCopyItem.value = false;
+  isShowModal.value = true;
+};
 
+const openEdit = (item) => {
+  currentItem.value = { ...item };
+  currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
+  isCopyItem.value = false;
+  isShowModal.value = true;
+};
+
+const openCopy = (item) => {
+  currentItem.value = { ...item, id: undefined };
+  currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
+  isCopyItem.value = true;
+  isShowModal.value = true;
+};
+
+const openCreateTransfer = () => {
+  isShowModalTransfer.value = true;
+};
+
+const onSaved = async () => {
+  isShowModal.value = false;
+  isShowModalTransfer.value = false;
+  isCopyItem.value = false;
+  await load(true);
+};
+
+// Тут watchEffect не использую, т.к. похоже
+// watch на route.query срабатывает.
+//
+// watchEffect(() => {
+//   if (token.value) load();
+// });
 watch(
   () => route.query,
   () => {
@@ -125,9 +164,19 @@ watch(
 </script>
 
 <template>
-  <ModalNewTransaction income @newTransaction='quiteLoading' />
-  <ModalNewTransaction expense @newTransaction='quiteLoading' />
-  <ModalNewTransfer @newTransaction='quiteLoading' />
+  <ModalNewTransaction
+    v-if='isShowModal'
+    :kind='currentKind'
+    :item='currentItem'
+    :isCopy='isCopyItem'
+    @saved='onSaved'
+    @close="isShowModal = false"
+  />
+  <ModalNewTransfer
+    v-if='isShowModalTransfer'
+    @saved='onSaved'
+    @close="isShowModalTransfer = false"
+  />
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
@@ -142,8 +191,8 @@ watch(
                 <!--h1 class='card-title mb-0'>Операции</h1-->
                 <!--p class="text-secondary m-0">Table description.</p-->
               </div>
-              <div class="col-md-auto col-sm-12">
-                <div class="ms-auto d-flex flex-wrap btn-list">
+              <div class='col-md-auto col-sm-12'>
+                <div class='ms-auto d-flex flex-wrap btn-list'>
                   <!--div class="input-group input-group-flat w-auto">
                     <span class="input-group-text">
                       <IconSearch size=20 stroke-width=1 />
@@ -153,13 +202,22 @@ watch(
                       <kbd>Enter</kbd>
                     </span>
                   </div-->
-                  <button class='btn btn-outline-green' data-bs-toggle='modal' data-bs-target='#modal-income'>
+                  <button
+                    class='btn btn-outline-green'
+                    @click="openCreate(KIND_INCOME)"
+                  >
                     <IconArrowUp stroke-width=2 />
                   </button>
-                  <button class='btn btn-outline-secondary' data-bs-toggle='modal' data-bs-target='#modal-transfer'>
+                  <button
+                    class='btn btn-outline-secondary'
+                    @click="openCreateTransfer()"
+                  >
                     <IconArrowsRightLeft stroke-width=2 />
                   </button>
-                  <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal-expense'>
+                  <button
+                    class='btn btn-primary'
+                    @click="openCreate(KIND_EXPENSE)"
+                  >
                     <IconArrowDown stroke-width=2 />
                   </button>
                 </div>
@@ -180,12 +238,7 @@ watch(
                       </button-->
                       Дата
                     </th>
-                    <th class='text-end'>
-                      <!--button class='table-sort d-flex justify-content-end' data-sort='sort-amount'>
-                        Величина
-                      </button-->
-                      Величина
-                    </th>
+                    <th class='text-end'>Величина</th>
                     <th class='w-1'>Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
@@ -193,26 +246,26 @@ watch(
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="tx in transactions" :key="tx.id">
+                  <tr v-for="item in transactions" :key="item.id">
                     <td>
-                      {{ new Date(tx.dateAt).toLocaleDateString(LOCALE) }}
+                      {{ new Date(item.dateAt).toLocaleDateString(LOCALE) }}
                     </td>
                     <td class='text-nowrap text-end'>
                       <span :class="{
-                        'text-success': !tx.isTransfer && tx.amount > 0,
-                        'text-danger': !tx.isTransfer && tx.amount < 0
+                        'text-success': !item.isTransfer && item.amount > 0,
+                        'text-danger': !item.isTransfer && item.amount < 0
                       }">
                         <Amount
-                          :value='tx.amount'
-                          :currency='tx.account.currency.name'
+                          :value='item.amount'
+                          :currency='item.account.currency.name'
                         />
                       </span>
                     </td>
-                    <td class='text-nowrap'>{{ tx.account.name }}</td>
+                    <td class='text-nowrap'>{{ item.account.name }}</td>
                     <td>
                       <div class='badges-list'>
                         <span
-                          v-for='cat in tx.categories'
+                          v-for='cat in item.categories'
                           :key='cat.id'
                           class='badge'
                           :style='badgeStyles(cat.color)'
@@ -221,16 +274,23 @@ watch(
                         </span>
                       </div>
                     </td>
-                    <td>{{ tx.description }}</td>
+                    <td>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions'>
-                        <a class='btn btn-action'>
+                        <a
+                          class='btn btn-action'
+                          @click.prevent='openEdit(item)'
+                        >
                           <IconPencil size=20 stroke-width=1 />
                         </a>
-                        <a class='btn btn-action' @click.prevent='() => copyTransaction(tx)'>
+                        <a
+                          class='btn btn-action'
+                          v-tooltip:bottom="'Повторить операцию'"
+                          @click.prevent='openCopy(item)'
+                        >
                           <IconCopy size=20 stroke-width=1 />
                         </a>
-                        <a class='btn btn-action' @click.prevent='() => deleteTransaction(tx.id)'>
+                        <a class='btn btn-action' @click.prevent='destroy(item)'>
                           <IconTrash size=20 stroke-width=1 />
                         </a>
                       </div>

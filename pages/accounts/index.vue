@@ -15,8 +15,8 @@ const { token } = useAuth();
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const accounts = ref([]);
-const isShowModal = ref(false)
-const currentItem = ref(null)
+const isShowModal = ref(false);
+const currentItem = ref(null);
 const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
 
@@ -57,35 +57,31 @@ const destroy = async ({ id }) => {
 };
 
 const openCreate = () => {
-  currentItem.value = null
-  isShowModal.value = true
+  currentItem.value = null;
+  isShowModal.value = true;
 }
 
 const openEdit = (item) => {
-  currentItem.value = { ...item }
-  isShowModal.value = true
+  currentItem.value = { ...item };
+  isShowModal.value = true;
 }
 
 const onSaved = async () => {
-  isShowModal.value = false
-  await load(true)
+  isShowModal.value = false;
+  await load(true);
 }
 
 const isShowKind = ({ kind }) => {
   return kind == 'credit';
-};
+}
 
 const kindDisplayName = ({ kind }) => {
   return kind == 'credit' ? 'Кредит' : '';
 }
 
-watch(
-  () => token.value,
-  (val) => {
-    if (val) load();
-  },
-  { immediate: true }
-);
+watchEffect(() => {
+  if (token.value) load();
+});
 </script>
 
 <template>

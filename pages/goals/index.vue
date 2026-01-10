@@ -86,13 +86,9 @@ const onSaved = async () => {
   await load(true)
 }
 
-watch(
-  () => token.value,
-  (val) => {
-    if (val) load();
-  },
-  { immediate: true }
-);
+watchEffect(() => {
+  if (token.value) load();
+});
 </script>
 
 <template>
