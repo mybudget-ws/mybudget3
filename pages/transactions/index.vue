@@ -14,13 +14,17 @@ import { useAuth } from '~/composables/use_auth';
 
 const LOCALE = 'ru-RU';
 const PER_PAGE = 50;
+const KIND_EXPENSE = 'expense';
+const KIND_INCOME = 'income';
 
 const route = useRoute();
 const { token } = useAuth();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
+const isCopyItem = ref(false);
 const isShowModal = ref(false);
+const currentKind = ref(KIND_EXPENSE);
 const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
@@ -110,18 +114,30 @@ const destroy = async ({ id }) => {
   }
 };
 
-const openCreate = () => {
-  currentItem.value = null
-  isShowModal.value = true
-}
+const openCreate = (kind, isCopy = false) => {
+  currentKind.value = kind;
+  currentItem.value = null;
+  isCopyItem.value = false;
+  isShowModal.value = true;
+};
 
 const openEdit = (item) => {
-  currentItem.value = { ...item }
-  isShowModal.value = true
-}
+  currentItem.value = { ...item };
+  currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
+  isCopyItem.value = false;
+  isShowModal.value = true;
+};
+
+const openCopy = (item) => {
+  currentItem.value = { ...item, id: undefined };
+  currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
+  isCopyItem.value = true;
+  isShowModal.value = true;
+};
 
 const onSaved = async () => {
-  isShowModal.value = false
+  isShowModal.value = false;
+  isCopyItem.value = false;
   await load(true);
 }
 
@@ -146,8 +162,9 @@ watch(
 <template>
   <ModalNewTransaction
     v-if='isShowModal'
-    kind='income'
+    :kind='currentKind'
     :item='currentItem'
+    :isCopy='isCopyItem'
     @saved='onSaved'
     @close="isShowModal = false"
   />
@@ -180,7 +197,7 @@ watch(
                   </div-->
                   <button
                     class='btn btn-outline-green'
-                    @click='openCreate'
+                    @click="openCreate('income')"
                   >
                     <IconArrowUp stroke-width=2 />
                   </button>
@@ -252,12 +269,17 @@ watch(
                     <td>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions'>
-                        <a class='btn btn-action'
+                        <a
+                          class='btn btn-action'
                           @click.prevent='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
                         </a>
-                        <a class='btn btn-action' @click.prevent='copyTransaction(item)'>
+                        <a
+                          class='btn btn-action'
+                          v-tooltip:bottom="'Повторить операцию'"
+                          @click.prevent='openCopy(item)'
+                        >
                           <IconCopy size=20 stroke-width=1 />
                         </a>
                         <a class='btn btn-action' @click.prevent='destroy(item)'>

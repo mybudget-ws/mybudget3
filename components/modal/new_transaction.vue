@@ -11,6 +11,7 @@ const description = ref('');
 const date = ref(new Date());
 const isSubmitting = ref(false);
 const currentAccount = ref(undefined);
+const currentAccountIds = ref([]);
 const currentCategoriesIds = ref([]);
 const currentPropertyId = ref(undefined);
 // TODO: Try to remove transactionEventTicks
@@ -21,28 +22,34 @@ const props = defineProps({
     type: String,
     default: 'expense',
   },
+  isCopy: {
+    type: Boolean,
+    default: false,
+  },
   item: {
     type: Object,
     default: null,
   },
 });
 
-// TODO: Remove newTransaction
-// const emit = defineEmits(['newTransaction'])
 const emit = defineEmits(['saved', 'close']);
 
-const isEdit = computed(() => !!props.item);
+const isEdit = computed(() => !!props.item && !props.isCopy);
 const modalTitle = computed(() => {
+  // console.log(props);
+  // console.log('isEdit', isEdit.value.toString());
   if (props.kind === 'income') {
-    return isEdit ? 'Редактировать доход' : 'Новый доход';
+    return isEdit.value ? 'Редактировать доход' : 'Новый доход';
   } else {
-    return isEdit ? 'Редактировать расход' : 'Новый расход';
+    return isEdit.value ? 'Редактировать расход' : 'Новый расход';
   }
 });
 
 const toggleAccountCallback = (account) => {
+  // console.log('toggleAccountCallback', account);
   if (account == null) return;
   currentAccount.value = account;
+  currentAccountIds.value = [account.id];
 }
 
 const toggleCategoryCallback = (categoryIds) => {
@@ -80,10 +87,21 @@ watch(
   () => props.item,
   (val) => {
     amount.value = val?.amount.toString() ?? '';
+    const parsedAmount = parseFloat(amount.value);
+    // console.log('item', val);
+    // console.log('parsedAmount', parsedAmount);
+    if (parsedAmount !== NaN && parsedAmount < 0) {
+      amount.value = Math.abs(parsedAmount).toString();
+    }
     description.value = val?.description ?? '';
     date.value = val?.date ?? new Date();
+    currentAccount.value = val?.account ?? undefined;
+    if (currentAccount.value) {
+      currentAccountIds.value = [currentAccount.value.id];
+    }
+    // console.log('item.Account', val?.account);
+    // console.log('currentAccount', currentAccount.value);
     // TODO: Init account, categories, project, property
-    // const currentAccount = ref(undefined);
     // const currentCategoriesIds = ref([]);
     // const currentPropertyId = ref(undefined);
   },
@@ -182,7 +200,10 @@ const onSubmit = async () => {
 
         <div class='row'>
           <div class='col'>
-            <FormAccounts @toggle-account='toggleAccountCallback' />
+            <FormAccounts
+              @toggle-account='toggleAccountCallback'
+              :ids='currentAccountIds'
+            />
           </div>
           <div class='col'>
             <FormCategories

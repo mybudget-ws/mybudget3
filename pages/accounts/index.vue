@@ -57,18 +57,18 @@ const destroy = async ({ id }) => {
 };
 
 const openCreate = () => {
-  currentItem.value = null
-  isShowModal.value = true
+  currentItem.value = null;
+  isShowModal.value = true;
 }
 
 const openEdit = (item) => {
-  currentItem.value = { ...item }
-  isShowModal.value = true
+  currentItem.value = { ...item };
+  isShowModal.value = true;
 }
 
 const onSaved = async () => {
-  isShowModal.value = false
-  await load(true)
+  isShowModal.value = false;
+  await load(true);
 }
 
 const isShowKind = ({ kind }) => {
