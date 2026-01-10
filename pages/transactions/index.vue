@@ -17,10 +17,11 @@ const PER_PAGE = 50;
 
 const route = useRoute();
 const { token } = useAuth();
-// const appConfig = useAppConfig();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
+const isShowModal = ref(false);
+const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
@@ -55,14 +56,15 @@ const load = async (isQuite = false) => {
   } catch (err) {
     console.error(err);
   } finally {
+    if (isQuite) transactionEventTicks.value++;
     isLoading.value = false;
     isQuiteLoading.value = false;
   }
 };
 
+// TODO: Remove
 const quiteLoading = async () => {
   await load(true);
-  transactionEventTicks.value++;
 }
 
 const badgeStyles = (color) => {
@@ -71,6 +73,8 @@ const badgeStyles = (color) => {
   // return appConfig.theme.dark ?
   //   { color: color } :
   //   { backgroundColor: color };
+  // Если это будет нужно, тогда сверху ещё инициализировать конфиг:
+  // const appConfig = useAppConfig();
 };
 
 const filterKeys = {
@@ -98,13 +102,28 @@ const copyTransaction = async (transaction) => {
   console.log('copy', transaction);
 };
 
-const deleteTransaction = async (id) => {
+const destroy = async ({ id }) => {
   if (confirm('Вы уверены, что хотите удалить операцию?')) {
     isQuiteLoading.value = true;
     await api.destroyTransaction(token.value, id);
-    await quiteLoading();
+    await load(true);
   }
 };
+
+const openCreate = () => {
+  currentItem.value = null
+  isShowModal.value = true
+}
+
+const openEdit = (item) => {
+  currentItem.value = { ...item }
+  isShowModal.value = true
+}
+
+const onSaved = async () => {
+  isShowModal.value = false
+  await load(true);
+}
 
 watch(
   () => token.value,
@@ -125,9 +144,15 @@ watch(
 </script>
 
 <template>
-  <ModalNewTransaction income @newTransaction='quiteLoading' />
-  <ModalNewTransaction expense @newTransaction='quiteLoading' />
-  <ModalNewTransfer @newTransaction='quiteLoading' />
+  <ModalNewTransaction
+    v-if='isShowModal'
+    kind='income'
+    :item='currentItem'
+    @saved='onSaved'
+    @close="isShowModal = false"
+  />
+  <!--ModalNewTransaction expense @newTransaction='quiteLoading' />
+  <ModalNewTransfer @newTransaction='quiteLoading' /-->
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
@@ -153,15 +178,18 @@ watch(
                       <kbd>Enter</kbd>
                     </span>
                   </div-->
-                  <button class='btn btn-outline-green' data-bs-toggle='modal' data-bs-target='#modal-income'>
+                  <button
+                    class='btn btn-outline-green'
+                    @click='openCreate'
+                  >
                     <IconArrowUp stroke-width=2 />
                   </button>
-                  <button class='btn btn-outline-secondary' data-bs-toggle='modal' data-bs-target='#modal-transfer'>
+                  <!--button class='btn btn-outline-secondary' data-bs-toggle='modal' data-bs-target='#modal-transfer'>
                     <IconArrowsRightLeft stroke-width=2 />
                   </button>
                   <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal-expense'>
                     <IconArrowDown stroke-width=2 />
-                  </button>
+                  </button-->
                 </div>
               </div>
             </div>
@@ -193,26 +221,26 @@ watch(
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="tx in transactions" :key="tx.id">
+                  <tr v-for="item in transactions" :key="item.id">
                     <td>
-                      {{ new Date(tx.dateAt).toLocaleDateString(LOCALE) }}
+                      {{ new Date(item.dateAt).toLocaleDateString(LOCALE) }}
                     </td>
                     <td class='text-nowrap text-end'>
                       <span :class="{
-                        'text-success': !tx.isTransfer && tx.amount > 0,
-                        'text-danger': !tx.isTransfer && tx.amount < 0
+                        'text-success': !item.isTransfer && item.amount > 0,
+                        'text-danger': !item.isTransfer && item.amount < 0
                       }">
                         <Amount
-                          :value='tx.amount'
-                          :currency='tx.account.currency.name'
+                          :value='item.amount'
+                          :currency='item.account.currency.name'
                         />
                       </span>
                     </td>
-                    <td class='text-nowrap'>{{ tx.account.name }}</td>
+                    <td class='text-nowrap'>{{ item.account.name }}</td>
                     <td>
                       <div class='badges-list'>
                         <span
-                          v-for='cat in tx.categories'
+                          v-for='cat in item.categories'
                           :key='cat.id'
                           class='badge'
                           :style='badgeStyles(cat.color)'
@@ -221,16 +249,18 @@ watch(
                         </span>
                       </div>
                     </td>
-                    <td>{{ tx.description }}</td>
+                    <td>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions'>
-                        <a class='btn btn-action'>
+                        <a class='btn btn-action'
+                          @click.prevent='openEdit(item)'
+                        >
                           <IconPencil size=20 stroke-width=1 />
                         </a>
-                        <a class='btn btn-action' @click.prevent='() => copyTransaction(tx)'>
+                        <a class='btn btn-action' @click.prevent='copyTransaction(item)'>
                           <IconCopy size=20 stroke-width=1 />
                         </a>
-                        <a class='btn btn-action' @click.prevent='() => deleteTransaction(tx.id)'>
+                        <a class='btn btn-action' @click.prevent='destroy(item)'>
                           <IconTrash size=20 stroke-width=1 />
                         </a>
                       </div>
