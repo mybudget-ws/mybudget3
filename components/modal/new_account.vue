@@ -22,12 +22,13 @@ const props = defineProps({
     default: null,
   },
 });
+
 const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item);
 
 const onSubmit = async () => {
-  if (!token.value) return;
+  if (isSubmitting.value || !token.value) return;
 
   isSubmitting.value = true
   try {
@@ -65,7 +66,7 @@ watch(
     accountPosition.value = val?.position ?? DEFAULT_POSITION;
   },
   { immediate: true }
-)
+);
 </script>
 
 <template>

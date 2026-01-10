@@ -17,7 +17,7 @@ const emit = defineEmits(['saved', 'close']);
 const isEdit = computed(() => !!props.item);
 
 const onSubmit = async () => {
-  if (!token.value) return;
+  if (isSubmitting.value || !token.value) return;
 
   isSubmitting.value = true
   try {

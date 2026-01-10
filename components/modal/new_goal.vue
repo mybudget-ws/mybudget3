@@ -27,7 +27,7 @@ const toggleAccountsCallback = (accountIds) => {
 }
 
 const onSubmit = async () => {
-  if (!token.value) return;
+  if (isSubmitting.value || !token.value) return;
 
   isSubmitting.value = true
   try {
