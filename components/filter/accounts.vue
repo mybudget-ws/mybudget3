@@ -52,13 +52,10 @@ const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
 
-watch(
-  () => token.value,
-  (val) => {
-    if (val) load();
-  },
-  { immediate: true }
-);
+watchEffect(() => {
+  if (token.value) load();
+});
+
 watch(
   () => props.reload,
   () => {
