@@ -184,8 +184,8 @@ watch(
                 <!--h1 class='card-title mb-0'>Операции</h1-->
                 <!--p class="text-secondary m-0">Table description.</p-->
               </div>
-              <div class="col-md-auto col-sm-12">
-                <div class="ms-auto d-flex flex-wrap btn-list">
+              <div class='col-md-auto col-sm-12'>
+                <div class='ms-auto d-flex flex-wrap btn-list'>
                   <!--div class="input-group input-group-flat w-auto">
                     <span class="input-group-text">
                       <IconSearch size=20 stroke-width=1 />
@@ -197,16 +197,19 @@ watch(
                   </div-->
                   <button
                     class='btn btn-outline-green'
-                    @click="openCreate('income')"
+                    @click="openCreate(KIND_INCOME)"
                   >
                     <IconArrowUp stroke-width=2 />
                   </button>
                   <!--button class='btn btn-outline-secondary' data-bs-toggle='modal' data-bs-target='#modal-transfer'>
                     <IconArrowsRightLeft stroke-width=2 />
-                  </button>
-                  <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#modal-expense'>
-                    <IconArrowDown stroke-width=2 />
                   </button-->
+                  <button
+                    class='btn btn-primary'
+                    @click="openCreate(KIND_EXPENSE)"
+                  >
+                    <IconArrowDown stroke-width=2 />
+                  </button>
                 </div>
               </div>
             </div>
