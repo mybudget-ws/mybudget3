@@ -3,9 +3,11 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
+  IconBulb,
   IconCopy,
   IconPencil,
   IconSearch,
+  IconShieldLock,
   IconTrash,
 } from '@tabler/icons-vue';
 
@@ -17,6 +19,7 @@ const PER_PAGE = 50;
 const KIND_EXPENSE = 'expense';
 const KIND_INCOME = 'income';
 
+const appConfig = useAppConfig();
 const route = useRoute();
 const { token } = useAuth();
 
@@ -72,14 +75,16 @@ const isEmpty = computed(() => {
   return transactions.value.length === 0;
 });
 
-const badgeStyles = (color) => {
-  return {};
-  // NOTE: Пока пробую без стилей для цвета у категорий.
-  // return appConfig.theme.dark ?
-  //   { color: color } :
-  //   { backgroundColor: color };
-  // Если это будет нужно, тогда сверху ещё инициализировать конфиг:
-  // const appConfig = useAppConfig();
+const badgeClasses = (kind) => {
+  if (appConfig.theme.dark) {
+    return kind === 'project' ?
+      'bg-azure-lt text-azure-lt-fg' :
+      'bg-teal-lt text-teal-lt-fg';
+  } else {
+    return kind === 'project' ?
+      'bg-azure text-azure-fg' :
+      'bg-teal text-teal-fg';
+  }
 };
 
 const filterKeys = {
@@ -261,10 +266,25 @@ watch(
                     <td>
                       <div class='badges-list'>
                         <span
+                          v-if='item.project'
+                          class='badge'
+                          :class='badgeClasses("project")'
+                        >
+                          <IconBulb size=12 stroke-width=2 />
+                          {{ item.project.name }}
+                        </span>
+                        <span
+                          v-if='item.property'
+                          class='badge'
+                          :class='badgeClasses("property")'
+                        >
+                          <IconShieldLock size=12 stroke-width=2 />
+                          {{ item.property.name }}
+                        </span>
+                        <span
                           v-for='cat in item.categories'
                           :key='cat.id'
                           class='badge'
-                          :style='badgeStyles(cat.color)'
                         >
                           {{ cat.name }}
                         </span>
