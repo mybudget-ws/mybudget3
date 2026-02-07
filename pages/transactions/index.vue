@@ -67,10 +67,10 @@ const load = async (isQuite = false) => {
   }
 };
 
-// TODO: Remove
-const quiteLoading = async () => {
-  await load(true);
-}
+const isEmpty = computed(() => {
+  if (isLoading.value) return false;
+  return transactions.value.length === 0;
+});
 
 const badgeStyles = (color) => {
   return {};
@@ -300,6 +300,9 @@ watch(
               </table>
             </div>
             <div class='card-footer d-flex align-items-center'>
+              <i v-if='isEmpty' class='text-secondary'>
+                Похоже таких операций ещё нет
+              </i>
               <!--div class='dropdown'>
                 <a class='btn dropdown-toggle' data-bs-toggle='dropdown'>
                   <span id='page-count' class='me-1'>20</span>
