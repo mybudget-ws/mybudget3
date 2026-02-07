@@ -290,7 +290,7 @@ watch(
                         </span>
                       </div>
                     </td>
-                    <td>{{ item.description }}</td>
+                    <td class='text-secondary'>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions'>
                         <a
