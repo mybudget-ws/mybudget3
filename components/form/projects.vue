@@ -7,12 +7,12 @@ const { token } = useAuth();
 const isLoading = ref(true);
 const items = ref([]);
 const selectedId = ref(undefined);
-const emit = defineEmits(['toggleProperty'])
+const emit = defineEmits(['toggleProject'])
 
 const props = defineProps({
   label: {
     type: String,
-    default: 'Имущество',
+    default: 'Проекты',
   },
   id: {
     type: Number,
@@ -23,10 +23,10 @@ const props = defineProps({
 const load = async () => {
   isLoading.value = true
   try {
-    const result = await api.properties(token.value);
+    const result = await api.projects(token.value);
     if (result) {
       items.value = result;
-      // initSelectedIds(route.query.properties);
+      // initSelectedIds(route.query.projects);
     } else {
       console.log('TODO: error');
     }
@@ -48,9 +48,9 @@ const options = computed(() => (
   ]
 ));
 
-const initSelectedIds = (properties = '') => {
+const initSelectedIds = (projects = '') => {
   if (props.id === undefined) {
-    const queryIds = properties?.toString().split(',') || [];
+    const queryIds = projects?.toString().split(',') || [];
     const queryId = queryIds.map(id => Number(id)).filter(id => id > 0)[0];
     if (queryId != selectedId.value) {
       selectedId.value = queryId;
@@ -58,7 +58,7 @@ const initSelectedIds = (properties = '') => {
   } else {
     selectedId.value = props.id;
   }
-  emit('toggleProperty', selectedId.value);
+  emit('toggleProject', selectedId.value);
 }
 
 watch(
@@ -70,11 +70,11 @@ watch(
 );
 
 watch(() => route, (newRoute) => {
-  initSelectedIds(newRoute.query.properties);
+  initSelectedIds(newRoute.query.projects);
 }, { immediate: true, deep: true })
 
 watch(selectedId, (newId) => {
-  emit('toggleProperty', newId);
+  emit('toggleProject', newId);
 });
 </script>
 

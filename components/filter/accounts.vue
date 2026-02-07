@@ -19,8 +19,7 @@ const load = async (isQuite = false) => {
     const result = await api.accounts(token.value);
     if (result) {
       items.value = result;
-      const queryIds = route.query.accounts?.toString().split(',') || [];
-      selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
+      initSelectedItemsByQuery(route.query.accounts);
     } else {
       console.log('TODO: error');
     }
@@ -51,6 +50,15 @@ const toggleSelection = (id) => {
 const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
+
+const initSelectedItemsByQuery = (items = '') => {
+  const queryIds = items?.toString().split(',') || [];
+  selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
+}
+
+watch(() => route, (newRoute) => {
+  initSelectedItemsByQuery(newRoute.query.accounts);
+}, { immediate: true, deep: true })
 
 watchEffect(() => {
   if (token.value) load();

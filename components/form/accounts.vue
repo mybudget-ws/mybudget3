@@ -36,7 +36,7 @@ const load = async () => {
     const result = await api.accounts(token.value);
     if (result) {
       items.value = result;
-      initSelectedAccountByQuery();
+      initSelectedIds();
     } else {
       console.log('TODO: error');
     }
@@ -47,20 +47,15 @@ const load = async () => {
   }
 };
 
-const initSelectedAccountByQuery = (query = route.query) => {
-  const queryIds = query.accounts?.toString().split(',').filter(v => v !== '') || [];
-  // console.log('props.ids', props.ids);
-  // console.log('queryIds', queryIds);
-  if (queryIds.length > 0) {
+const initSelectedIds = (query = route.query) => {
+  if (props.ids.length === 0) {
+    const queryIds = query.accounts?.toString().split(',').filter(v => v !== '') || [];
     selectedIds.value = queryIds.map(id => Number(id)).filter(id => id > 0);
   } else {
     selectedIds.value = props.ids;
   }
-  // console.log('selectedIds', selectedIds.value);
-  // console.log('visibleItems.value.length', visibleItems.value.length);
   if (selectedIds.value.length === 0 && visibleItems.value.length > 0) {
     selectedIds.value = [visibleItems.value[0].id];
-    // console.log('selectedIds.value', selectedIds.value);
   }
   emit('toggleAccount', findItem(selectedIds.value[0]));
   emit('toggleAccountIds', selectedIds.value);
@@ -77,7 +72,6 @@ const toggleSelection = (id) => {
     } else {
       selectedIds.value = Array.from(new Set([id, ...selectedIds.value]));
     }
-    // console.log('toggleSelection', selectedIds.value);
     emit('toggleAccountIds', selectedIds.value);
   }
 };
@@ -100,7 +94,7 @@ watch(
 );
 
 watch(() => route, (newRoute) => {
-  initSelectedAccountByQuery(newRoute.query.accounts);
+  initSelectedIds(newRoute.query.accounts);
 }, { immediate: true, deep: true })
 </script>
 

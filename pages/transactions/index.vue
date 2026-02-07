@@ -103,10 +103,6 @@ const applyFiltersFromQuery = () => {
   }
 };
 
-const copyTransaction = async (transaction) => {
-  console.log('copy', transaction);
-};
-
 const destroy = async ({ id }) => {
   if (confirm('Вы уверены, что хотите удалить операцию?')) {
     isQuiteLoading.value = true;

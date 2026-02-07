@@ -24,7 +24,7 @@ const load = async () => {
     const result = await api.categories(token.value);
     if (result) {
       items.value = result;
-      fetchCategoryIdsFromUrl();
+      // initSelectedIds();
     } else {
       console.log('TODO: error');
     }
@@ -35,16 +35,13 @@ const load = async () => {
   }
 };
 
-const fetchCategoryIdsFromUrl = (query = route.query) => {
-  // console.log('props', props);
-  const queryIds = query.categories?.toString().split(',').filter(v => v !== '') || [];
-  if (queryIds.length > 0) {
+const initSelectedIds = (query = route.query) => {
+  if (props.ids.length === 0) {
+    const queryIds = query.categories?.toString().split(',').filter(v => v !== '') || [];
     selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
   } else {
     selectedIds.value = new Set(props.ids);
   }
-
-  // console.log('selectedIds.value', selectedIds.value);
   emit('toggleCategory', selectedIds.value);
 };
 
@@ -74,13 +71,13 @@ watch(
 //   () => {
 //     if (props.reload > 1) {
 //       selectedIds.value.clear();
-//       fetchCategoryIdsFromUrl();
+//       initSelectedIds();
 //     }
 //   }
 // );
 
 watch(() => route, (newRoute) => {
-  fetchCategoryIdsFromUrl(newRoute.query);
+  initSelectedIds(newRoute.query);
 }, { immediate: true, deep: true })
 </script>
 

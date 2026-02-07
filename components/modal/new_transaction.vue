@@ -13,6 +13,7 @@ const isSubmitting = ref(false);
 const currentAccount = ref(undefined);
 const currentAccountIds = ref([]);
 const currentCategoryIds = ref([]);
+const currentProjectId = ref(undefined);
 const currentPropertyId = ref(undefined);
 
 const props = defineProps({
@@ -54,9 +55,8 @@ const toggleCategoryCallback = (categoryIds) => {
   currentCategoryIds.value = [...categoryIds];
 }
 
-const togglePropertyCallback = (id) => {
-  currentPropertyId.value = id;
-}
+const toggleProjectCallback = (id) => currentProjectId.value = Number(id);
+const togglePropertyCallback = (id) => currentPropertyId.value = Number(id);
 
 const currentCurrencyName = computed(() => {
   const account = currentAccount.value;
@@ -105,8 +105,10 @@ watch(
       val.categories.map(v => v.id) :
       [];
 
-    // TODO: init: project, property
-    // const currentPropertyId = ref(undefined);
+    if (props.item) {
+      currentProjectId.value = val?.project?.id;
+      currentPropertyId.value = val?.property?.id;
+    }
   },
   { immediate: true }
 );
@@ -131,7 +133,7 @@ const onSubmit = async () => {
         description: description.value,
         accountId: currentAccount.value.id,
         categoryIds: currentCategoryIds.value,
-        projectId: [], // TODO
+        projectId: currentProjectId.value,
         propertyId: currentPropertyId.value,
       });
 
@@ -143,11 +145,16 @@ const onSubmit = async () => {
         description: description.value,
         accountId: currentAccount.value.id,
         categoryIds: currentCategoryIds.value,
-        projectId: [], // TODO
+        projectId: currentProjectId.value,
         propertyId: currentPropertyId.value,
       });
     }
 
+    currentAccount.value = undefined;
+    currentAccountIds.value = [];
+    currentCategoryIds.value = [];
+    currentProjectId.value = undefined;
+    currentPropertyId.value = undefined;
     emit('saved');
   } finally {
     isSubmitting.value = false
@@ -209,9 +216,16 @@ const onSubmit = async () => {
         </div>
         <div class='row'>
           <div class='col'>
-            <FormProperties @toggle-property='togglePropertyCallback' />
+            <FormProjects
+              @toggle-project='toggleProjectCallback'
+              :id='currentProjectId'
+            />
           </div>
           <div class='col'>
+            <FormProperties
+              @toggle-property='togglePropertyCallback'
+              :id='currentPropertyId'
+            />
           </div>
         </div>
       </div>

@@ -15,8 +15,7 @@ const load = async () => {
     const result = await api.categories(token.value);
     if (result) {
       items.value = result;
-      const queryIds = route.query.categories?.toString().split(',') || [];
-      selectedIds.value = new Set(queryIds.map(id => Number(id)).filter(id => id > 0));
+      initSelectedItemsByQuery(route.query.categories);
     } else {
       console.log('TODO: error');
     }
@@ -46,6 +45,15 @@ const toggleSelection = (id) => {
 const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
+
+const initSelectedItemsByQuery = (items = '') => {
+  const queryIds = items?.toString().split(',') || [];
+  selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
+}
+
+watch(() => route, (newRoute) => {
+  initSelectedItemsByQuery(newRoute.query.categories);
+}, { immediate: true, deep: true })
 
 watchEffect(() => {
   if (token.value) load();
