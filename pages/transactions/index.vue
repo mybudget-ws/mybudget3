@@ -233,14 +233,14 @@ watch(
               <table class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
-                    <th class='w-1'>
+                    <th class='w-1 text-nowrap'>
                       <!--button class='table-sort d-flex' data-sort='sort-date'>
                         Дата
                       </button-->
                       Дата
                     </th>
-                    <th class='text-end'>Величина</th>
-                    <th class='w-1'>Счёт</th>
+                    <th class='w-1 text-nowrap text-end'>Величина</th>
+                    <th class='w-1 text-nowrap'>Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
                     <th class='w-1'></th>

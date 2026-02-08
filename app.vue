@@ -35,12 +35,15 @@ useHead({
     'data-bs-theme-primary': 'indigo',
     'data-bs-theme-radius': '1.5',
   },
+  bodyAttrs: {
+    class: 'sticky-top', // 'layout-fluid',
+  },
 });
 </script>
 
 <template>
   <div class='page'>
-    <header class='navbar navbar-expand-md sticky-top d-print-none'>
+    <header class='navbar navbar-expand-md d-print-none'>
       <div class='container-xxl'>
         <button
           class='navbar-toggler'
