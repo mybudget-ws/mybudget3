@@ -3,11 +3,11 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
-  IconBulb,
+  IconBulbFilled,
   IconCopy,
+  IconKeyFilled,
   IconPencil,
   IconSearch,
-  IconShieldLock,
   IconTrash,
 } from '@tabler/icons-vue';
 
@@ -270,7 +270,7 @@ watch(
                           class='badge'
                           :class='badgeClasses("project")'
                         >
-                          <IconBulb size=12 stroke-width=2 />
+                          <IconBulbFilled size=12 stroke-width=2 />
                           {{ item.project.name }}
                         </span>
                         <span
@@ -278,7 +278,7 @@ watch(
                           class='badge'
                           :class='badgeClasses("property")'
                         >
-                          <IconShieldLock size=12 stroke-width=2 />
+                          <IconKeyFilled size=12 stroke-width=2 />
                           {{ item.property.name }}
                         </span>
                         <span

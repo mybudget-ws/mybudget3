@@ -6,7 +6,7 @@ import {
   IconReceipt,
   IconChartHistogram,
   IconTags,
-  IconShieldLock,
+  IconKey,
   IconBulb,
   IconTargetArrow,
   IconWallet,
@@ -130,7 +130,7 @@ useHead({
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/'>
-                <IconShieldLock size=20 stroke-width=1 />
+                <IconKey size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Имущество</span>
               </NuxtLink>
             </li>
