@@ -216,7 +216,7 @@ watchEffect(() => {
                         <a
                             class='btn btn-action'
                             @click.prevent='toggleHidden(item)'
-                            v-tooltip:bottom="'Скрыть счёт'"
+                            v-tooltip:bottom="'Скрыть цель'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
