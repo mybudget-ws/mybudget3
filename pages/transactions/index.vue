@@ -21,6 +21,7 @@ const KIND_INCOME = 'income';
 
 const appConfig = useAppConfig();
 const route = useRoute();
+const router = useRouter();
 const { token } = useAuth();
 
 const isLoading = ref(false);
@@ -162,6 +163,28 @@ watch(
   },
   { immediate: true }
 );
+
+//Функция клика по категориям
+const onCategoryClick = (id) => {
+  const current = route.query.categories
+    ? route.query.categories.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  let newCategories;
+
+  if (current.includes(id)) {
+    newCategories = current.filter(c => c !== id);
+  } else {
+    newCategories = [...current, id];
+  }
+
+  router.replace({
+    query: {
+      ...route.query,
+      categories: newCategories.join(','),
+    },
+  });
+};
 </script>
 
 <template>
@@ -282,11 +305,12 @@ watch(
                           {{ item.property.name }}
                         </span>
                         <span
-                          v-for='cat in item.categories'
-                          :key='cat.id'
-                          class='badge'
-                        >
-                          {{ cat.name }}
+                            v-for='cat in item.categories'
+                            :key='cat.id'
+                            class='badge cursor-pointer'
+                            @click="onCategoryClick(cat.id)"
+                          >
+                            {{ cat.name }}
                         </span>
                       </div>
                     </td>
