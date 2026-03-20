@@ -10,8 +10,6 @@ import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
 const route = useRoute();
-
-
 const { token } = useAuth();
 
 const isLoading = ref(false);
