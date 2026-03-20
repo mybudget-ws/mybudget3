@@ -157,4 +157,8 @@ useHead({
   border-bottom-right-radius: var(--tblr-border-radius-lg);
   border-bottom-left-radius: var(--tblr-border-radius-lg);
 }
+
+.badge.cursor-pointer:hover {
+  opacity: 0.8;
+}
 </style>
