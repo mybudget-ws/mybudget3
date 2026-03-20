@@ -74,6 +74,7 @@ const onSaved = async () => {
 watchEffect(() => {
   if (token.value) load();
 });
+
 </script>
 
 <template>

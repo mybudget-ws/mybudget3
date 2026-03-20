@@ -21,6 +21,7 @@ const KIND_INCOME = 'income';
 
 const appConfig = useAppConfig();
 const route = useRoute();
+const router = useRouter();
 const { token } = useAuth();
 
 const isLoading = ref(false);
@@ -162,6 +163,26 @@ watch(
   },
   { immediate: true }
 );
+
+// TODO: Подумать, унифицировать, этот код с кодом
+//       в components/categories.vue
+const onCategoryClick = (id) => {
+  const current = route.query.categories ?
+    route.query.categories.toString().split(',').map(Number).filter(Boolean) :
+    [];
+
+  const newCategories = current.includes(id) ?
+    current.filter(c => c !== id) :
+    [...current, id];
+
+  const nextQuery = { ...route.query };
+  if (newCategories.length > 0) {
+    nextQuery.categories = newCategories.join(',');
+  } else {
+    delete nextQuery.categories;
+  }
+  router.replace({ query: nextQuery });
+};
 </script>
 
 <template>
@@ -282,11 +303,12 @@ watch(
                           {{ item.property.name }}
                         </span>
                         <span
-                          v-for='cat in item.categories'
-                          :key='cat.id'
-                          class='badge'
-                        >
-                          {{ cat.name }}
+                            v-for='cat in item.categories'
+                            :key='cat.id'
+                            class='badge cursor-pointer'
+                            @click="onCategoryClick(cat.id)"
+                          >
+                            {{ cat.name }}
                         </span>
                       </div>
                     </td>
