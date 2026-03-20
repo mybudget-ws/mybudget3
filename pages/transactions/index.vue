@@ -164,19 +164,16 @@ watch(
   { immediate: true }
 );
 
-//Функция клика по категориям
+// TODO: Подумать, унифицировать, этот код с кодом
+//       в components/categories.vue
 const onCategoryClick = (id) => {
-  const current = route.query.categories
-    ? route.query.categories.toString().split(',').map(Number).filter(Boolean)
-    : [];
+  const current = route.query.categories ?
+    route.query.categories.toString().split(',').map(Number).filter(Boolean) :
+    [];
 
-  let newCategories;
-
-  if (current.includes(id)) {
-    newCategories = current.filter(c => c !== id);
-  } else {
-    newCategories = [...current, id];
-  }
+  const newCategories = current.includes(id) ?
+    current.filter(c => c !== id) :
+    [...current, id];
 
   router.replace({
     query: {
