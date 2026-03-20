@@ -182,7 +182,6 @@ const onCategoryClick = (id) => {
     delete nextQuery.categories;
   }
   router.replace({ query: nextQuery });
-  });
 };
 </script>
 
