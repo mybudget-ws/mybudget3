@@ -175,11 +175,13 @@ const onCategoryClick = (id) => {
     current.filter(c => c !== id) :
     [...current, id];
 
-  router.replace({
-    query: {
-      ...route.query,
-      categories: newCategories.join(','),
-    },
+  const nextQuery = { ...route.query };
+  if (newCategories.length > 0) {
+    nextQuery.categories = newCategories.join(',');
+  } else {
+    delete nextQuery.categories;
+  }
+  router.replace({ query: nextQuery });
   });
 };
 </script>
