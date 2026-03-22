@@ -53,6 +53,6 @@ const inputClass = computed(() => ([
 ]));
 
 const isShowErrorMessage = computed(() => (
-  props.isError === true && props.errorText != null
+  props.isError && props.errorText
 ));
 </script>
