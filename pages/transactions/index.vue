@@ -6,6 +6,7 @@ import {
   IconBulbFilled,
   IconCopy,
   IconKeyFilled,
+  IconSearch,
   IconPencil,
   IconTrash,
   IconX
