@@ -177,11 +177,11 @@ const onCategoryClick = (id) => {
     [...current, id];
 
   const nextQuery = { ...route.query };
-  if (newCategories.length > 0) {
-    nextQuery.categories = newCategories.join(',');
-  } else {
-    delete nextQuery.categories;
-  }
+    if (newCategories.length > 0) {
+      nextQuery.categories = newCategories.join(',');
+    } else {
+     delete nextQuery.categories;
+    }
   router.replace({ query: nextQuery });
 };
 const selectedCategories = computed(() => {
@@ -192,7 +192,6 @@ const selectedCategories = computed(() => {
   if (!ids.length) return [];
 
   const map = new Map();
-
   for (const t of transactions.value) {
     for (const cat of t.categories) {
       if (ids.includes(cat.id)) {
