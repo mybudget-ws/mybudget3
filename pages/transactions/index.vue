@@ -7,8 +7,8 @@ import {
   IconCopy,
   IconKeyFilled,
   IconPencil,
-  IconSearch,
   IconTrash,
+  IconX
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -183,6 +183,25 @@ const onCategoryClick = (id) => {
   }
   router.replace({ query: nextQuery });
 };
+const selectedCategories = computed(() => {
+  const ids = route.query.categories
+    ? route.query.categories.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  if (!ids.length) return [];
+
+  const map = new Map();
+
+  for (const t of transactions.value) {
+    for (const cat of t.categories) {
+      if (ids.includes(cat.id)) {
+        map.set(cat.id, cat);
+      }
+    }
+  }
+
+  return Array.from(map.values());
+});
 </script>
 
 <template>
@@ -207,11 +226,24 @@ const onCategoryClick = (id) => {
         <div class='card-table'>
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
-              <div class='col d-flex align-items-center'>
-                <h2 class='mb-0'>Операции</h2>
-                <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
-                <!--h1 class='card-title mb-0'>Операции</h1-->
-                <!--p class="text-secondary m-0">Table description.</p-->
+              <div class='col'>
+                <div class="d-flex align-items-center">
+                  <h2 class='mb-0'>Операции</h2>
+                  <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
+                </div>
+                <div v-if="selectedCategories.length" class="mt-2">
+                  <div class="badges-list">
+                    <span
+                        v-for="cat in selectedCategories"
+                        :key="cat.id"
+                        class="badge cursor-pointer d-inline-flex align-items-center"
+                        @click="onCategoryClick(cat.id)"
+                      >
+                        <IconX size="12" class="me-1" />
+                        {{ cat.name }}
+                    </span>
+                  </div>
+                </div>
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex flex-wrap btn-list'>
