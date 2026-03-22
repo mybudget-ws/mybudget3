@@ -3,6 +3,9 @@
     v-bind='inputAttrs'
     :class='inputClass'
   />
+  <div v-if='isShowErrorMessage' class='text-danger mt-1'>
+    {{ errorText }}
+  </div>
 </template>
 
 <script setup>
@@ -17,12 +20,14 @@ const props = defineProps({
     default: 'off',
   },
   required: Boolean,
+  isError:Boolean,
   disabled: Boolean,
   class: {
     type: String,
     default: '',
   },
   modelValue: [String, Number],
+  errorText: String,
   name: String,
   id: String,
 })
@@ -44,5 +49,10 @@ const inputAttrs = computed(() => ({
 const inputClass = computed(() => ([
   'form-control',
   props.class,
+  props.isError === true ? 'border-red' : '',
 ]));
+
+const isShowErrorMessage = computed(() => (
+  props.isError === true && props.errorText != null
+));
 </script>
