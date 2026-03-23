@@ -20,7 +20,7 @@
         signIn(user.token);
         navigateTo('/');
       } else {
-        console.log('TODO: error');
+        // TODO: Отобразить ошибку "Неправильный email или пароль"
       }
     } catch (err) {
       console.error(err);
