@@ -58,6 +58,8 @@ watch(() => route, (newRoute) => {
 }, { immediate: true, deep: true })
 
 watch(selectedIds, () => {
+  if (items.value.length === 0) return;
+  
   const result = items.value
     .filter(item => selectedIds.value.has(item.id))
     .map(item => ({
