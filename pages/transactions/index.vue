@@ -216,22 +216,9 @@ const onCategoriesChange = (categories) => {
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
               <div class='col'>
-                <div class="d-flex align-items-center">
+                <div class='d-flex align-items-center'>
                   <h2 class='mb-0'>Операции</h2>
                   <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
-                </div>
-                <div v-if="selectedCategories.length" class="mt-2">
-                  <div class="badges-list">
-                    <span
-                      v-for="category in selectedCategories"
-                      :key="category.id"
-                      class="badge cursor-pointer d-inline-flex align-items-center"
-                      @click="onCategoryClick(category.id)"
-                    >  
-                      {{ category.name }}
-                      <IconX size='12' class='ms-1' />
-                    </span>
-                  </div>
                 </div>
               </div>
               <div class='col-md-auto col-sm-12'>
@@ -267,6 +254,24 @@ const onCategoriesChange = (categories) => {
               </div>
             </div>
           </div>
+          
+          <div
+            v-if='!isLoading && selectedCategories.length'
+            class='card-body border-bottom'
+          >
+            <div class='badges-list'>
+              <span
+                v-for='category in selectedCategories'
+                :key='category.id'
+                class='badge cursor-pointer'
+                @click='onCategoryClick(category.id)'
+              >  
+                {{ category.name }}
+                <IconX size='12' class='ms-1' />
+              </span>
+            </div>
+          </div>
+
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
