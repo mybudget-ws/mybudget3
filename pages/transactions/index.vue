@@ -255,7 +255,7 @@ const onCategoriesChange = (categories) => {
           </div>
           
           <div
-            v-if='!isLoading && selectedCategories.length'
+            v-if='selectedCategories.length'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
