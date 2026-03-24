@@ -9,6 +9,8 @@ const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref(new Set());
 
+const emit = defineEmits(['update:categories']);
+
 const load = async () => {
   isLoading.value = true
   try {
@@ -54,6 +56,19 @@ const initSelectedItemsByQuery = (items = '') => {
 watch(() => route, (newRoute) => {
   initSelectedItemsByQuery(newRoute.query.categories);
 }, { immediate: true, deep: true })
+
+watch(selectedIds, () => {
+  if (items.value.length === 0) return;
+  
+  const result = items.value
+    .filter(item => selectedIds.value.has(item.id))
+    .map(item => ({
+      id: item.id,
+      name: item.name,
+    }));
+
+  emit('update:categories', result);
+}, { deep: true });
 
 watchEffect(() => {
   if (token.value) load();

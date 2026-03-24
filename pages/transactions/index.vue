@@ -7,8 +7,8 @@ import {
   IconCopy,
   IconKeyFilled,
   IconPencil,
-  IconSearch,
   IconTrash,
+  IconX,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -34,6 +34,7 @@ const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
+const selectedCategories = ref([]);
 
 const filters = reactive({
   accountIds: [],
@@ -176,12 +177,18 @@ const onCategoryClick = (id) => {
     [...current, id];
 
   const nextQuery = { ...route.query };
+
   if (newCategories.length > 0) {
     nextQuery.categories = newCategories.join(',');
   } else {
     delete nextQuery.categories;
   }
+
   router.replace({ query: nextQuery });
+};
+
+const onCategoriesChange = (categories) => {
+  selectedCategories.value = categories;
 };
 </script>
 
@@ -207,11 +214,11 @@ const onCategoryClick = (id) => {
         <div class='card-table'>
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
-              <div class='col d-flex align-items-center'>
-                <h2 class='mb-0'>Операции</h2>
-                <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
-                <!--h1 class='card-title mb-0'>Операции</h1-->
-                <!--p class="text-secondary m-0">Table description.</p-->
+              <div class='col'>
+                <div class='d-flex align-items-center'>
+                  <h2 class='mb-0'>Операции</h2>
+                  <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
+                </div>
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex flex-wrap btn-list'>
@@ -246,6 +253,24 @@ const onCategoryClick = (id) => {
               </div>
             </div>
           </div>
+          
+          <div
+            v-if='selectedCategories.length'
+            class='card-body border-bottom'
+          >
+            <div class='badges-list'>
+              <span
+                v-for='category in selectedCategories'
+                :key='category.id'
+                class='badge cursor-pointer'
+                @click='onCategoryClick(category.id)'
+              >  
+                {{ category.name }}
+                <IconX size='12' class='ms-1' />
+              </span>
+            </div>
+          </div>
+
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
@@ -370,7 +395,7 @@ const onCategoryClick = (id) => {
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
       <FilterAccounts :reload='transactionEventTicks' />
-      <FilterCategories />
+      <FilterCategories @update:categories="onCategoriesChange" />
       <FilterProjects />
       <FilterProperties />
     </div>
