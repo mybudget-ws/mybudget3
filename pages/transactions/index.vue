@@ -6,10 +6,9 @@ import {
   IconBulbFilled,
   IconCopy,
   IconKeyFilled,
-  IconSearch,
   IconPencil,
   IconTrash,
-  IconX
+  IconX,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
