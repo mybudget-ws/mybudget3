@@ -35,6 +35,7 @@ const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
+const selectedCategories = ref([]);
 
 const filters = reactive({
   accountIds: [],
@@ -177,31 +178,19 @@ const onCategoryClick = (id) => {
     [...current, id];
 
   const nextQuery = { ...route.query };
-    if (newCategories.length > 0) {
-      nextQuery.categories = newCategories.join(',');
-    } else {
-     delete nextQuery.categories;
-    }
-  router.replace({ query: nextQuery });
-};
-const selectedCategories = computed(() => {
-  const ids = route.query.categories
-    ? route.query.categories.toString().split(',').map(Number).filter(Boolean)
-    : [];
 
-  if (!ids.length) return [];
-
-  const map = new Map();
-  for (const t of transactions.value) {
-    for (const cat of t.categories) {
-      if (ids.includes(cat.id)) {
-        map.set(cat.id, cat);
-      }
-    }
+  if (newCategories.length > 0) {
+    nextQuery.categories = newCategories.join(',');
+  } else {
+    delete nextQuery.categories;
   }
 
-  return Array.from(map.values());
-});
+  router.replace({ query: nextQuery });
+};
+
+const onCategoriesChange = (categories) => {
+  selectedCategories.value = categories;
+};
 </script>
 
 <template>
@@ -234,13 +223,13 @@ const selectedCategories = computed(() => {
                 <div v-if="selectedCategories.length" class="mt-2">
                   <div class="badges-list">
                     <span
-                        v-for="cat in selectedCategories"
-                        :key="cat.id"
-                        class="badge cursor-pointer d-inline-flex align-items-center"
-                        @click="onCategoryClick(cat.id)"
-                      >
-                        <IconX size="12" class="me-1" />
-                        {{ cat.name }}
+                      v-for="category in selectedCategories"
+                      :key="category.id"
+                      class="badge cursor-pointer d-inline-flex align-items-center"
+                      @click="onCategoryClick(category.id)"
+                    >  
+                      {{ category.name }}
+                      <IconX size='12' class='ms-1' />
                     </span>
                   </div>
                 </div>
@@ -402,7 +391,7 @@ const selectedCategories = computed(() => {
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
       <FilterAccounts :reload='transactionEventTicks' />
-      <FilterCategories />
+      <FilterCategories @update:categories="onCategoriesChange" />
       <FilterProjects />
       <FilterProperties />
     </div>
