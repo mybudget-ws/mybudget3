@@ -118,7 +118,7 @@ const destroy = async ({ id }) => {
   }
 };
 
-const openCreate = (kind, isCopy = false) => {
+const openCreate = (kind) => {
   currentKind.value = kind;
   currentItem.value = null;
   isCopyItem.value = false;
@@ -197,7 +197,7 @@ const onCategoriesChange = (categories) => {
     v-if='isShowModal'
     :kind='currentKind'
     :item='currentItem'
-    :isCopy='isCopyItem'
+    :is-copy='isCopyItem'
     @saved='onSaved'
     @close="isShowModal = false"
   />
@@ -253,7 +253,7 @@ const onCategoriesChange = (categories) => {
               </div>
             </div>
           </div>
-          
+
           <div
             v-if='selectedCategories.length'
             class='card-body border-bottom'
@@ -264,9 +264,9 @@ const onCategoriesChange = (categories) => {
                 :key='category.id'
                 class='badge cursor-pointer'
                 @click='onCategoryClick(category.id)'
-              >  
+              >
                 {{ category.name }}
-                <IconX size='12' class='ms-1' />
+                <IconX size='12' />
               </span>
             </div>
           </div>
@@ -289,7 +289,7 @@ const onCategoriesChange = (categories) => {
                     <th class='w-1 text-nowrap'>Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
@@ -298,10 +298,12 @@ const onCategoriesChange = (categories) => {
                       {{ new Date(item.dateAt).toLocaleDateString(LOCALE) }}
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span :class="{
-                        'text-success': !item.isTransfer && item.amount > 0,
-                        'text-danger': !item.isTransfer && item.amount < 0
-                      }">
+                      <span
+                        :class="{
+                          'text-success': !item.isTransfer && item.amount > 0,
+                          'text-danger': !item.isTransfer && item.amount < 0
+                        }"
+                      >
                         <Amount
                           :value='item.amount'
                           :currency='item.account.currency.name'
@@ -347,8 +349,8 @@ const onCategoriesChange = (categories) => {
                           <IconPencil size=20 stroke-width=1 />
                         </a>
                         <a
-                          class='btn btn-action'
                           v-tooltip:bottom="'Повторить операцию'"
+                          class='btn btn-action'
                           @click.prevent='openCopy(item)'
                         >
                           <IconCopy size=20 stroke-width=1 />
