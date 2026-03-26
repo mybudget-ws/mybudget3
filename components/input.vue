@@ -1,5 +1,6 @@
 <template>
   <input
+    ref="inputRef"
     v-bind='inputAttrs'
     :class='inputClass'
   />
@@ -9,6 +10,7 @@
 </template>
 
 <script setup>
+import {ref, computed } from 'vue'
 const props = defineProps({
   type: {
     type: String,
@@ -33,6 +35,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+const inputRef = ref(null)
 
 const inputAttrs = computed(() => ({
   type: props.type,
@@ -55,4 +58,14 @@ const inputClass = computed(() => ([
 const isShowErrorMessage = computed(() => (
   props.isError && props.errorText
 ));
+const selectAll = () => {
+  if (inputRef.value) {
+    inputRef.value.focus()
+    inputRef.value.select()
+  }
+}
+
+defineExpose({
+  selectAll
+})
 </script>

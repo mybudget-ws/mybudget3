@@ -4,6 +4,8 @@ import { evaluate } from 'mathjs';
 
 const { token } = useAuth();
 
+
+const amountInputRef = ref(null);
 const amount = ref(undefined);
 const evaluatedAmount = ref(undefined);
 const calculationError = ref('');
@@ -81,14 +83,14 @@ watch(amount, (newExpression) => {
   }
 });
 
+import { nextTick } from 'vue'
+
 watch(
   () => props.item,
   (val) => {
-    amount.value = val?.amount.toString() ?? '';
+    amount.value = val?.amount?.toString() ?? '';
     const parsedAmount = parseFloat(amount.value);
-    // console.log('item', val);
-    // console.log('parsedAmount', parsedAmount);
-    if (parsedAmount !== NaN && parsedAmount < 0) {
+    if (!isNaN(parsedAmount) && parsedAmount < 0) {
       amount.value = Math.abs(parsedAmount).toString();
     }
     description.value = val?.description ?? '';
@@ -99,8 +101,6 @@ watch(
     if (currentAccount.value) {
       currentAccountIds.value = [currentAccount.value.id];
     }
-    // console.log('val?.categories', val?.categories);
-    // console.log('val?.categories?.length', val?.categories?.length);
     currentCategoryIds.value = val?.categories?.length > 0 ?
       val.categories.map(v => v.id) :
       [];
@@ -108,6 +108,13 @@ watch(
     if (props.item) {
       currentProjectId.value = val?.project?.id;
       currentPropertyId.value = val?.property?.id;
+    }
+    if (props.isCopy) {
+      nextTick(() => {
+      if (amountInputRef.value?.selectAll) {
+          amountInputRef.value.selectAll(); // вызывает метод из Input.vue
+        }
+      });
     }
   },
   { immediate: true }
@@ -176,6 +183,7 @@ const onSubmit = async () => {
             <Label required>Величина</Label>
             <div class='input-group input-group-flat'>
               <Input
+                ref="amountInputRef"
                 type='text'
                 placeholder='10.2 + 3 * 6'
                 required
