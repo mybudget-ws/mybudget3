@@ -172,29 +172,29 @@ watchEffect(() => {
                   </tr>
                 </tbody>
               </table>
-                <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
-                  <thead>
-                    <tr>
-                      <th>Архив ({{ hiddenItems.length }})</th>
-                      <th class='w-1'></th>
-                    </tr>
-                  </thead>
-                  <tbody class='opacity-30'>
-                    <tr v-for="item in hiddenItems" :key="item.id">
-                      <td>{{ item.name }}</td>
-                      <td>
-                        <div class='btn-actions justify-content-end'>
-                          <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
-                            <IconEyeOff size=20 stroke-width=1 />
-                          </a>
-                          <a class='btn btn-action' @click.prevent='destroy(item)'>
-                            <IconTrash size=20 stroke-width=1 />
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
+                <thead>
+                  <tr>
+                    <th>Архив ({{ hiddenItems.length }})</th>
+                    <th class='w-1'></th>
+                  </tr>
+                </thead>
+                <tbody class='opacity-30'>
+                  <tr v-for="item in hiddenItems" :key="item.id">
+                    <td>{{ item.name }}</td>
+                    <td>
+                      <div class='btn-actions justify-content-end'>
+                        <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
+                          <IconEyeOff size=20 stroke-width=1 />
+                        </a>
+                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                          <IconTrash size=20 stroke-width=1 />
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div class='card-footer d-flex align-items-center'>
               <i v-if='isEmpty' class='text-secondary'>
