@@ -19,7 +19,10 @@ const isShowModal = ref(false);
 const currentItem = ref(null);
 const visibleItems = computed(() => items.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => items.value.filter(v => v.isHidden));
-
+const isEmpty = computed(() => {
+  if (isLoading.value) return false;
+  return items.value.length === 0;
+});
 const load = async (isQuite = false) => {
   if (isQuite) {
     isQuiteLoading.value = true
@@ -190,6 +193,11 @@ watchEffect(() => {
                 </tbody>
               </table>
             </div>
+              <div class='card-footer d-flex align-items-center'>
+                <i v-if='isEmpty' class='text-secondary'>
+                  Похоже таких проектов ещё нет
+                </i>
+              </div>
           </div>
         </div>
       </div>

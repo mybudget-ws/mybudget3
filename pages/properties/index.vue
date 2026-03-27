@@ -9,26 +9,22 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
-const route = useRoute();
 const { token } = useAuth();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
-const accounts = ref([]);
-const isShowModal = ref(false);
-const isError = ref(false);
-const currentItem = ref(null);
-const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
-const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
+const properties = ref([]);
+const isShowModal = ref(false)
+const currentItem = ref(null)
+const visibleItems = computed(() => properties.value.filter(v => !v.isHidden));
+const hiddenItems = computed(() => properties.value.filter(v => v.isHidden));
 
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
-  if (isError.value) return false;
-  return accounts.value.length === 0;
+  return properties.value.length === 0;
 });
 
 const load = async (isQuite = false) => {
-  isError.value = false;
   if (isQuite) {
     isQuiteLoading.value = true
   } else {
@@ -36,15 +32,14 @@ const load = async (isQuite = false) => {
   }
 
   try {
-    const items = await api.accounts(token.value);
+    const items = await api.properties(token.value);
     if (items) {
-      accounts.value = items
+      properties.value = items
     } else {
       console.log('TODO: error');
     }
   } catch (err) {
     console.error(err);
-    isError.value = true;
   } finally {
     isLoading.value = false;
     isQuiteLoading.value = false;
@@ -53,76 +48,68 @@ const load = async (isQuite = false) => {
 
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
-  await api.toggleIsHidden(token.value, id, 'account');
+  await api.toggleIsHidden(token.value, id, 'property');
   await load(true);
 };
 
 const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить счёт, операция необратима?')) {
+  if (confirm('Вы уверены, что хотите удалить имущество?')) {
     isQuiteLoading.value = true;
-    await api.destroyAccount(token.value, id);
+    await api.destroyProperty(token.value, id);
     await load(true);
   }
 };
 
 const openCreate = () => {
-  currentItem.value = null;
-  isShowModal.value = true;
+  currentItem.value = null
+  isShowModal.value = true
 }
 
 const openEdit = (item) => {
-  currentItem.value = { ...item };
-  isShowModal.value = true;
+  currentItem.value = { ...item }
+  isShowModal.value = true
 }
 
 const onSaved = async () => {
-  isShowModal.value = false;
-  await load(true);
-}
-
-const isShowKind = ({ kind }) => {
-  return kind == 'credit';
-}
-
-const kindDisplayName = ({ kind }) => {
-  return kind == 'credit' ? 'Кредит' : '';
+  isShowModal.value = false
+  await load(true)
 }
 
 watchEffect(() => {
   if (token.value) load();
 });
+
 </script>
 
 <template>
-  <ModalNewAccount
+  <!--ModalNewCategory
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
     @close="isShowModal = false"
-  />
+  /-->
 
   <div class='row'>
     <div class='col-12'>
       <div class='card'>
         <div class='card-table'>
           <div class='card-header pe-0'>
-              <div class='row w-full align-items-center'>
-                <div class='col d-flex align-items-center'>
-                  <h2 class='mb-0'>Счета</h2>
-                  <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
-                </div>
-                
-                <div class='col-auto'>
-                  <div class='ms-auto d-flex flex-wrap btn-list'>
-                    <button
-                      class='btn btn-primary'
-                      @click='openCreate'
-                    >
-                      <IconPlus stroke-width=2 />
-                    </button>
-                  </div>
+            <div class='row w-full align-items-center'>
+              <div class='col d-flex align-items-center'>
+                <h2 class='mb-0'>Имущество</h2>
+                <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
+              </div>
+              <div class='col-auto'>
+                <div class='ms-auto d-flex flex-wrap btn-list'>
+                  <button
+                    class='btn btn-primary'
+                    @click='openCreate'
+                  >
+                    <IconPlus stroke-width=2 />
+                  </button>
                 </div>
               </div>
+            </div>
           </div>
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
@@ -133,27 +120,12 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Название</th>
-                    <th class='text-end'>Баланс</th>
                     <th class='w-1'></th>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
-                    <td>
-                      <span class='me-2'>{{ item.name }}</span>
-                      <span v-if='isShowKind(item)' class='badge'>{{ kindDisplayName(item) }}</span>
-                    </td>
-                    <td class='text-nowrap text-end'>
-                      <span :class="{
-                        'text-success': item.balance > 0,
-                        'text-danger': item.balance < 0
-                      }">
-                        <Amount
-                          :value='item.balance'
-                          :currency='item.currency.name'
-                        />
-                      </span>
-                    </td>
+                    <td>{{ item.name }}</td>
                     <td>
                       <div class='btn-actions'>
                         <a class='btn btn-action'
@@ -164,7 +136,7 @@ watchEffect(() => {
                         <a
                             class='btn btn-action'
                             @click.prevent='toggleHidden(item)'
-                            v-tooltip:bottom="'Скрыть счёт'"
+                            v-tooltip:bottom="'Скрыть имущество'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
@@ -176,6 +148,7 @@ watchEffect(() => {
                   </tr>
                 </tbody>
               </table>
+
               <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
@@ -185,7 +158,9 @@ watchEffect(() => {
                 </thead>
                 <tbody class='opacity-30'>
                   <tr v-for="item in hiddenItems" :key="item.id">
-                    <td>{{ item.name }}</td>
+                    <td>
+                      {{ item.name }}
+                    </td>
                     <td>
                       <div class='btn-actions justify-content-end'>
                         <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
@@ -202,11 +177,7 @@ watchEffect(() => {
             </div>
             <div class='card-footer d-flex align-items-center'>
               <i v-if='isEmpty' class='text-secondary'>
-                Похоже таких счетов ещё нет
-              </i>
-              <i v-if='isError' class='text-danger'>
-                Ошибка: не удалось загрузить счета.
-                Попробуйте повторить операцию, или обратитесь в поддержку.
+                Похоже имущества ещё нет
               </i>
             </div>
           </div>
