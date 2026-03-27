@@ -16,6 +16,7 @@ const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const accounts = ref([]);
 const isShowModal = ref(false);
+const isError = ref(false);
 const currentItem = ref(null);
 const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
@@ -26,6 +27,7 @@ const isEmpty = computed(() => {
 });
 
 const load = async (isQuite = false) => {
+  isError.value = false;
   if (isQuite) {
     isQuiteLoading.value = true
   } else {
@@ -41,6 +43,7 @@ const load = async (isQuite = false) => {
     }
   } catch (err) {
     console.error(err);
+    isError.value = true;
   } finally {
     isLoading.value = false;
     isQuiteLoading.value = false;
@@ -197,8 +200,12 @@ watchEffect(() => {
               </table>
             </div>
             <div class='card-footer d-flex align-items-center'>
-              <i v-if='isEmpty' class='text-secondary'>
+              <i v-if='isEmpty && !isError' class='text-secondary'>
                 Похоже таких счетов ещё нет
+              </i>
+              <i v-if='isError' class='text-danger'>
+                Ошибка: не удалось загрузить счета.
+                Попробуйте повторить операцию, или обратитесь в поддержку.
               </i>
             </div>
           </div>
