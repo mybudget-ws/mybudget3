@@ -23,6 +23,7 @@ const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
 
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
+  if (isError.value) return false;
   return accounts.value.length === 0;
 });
 
@@ -200,7 +201,7 @@ watchEffect(() => {
               </table>
             </div>
             <div class='card-footer d-flex align-items-center'>
-              <i v-if='isEmpty && !isError' class='text-secondary'>
+              <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких счетов ещё нет
               </i>
               <i v-if='isError' class='text-danger'>
