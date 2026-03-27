@@ -129,7 +129,7 @@ useHead({
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/properties'>
                 <IconKey size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Имущество</span>
               </NuxtLink>
