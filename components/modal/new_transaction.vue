@@ -1,9 +1,9 @@
 <script setup>
 import api from '~/lib/api';
 import { evaluate } from 'mathjs';
+import { nextTick } from 'vue';
 
 const { token } = useAuth();
-
 
 const amountInputRef = ref(null);
 const amount = ref(undefined);
@@ -83,8 +83,6 @@ watch(amount, (newExpression) => {
   }
 });
 
-import { nextTick } from 'vue'
-
 watch(
   () => props.item,
   (val) => {
@@ -111,8 +109,8 @@ watch(
     }
     if (props.isCopy) {
       nextTick(() => {
-      if (amountInputRef.value?.selectAll) {
-          amountInputRef.value.selectAll(); // вызывает метод из Input.vue
+        if (amountInputRef.value?.selectAll) {
+          amountInputRef.value.selectAll();
         }
       });
     }
@@ -183,7 +181,7 @@ const onSubmit = async () => {
             <Label required>Величина</Label>
             <div class='input-group input-group-flat'>
               <Input
-                ref="amountInputRef"
+                ref='amountInputRef'
                 type='text'
                 placeholder='10.2 + 3 * 6'
                 required
