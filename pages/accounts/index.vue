@@ -20,6 +20,11 @@ const currentItem = ref(null);
 const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
 
+const isEmpty = computed(() => {
+  if (isLoading.value) return false;
+  return accounts.value.length === 0;
+});
+
 const load = async (isQuite = false) => {
   if (isQuite) {
     isQuiteLoading.value = true
@@ -97,22 +102,23 @@ watchEffect(() => {
       <div class='card'>
         <div class='card-table'>
           <div class='card-header pe-0'>
-            <div class='row w-full align-items-center'>
-              <div class='col d-flex align-items-center'>
-                <h2 class='mb-0'>Счета</h2>
-                <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
-              </div>
-              <div class='col-auto'>
-                <div class='ms-auto d-flex flex-wrap btn-list'>
-                  <button
-                    class='btn btn-primary'
-                    @click='openCreate'
-                  >
-                    <IconPlus stroke-width=2 />
-                  </button>
+              <div class='row w-full align-items-center'>
+                <div class='col d-flex align-items-center'>
+                  <h2 class='mb-0'>Счета</h2>
+                  <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
+                </div>
+                
+                <div class='col-auto'>
+                  <div class='ms-auto d-flex flex-wrap btn-list'>
+                    <button
+                      class='btn btn-primary'
+                      @click='openCreate'
+                    >
+                      <IconPlus stroke-width=2 />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
           </div>
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
@@ -166,29 +172,34 @@ watchEffect(() => {
                   </tr>
                 </tbody>
               </table>
-              <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
-                <thead>
-                  <tr>
-                    <th>Архив ({{ hiddenItems.length }})</th>
-                    <th class='w-1'></th>
-                  </tr>
-                </thead>
-                <tbody class='opacity-30'>
-                  <tr v-for="item in hiddenItems" :key="item.id">
-                    <td>{{ item.name }}</td>
-                    <td>
-                      <div class='btn-actions justify-content-end'>
-                        <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
-                          <IconEyeOff size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
-                        </a>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
+                  <thead>
+                    <tr>
+                      <th>Архив ({{ hiddenItems.length }})</th>
+                      <th class='w-1'></th>
+                    </tr>
+                  </thead>
+                  <tbody class='opacity-30'>
+                    <tr v-for="item in hiddenItems" :key="item.id">
+                      <td>{{ item.name }}</td>
+                      <td>
+                        <div class='btn-actions justify-content-end'>
+                          <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
+                            <IconEyeOff size=20 stroke-width=1 />
+                          </a>
+                          <a class='btn btn-action' @click.prevent='destroy(item)'>
+                            <IconTrash size=20 stroke-width=1 />
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+            <div class='card-footer d-flex align-items-center'>
+              <i v-if='isEmpty' class='text-secondary'>
+                Похоже таких счетов ещё нет
+              </i>
             </div>
           </div>
         </div>
