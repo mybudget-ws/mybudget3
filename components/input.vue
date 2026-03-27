@@ -1,6 +1,6 @@
 <template>
   <input
-    ref="inputRef"
+    ref='inputRef'
     v-bind='inputAttrs'
     :class='inputClass'
   />
@@ -58,14 +58,15 @@ const inputClass = computed(() => ([
 const isShowErrorMessage = computed(() => (
   props.isError && props.errorText
 ));
+
 const selectAll = () => {
   if (inputRef.value) {
-    inputRef.value.focus()
-    inputRef.value.select()
+    inputRef.value.focus();
+    inputRef.value.select();
   }
 }
 
 defineExpose({
   selectAll
-})
+});
 </script>
