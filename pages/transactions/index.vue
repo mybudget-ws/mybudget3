@@ -191,8 +191,10 @@ const onCategoriesChange = (categories) => {
   selectedCategories.value = categories;
 };
 const formatDate = (dateStr) => {
+  if (!dateStr) return '';
   const date = new Date(dateStr);
-
+  if (Number.isNaN(date.getTime())) return '';
+  
   const today = new Date();
   const yesterday = new Date();
 
