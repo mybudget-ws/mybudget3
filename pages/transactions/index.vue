@@ -190,6 +190,24 @@ const onCategoryClick = (id) => {
 const onCategoriesChange = (categories) => {
   selectedCategories.value = categories;
 };
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+
+  const today = new Date();
+  const yesterday = new Date();
+
+  yesterday.setDate(today.getDate() - 1);
+
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
+  if (isSameDay(date, today)) return 'Сегодня';
+  if (isSameDay(date, yesterday)) return 'Вчера';
+
+  return date.toLocaleDateString(LOCALE);
+};
 </script>
 
 <template>
@@ -295,7 +313,7 @@ const onCategoriesChange = (categories) => {
                 <tbody class='table-tbody'>
                   <tr v-for="item in transactions" :key="item.id">
                     <td>
-                      {{ new Date(item.dateAt).toLocaleDateString(LOCALE) }}
+                      {{ formatDate(item.dateAt) }}
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
