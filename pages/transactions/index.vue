@@ -12,9 +12,9 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
+import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 
-const LOCALE = 'ru-RU';
 const PER_PAGE = 50;
 const KIND_EXPENSE = 'expense';
 const KIND_INCOME = 'income';
@@ -189,36 +189,6 @@ const onCategoryClick = (id) => {
 
 const onCategoriesChange = (categories) => {
   selectedCategories.value = categories;
-};
-
-const isSameDay = (d1, d2) =>
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) return '';
-  
-  const today = new Date();
-  const yesterday = new Date();
-
-  yesterday.setDate(today.getDate() - 1);
-
-  if (isSameDay(date, today)) return 'Сегодня';
-  if (isSameDay(date, yesterday)) return 'Вчера';
-
-  return date.toLocaleDateString(LOCALE);
-};
-
-const formatDateFull = (dateStr) => {
-  if (!dateStr) return '';
-
-  const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) return '';
-
-  return date.toLocaleDateString(LOCALE);
 };
 </script>
 
