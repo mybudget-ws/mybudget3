@@ -10,24 +10,44 @@
   const email = ref('');
   const password = ref('');
   const isSubmitting = ref(false);
+  const isAuthError = ref(false);
+  const isApiError = ref(false);
+
+  const isError = computed(() => {
+    return isApiError.value || isAuthError.value;
+  });
+
+  const errorMessage = computed(() => {
+    if (isApiError.value) {
+      return 'Ошибка сервера. Попробуйте повторить операцию, или обратитесь в поддержку.';
+    }
+    if (isAuthError.value) {
+      return 'Неправильный email или пароль';
+    }
+  });
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    isSubmitting.value = true
+    isSubmitting.value = true;
+    isAuthError.value = false;
+    isApiError.value = false; 
+
     try {
       const user = await api.login(email.value, password.value);
-      if (user) {
+
+      if (user && user.token) {
         signIn(user.token);
         navigateTo('/');
       } else {
-        // TODO: Отобразить ошибку "Неправильный email или пароль"
+        isAuthError.value = true;
       }
     } catch (err) {
       console.error(err);
+      isApiError.value = true;
     } finally {
-      isSubmitting.value = false
+      isSubmitting.value = false;
     }
-  }
+  };
 </script>
 
 <template>
@@ -45,8 +65,9 @@
                 type='email'
                 placeholder='мой@email.ru'
                 required
-                :disabled='isSubmitting'
                 v-model='email'
+                :disabled='isSubmitting'
+                :isError='isError'
               />
             </div>
             <div class='mb-2'>
@@ -60,8 +81,10 @@
                 type='password'
                 placeholder='мой пароль'
                 required
-                :disabled='isSubmitting'
                 v-model='password'
+                :disabled='isSubmitting'
+                :isError='isError'
+                :errorText='errorMessage'
               />
             </div>
             <div class='form-footer'>
