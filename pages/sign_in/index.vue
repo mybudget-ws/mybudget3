@@ -10,24 +10,30 @@
   const email = ref('');
   const password = ref('');
   const isSubmitting = ref(false);
-
+  const authError = ref(false);
+  const authErrorMessage = 'Неправильный email или пароль';
   const onSubmit = async (event) => {
-    event.preventDefault();
-    isSubmitting.value = true
-    try {
-      const user = await api.login(email.value, password.value);
-      if (user) {
-        signIn(user.token);
-        navigateTo('/');
-      } else {
-        // TODO: Отобразить ошибку "Неправильный email или пароль"
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      isSubmitting.value = false
+  event.preventDefault();
+
+  isSubmitting.value = true;
+  authError.value = false; 
+
+  try {
+    const user = await api.login(email.value, password.value);
+
+    if (user && user.token) {
+      signIn(user.token);
+      navigateTo('/');
+    } else {
+      authError.value = true;
     }
+  } catch (err) {
+    console.error(err);
+    authError.value = true;
+  } finally {
+    isSubmitting.value = false;
   }
+};
 </script>
 
 <template>
@@ -42,11 +48,12 @@
             <div class='mb-3'>
               <Label required>Email</Label>
               <Input
-                type='email'
-                placeholder='мой@email.ru'
+                type="email"
+                placeholder="мой@email.ru"
                 required
-                :disabled='isSubmitting'
-                v-model='email'
+                :disabled="isSubmitting"
+                v-model="email"
+                :isError="authError"
               />
             </div>
             <div class='mb-2'>
@@ -57,11 +64,13 @@
                 </span>
               </Label>
               <Input
-                type='password'
-                placeholder='мой пароль'
+                type="password"
+                placeholder="мой пароль"
                 required
-                :disabled='isSubmitting'
-                v-model='password'
+                :disabled="isSubmitting"
+                v-model="password"
+                :isError="authError"
+                :errorText="authErrorMessage"
               />
             </div>
             <div class='form-footer'>
