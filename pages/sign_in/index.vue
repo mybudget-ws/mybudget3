@@ -12,7 +12,7 @@
   const isSubmitting = ref(false);
   const authError = ref(false);
   const authErrorMessage = 'Неправильный email или пароль';
-  
+
   const onSubmit = async (event) => {
     event.preventDefault();
 
@@ -49,12 +49,12 @@
             <div class='mb-3'>
               <Label required>Email</Label>
               <Input
-                type="email"
-                placeholder="мой@email.ru"
+                type='email'
+                placeholder='мой@email.ru'
                 required
-                :disabled="isSubmitting"
-                v-model="email"
-                :isError="authError"
+                :disabled='isSubmitting'
+                v-model='email'
+                :isError='authError'
               />
             </div>
             <div class='mb-2'>
@@ -65,13 +65,13 @@
                 </span>
               </Label>
               <Input
-                type="password"
-                placeholder="мой пароль"
+                type='password'
+                placeholder='мой пароль'
                 required
-                :disabled="isSubmitting"
-                v-model="password"
-                :isError="authError"
-                :errorText="authErrorMessage"
+                :disabled='isSubmitting'
+                v-model='password'
+                :isError='authError'
+                :errorText='authErrorMessage'
               />
             </div>
             <div class='form-footer'>
