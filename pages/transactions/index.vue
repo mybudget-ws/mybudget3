@@ -190,6 +190,12 @@ const onCategoryClick = (id) => {
 const onCategoriesChange = (categories) => {
   selectedCategories.value = categories;
 };
+
+const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
@@ -200,13 +206,17 @@ const formatDate = (dateStr) => {
 
   yesterday.setDate(today.getDate() - 1);
 
-  const isSameDay = (d1, d2) =>
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
-
   if (isSameDay(date, today)) return 'Сегодня';
   if (isSameDay(date, yesterday)) return 'Вчера';
+
+  return date.toLocaleDateString(LOCALE);
+};
+
+const formatDateFull = (dateStr) => {
+  if (!dateStr) return '';
+
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return '';
 
   return date.toLocaleDateString(LOCALE);
 };
@@ -314,7 +324,7 @@ const formatDate = (dateStr) => {
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in transactions" :key="item.id">
-                    <td>
+                    <td :title='formatDateFull(item.dateAt)'>
                       {{ formatDate(item.dateAt) }}
                     </td>
                     <td class='text-nowrap text-end'>
