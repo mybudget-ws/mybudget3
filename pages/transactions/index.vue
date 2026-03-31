@@ -12,9 +12,9 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
+import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 
-const LOCALE = 'ru-RU';
 const PER_PAGE = 50;
 const KIND_EXPENSE = 'expense';
 const KIND_INCOME = 'income';
@@ -294,8 +294,8 @@ const onCategoriesChange = (categories) => {
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in transactions" :key="item.id">
-                    <td>
-                      {{ new Date(item.dateAt).toLocaleDateString(LOCALE) }}
+                    <td :title='formatDateFull(item.dateAt)'>
+                      {{ formatDate(item.dateAt) }}
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
