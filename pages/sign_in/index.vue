@@ -12,28 +12,29 @@
   const isSubmitting = ref(false);
   const authError = ref(false);
   const authErrorMessage = 'Неправильный email или пароль';
+  
   const onSubmit = async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  isSubmitting.value = true;
-  authError.value = false; 
+    isSubmitting.value = true;
+    authError.value = false; 
 
-  try {
-    const user = await api.login(email.value, password.value);
+    try {
+      const user = await api.login(email.value, password.value);
 
-    if (user && user.token) {
-      signIn(user.token);
-      navigateTo('/');
-    } else {
+      if (user && user.token) {
+        signIn(user.token);
+        navigateTo('/');
+      } else {
+        authError.value = true;
+      }
+    } catch (err) {
+      console.error(err);
       authError.value = true;
+    } finally {
+      isSubmitting.value = false;
     }
-  } catch (err) {
-    console.error(err);
-    authError.value = true;
-  } finally {
-    isSubmitting.value = false;
-  }
-};
+  };
 </script>
 
 <template>
