@@ -10,14 +10,27 @@
   const email = ref('');
   const password = ref('');
   const isSubmitting = ref(false);
-  const authError = ref(false);
-  const authErrorMessage = 'Неправильный email или пароль';
+  const isAuthError = ref(false);
+  const isApiError = ref(false);
+
+  const isError = computed(() => {
+    return isApiError.value || isAuthError.value;
+  });
+
+  const errorMessage = computed(() => {
+    if (isApiError.value) {
+      return 'Ошибка сервера. Попробуйте повторить операцию, или обратитесь в поддержку.';
+    }
+    if (isAuthError.value) {
+      return 'Неправильный email или пароль';
+    }
+  });
 
   const onSubmit = async (event) => {
     event.preventDefault();
-
     isSubmitting.value = true;
-    authError.value = false; 
+    isAuthError.value = false;
+    isApiError.value = false; 
 
     try {
       const user = await api.login(email.value, password.value);
@@ -26,11 +39,11 @@
         signIn(user.token);
         navigateTo('/');
       } else {
-        authError.value = true;
+        isAuthError.value = true;
       }
     } catch (err) {
       console.error(err);
-      authError.value = true;
+      isApiError.value = true;
     } finally {
       isSubmitting.value = false;
     }
@@ -52,9 +65,9 @@
                 type='email'
                 placeholder='мой@email.ru'
                 required
-                :disabled='isSubmitting'
                 v-model='email'
-                :isError='authError'
+                :disabled='isSubmitting'
+                :isError='isError'
               />
             </div>
             <div class='mb-2'>
@@ -68,10 +81,10 @@
                 type='password'
                 placeholder='мой пароль'
                 required
-                :disabled='isSubmitting'
                 v-model='password'
-                :isError='authError'
-                :errorText='authErrorMessage'
+                :disabled='isSubmitting'
+                :isError='isError'
+                :errorText='errorMessage'
               />
             </div>
             <div class='form-footer'>
