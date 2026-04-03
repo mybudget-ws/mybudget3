@@ -36,9 +36,8 @@ const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
 const isAccountEmpty = computed(() => !currentAccount.value?.id);
+const isSubmitDisabled = computed(() => !token || isAccountEmpty.value);
 const modalTitle = computed(() => {
-  // console.log(props);
-  // console.log('isEdit', isEdit.value.toString());
   if (props.kind === 'income') {
     return isEdit.value ? 'Редактировать доход' : 'Новый доход';
   } else {
@@ -242,7 +241,7 @@ const onSubmit = async () => {
           type='submit'
           class='btn-primary'
           :loading='isSubmitting'
-          :disabled='!token || isAccountEmpty'
+          :disabled='isSubmitDisabled'
         >
           Сохранить
         </Button>
