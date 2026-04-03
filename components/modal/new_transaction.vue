@@ -121,7 +121,7 @@ watch(
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
 
-  if (!currentAccount.value?.id) {
+  if (!hasAccount.value) {
     alert('Невозможно создать операцию без счета. Создайте счет');
     return;
   }
