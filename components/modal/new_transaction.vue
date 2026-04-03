@@ -119,6 +119,10 @@ watch(
 
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
+  if (!evaluatedAmount.value && calculationError.value) {
+    alert(calculationError.value);
+    return;
+  }
 
   isSubmitting.value = true;
   const isIncome = props.kind === 'income';
