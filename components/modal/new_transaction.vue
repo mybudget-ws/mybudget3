@@ -17,7 +17,7 @@ const currentAccountIds = ref([]);
 const currentCategoryIds = ref([]);
 const currentProjectId = ref(undefined);
 const currentPropertyId = ref(undefined);
-
+const hasAccount = computed(() => !!currentAccount.value?.id);
 const props = defineProps({
   kind: {
     type: String,
@@ -121,8 +121,8 @@ watch(
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
 
-  if (!evaluatedAmount.value && calculationError.value) {
-    alert(calculationError.value);
+  if (!currentAccount.value?.id) {
+    alert('Невозможно создать операцию без счета. Создайте счет');
     return;
   }
 
@@ -212,6 +212,9 @@ const onSubmit = async () => {
               @toggle-account='toggleAccountCallback'
               :ids='currentAccountIds'
             />
+            <div v-if="!hasAccount" class="text-danger mt-1">
+              Невозможно создать операцию без счета. Создайте счет
+            </div>
           </div>
           <div class='col'>
             <FormCategories
@@ -244,7 +247,7 @@ const onSubmit = async () => {
           type='submit'
           class='btn-primary'
           :loading='isSubmitting'
-          :disabled='!token'
+          :disabled='!token || !hasAccount'
         >
           Сохранить
         </Button>
