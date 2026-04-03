@@ -17,7 +17,6 @@ const currentAccountIds = ref([]);
 const currentCategoryIds = ref([]);
 const currentProjectId = ref(undefined);
 const currentPropertyId = ref(undefined);
-const hasAccount = computed(() => !!currentAccount.value?.id);
 const props = defineProps({
   kind: {
     type: String,
@@ -36,6 +35,7 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
+const isAccountEmpty = computed(() => !currentAccount.value?.id);
 const modalTitle = computed(() => {
   // console.log(props);
   // console.log('isEdit', isEdit.value.toString());
@@ -120,11 +120,6 @@ watch(
 
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
-
-  if (!hasAccount.value) {
-    alert('Невозможно создать операцию без счета. Создайте счет');
-    return;
-  }
 
   isSubmitting.value = true;
   const isIncome = props.kind === 'income';
@@ -212,7 +207,7 @@ const onSubmit = async () => {
               @toggle-account='toggleAccountCallback'
               :ids='currentAccountIds'
             />
-            <div v-if="!hasAccount" class="text-danger mt-1">
+            <div v-if='isAccountEmpty' class='text-danger mt-1'>
               Невозможно создать операцию без счета. Создайте счет
             </div>
           </div>
@@ -247,7 +242,7 @@ const onSubmit = async () => {
           type='submit'
           class='btn-primary'
           :loading='isSubmitting'
-          :disabled='!token || !hasAccount'
+          :disabled='!token || isAccountEmpty'
         >
           Сохранить
         </Button>
