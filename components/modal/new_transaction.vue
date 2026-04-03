@@ -73,7 +73,11 @@ watch(amount, (newExpression) => {
   }
 
   try {
-    const result = evaluate(newExpression.replace(/,/g, '.'));
+    const result = evaluate(
+      newExpression
+      .replace(/\s+/g, '')   
+      .replace(/,/g, '.')    
+    );
     evaluatedAmount.value = Number.isFinite(result) ? result : undefined;
     calculationError.value = '';
   } catch (error) {
