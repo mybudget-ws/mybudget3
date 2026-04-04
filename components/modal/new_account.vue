@@ -47,7 +47,6 @@ const onSubmit = async () => {
         color: DEFAULT_COLOR,
         currency: accountCurrency.value,
         kind: accountKind.value,
-        position: parseInt(accountPosition.value),
       });
     }
 
@@ -71,7 +70,7 @@ watch(
 
 <template>
   <ModalBase id='modal-account' is-focus @close="emit('close')">
-    <form @submit.prevent='onSubmit' autocomplete='off'>
+    <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
         <h5 class="modal-title">
           {{ isEdit ? 'Редактирование счёта' : 'Новый счёт' }}
@@ -83,36 +82,36 @@ watch(
         <div class='mb-3'>
           <Label required>Название</Label>
           <Input
+            v-model='accountName'
             required
             type='text'
             class='form-control'
             placeholder='Новый счёт'
             :disabled='isSubmitting'
-            v-model='accountName'
           />
         </div>
 
         <div class='row mb-3'>
-          <div class='col-lg-6 col-md-12'>
+          <div :class="isEdit ? 'col-lg-6' : ''" class='col-md-12'>
             <Label required>Валюта</Label>
             <Input
+              v-model='accountCurrency'
               required
               type='string'
               class='form-control'
               placeholder='Валюта счёта'
               :disabled='isSubmitting'
-              v-model='accountCurrency'
             />
           </div>
-          <div class='col-lg-6 col-md-12'>
+          <div v-if='isEdit' class='col-lg-6 col-md-12'>
             <Label required>Позиция в списке</Label>
             <Input
+              v-model='accountPosition'
               required
               type='number'
               class='form-control'
               placeholder='1'
               :disabled='isSubmitting'
-              v-model='accountPosition'
             />
           </div>
         </div>
@@ -121,26 +120,24 @@ watch(
           <Label>Тип счёта</Label>
           <div class='form-selectgroup form-selectgroup-boxes d-flex'>
             <label
-              v-for='item in KINDS'
-              :key='item.value'
+              v-for='kind in KINDS'
+              :key='kind.value'
               class='form-selectgroup-item'
               style='flex: 1 1 0;'
             >
               <input
                 type='radio'
                 name='kinds'
-                value='item.value'
+                value='kind.value'
                 class='form-selectgroup-input'
-                :checked='accountKind == item.value'
-                @change='accountKind = item.value'
-              />
+                :checked='accountKind == kind.value'
+                @change='accountKind = kind.value'
+              >
               <div class='form-selectgroup-label d-flex align-items-center'>
                 <div class='me-3'>
                   <span class='form-selectgroup-check' />
                 </div>
-                <div>
-                  {{ item.name }}
-                </div>
+                <div>{{ kind.name }}</div>
               </div>
             </label>
           </div>
