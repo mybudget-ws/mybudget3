@@ -1,6 +1,8 @@
 <script setup>
 import api from '~/lib/api';
-
+import {
+  IconPlus,
+} from '@tabler/icons-vue';
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
@@ -56,6 +58,19 @@ const initSelectedItemsByQuery = (items = '') => {
   selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
 }
 
+const isShowModal = ref(false);
+const currentItem = ref(null);
+
+const openCreate = () => {
+  currentItem.value = null;
+  isShowModal.value = true;
+};
+
+const onSaved = async () => {
+  isShowModal.value = false;
+  await load(); 
+};
+
 watch(() => route, (newRoute) => {
   initSelectedItemsByQuery(newRoute.query.accounts);
 }, { immediate: true, deep: true })
@@ -73,11 +88,25 @@ watch(
 </script>
 
 <template>
+  <ModalNewAccount
+    v-if='isShowModal'
+    :item='currentItem'
+    @saved='onSaved'
+    @close="isShowModal = false"
+  />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
     <div v-else class='card-body p-3 pb-0'>
-      <div class='subheader mb-3'>Счета</div>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="subheader mb-0">Счета</div>
+        <button
+          class="btn btn-action"
+          @click="openCreate"
+        >
+          <IconPlus size="20" stroke-width="1" fill="none"/>
+        </button>
+      </div>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check'>
           <input
