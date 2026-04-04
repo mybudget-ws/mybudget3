@@ -143,10 +143,11 @@ watchEffect(() => {
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
-:class="{
-                        'text-success': item.balance > 0,
-                        'text-danger': item.balance < 0
-                      }">
+                        :class="{
+                          'text-success': item.balance > 0,
+                          'text-danger': item.balance < 0
+                        }"
+                      >
                         <Amount
                           :value='item.balance'
                           :currency='item.currency.name'
