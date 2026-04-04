@@ -1,6 +1,8 @@
 <script setup>
 import api from '~/lib/api';
-
+import {
+  IconPlus,
+} from '@tabler/icons-vue';
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
@@ -73,14 +75,41 @@ watch(selectedIds, () => {
 watchEffect(() => {
   if (token.value) load();
 });
+
+const isShowModal = ref(false);
+const currentItem = ref(null);
+
+const openCreate = () => {
+  currentItem.value = null;
+  isShowModal.value = true;
+};
+
+const onSaved = async () => {
+  isShowModal.value = false;
+  await load(); // обновляем список категорий
+};
 </script>
 
 <template>
+  <ModalNewCategory
+    v-if='isShowModal'
+    :item='currentItem'
+    @saved='onSaved'
+    @close="isShowModal = false"
+  />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
     <div v-else class='card-body p-3 pb-0'>
-      <div class='subheader mb-3'>Категории</div>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="subheader mb-0">Категории</div>
+        <button
+          class="btn btn-action"
+          @click="openCreate"
+        >
+          <IconPlus size="20" stroke-width="1" fill="none"/>
+        </button>
+      </div>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class="form-check" :title='item.name'>
           <input
