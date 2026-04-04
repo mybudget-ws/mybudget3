@@ -46,6 +46,14 @@ const load = async (isQuite = false) => {
   }
 };
 
+
+const kindDisplayName = ({ kind }) => {
+  if (kind === 'realty') return 'Недвижимость';
+  if (kind === 'transport') return 'Транспорт';
+
+  return 'Другое';
+}
+
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
   await api.toggleIsHidden(token.value, id, 'property');
@@ -128,7 +136,7 @@ watchEffect(() => {
                 <tbody class='table-tbody'>
                   <tr v-for='item in visibleItems' :key='item.id'>
                     <td>{{ item.name }}</td>
-                    <td>{{ item.kind }}</td>
+                    <td>{{ kindDisplayName(item) }}</td>
                     <td>
                       <Amount
                         :value='item.amount'
@@ -137,22 +145,28 @@ watchEffect(() => {
                     </td>
                     <td>
                       <div class='btn-actions'>
-                        <a
+                        <button
+                          type='button'
                           class='btn btn-action'
                           @click.prevent='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
-                        </a>
-                        <a
+                        </button>
+                        <button
                           v-tooltip:bottom="'Скрыть имущество'"
+                          type='button'
                           class='btn btn-action'
                           @click.prevent='toggleHidden(item)'
                         >
                           <IconEyeOff size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                        </button>
+                        <button
+                          type='button'
+                          class='btn btn-action'
+                          @click.prevent='destroy(item)'
+                        >
                           <IconTrash size=20 stroke-width=1 />
-                        </a>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -173,20 +187,28 @@ watchEffect(() => {
                     </td>
                     <td>
                       <div class='btn-actions justify-content-end'>
-                        <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
+                        <button
+                          class='btn btn-action'
+                          type='button'
+                          @click.prevent='toggleHidden(item)'
+                        >
                           <IconEyeOff size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                        </button>
+                        <button
+                          class='btn btn-action'
+                          type='button'
+                          @click.prevent='destroy(item)'
+                        >
                           <IconTrash size=20 stroke-width=1 />
-                        </a>
+                        </button>
                       </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <div class='card-footer d-flex align-items-center'>
-              <i v-if='isEmpty' class='text-secondary'>
+            <div v-if='isEmpty' class='card-footer d-flex align-items-center'>
+              <i class='text-secondary'>
                 Похоже имущества ещё нет
               </i>
             </div>

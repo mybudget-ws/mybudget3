@@ -128,7 +128,7 @@ watch(
               <input
                 type='radio'
                 name='kinds'
-                value='kind.value'
+                :value='kind.value'
                 class='form-selectgroup-input'
                 :checked='accountKind == kind.value'
                 @change='accountKind = kind.value'

@@ -74,7 +74,7 @@ watch(
 </script>
 
 <template>
-  <ModalBase id='modal-account' is-focus @close="emit('close')">
+  <ModalBase id='modal-property' is-focus @close="emit('close')">
     <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
         <h5 class="modal-title">
@@ -147,8 +147,8 @@ watch(
               <input
                 type='radio'
                 name='kinds'
-                value='kind.value'
                 class='form-selectgroup-input'
+                :value='kind.value'
                 :checked='propertyKind == kind.value'
                 @change='propertyKind = kind.value'
               >
