@@ -5,15 +5,17 @@ const DEFAULT_COLOR = 'teal';
 const DEFAULT_CURRENCY = 'RUB';
 const DEFAULT_POSITION = 1;
 const KINDS = [
-  { value: 'debit', name: 'Дебетовый, наличные' },
-  { value: 'credit', name: 'Кредитный' },
+  { value: 'realty', name: 'Недвижимость' },
+  { value: 'transport', name: 'Транспорт' },
+  { value: 'other', name: 'Другое' }
 ];
 
 const { token } = useAuth();
-const accountName = ref('');
-const accountKind = ref(KINDS[0].value);
-const accountCurrency = ref(DEFAULT_CURRENCY);
-const accountPosition = ref(DEFAULT_POSITION);
+const propertyName = ref('');
+const propertyKind = ref(KINDS[0].value);
+const propertyCurrency = ref(DEFAULT_CURRENCY);
+const propertyPosition = ref(DEFAULT_POSITION);
+const propertyAmount = ref('0');
 const isSubmitting = ref(false);
 
 const props = defineProps({
@@ -33,20 +35,22 @@ const onSubmit = async () => {
   isSubmitting.value = true
   try {
     if (isEdit.value) {
-      await api.updateAccount(token.value, {
+      await api.updateProperty(token.value, {
         id: props.item.id,
-        name: accountName.value,
+        name: propertyName.value,
         color: props.item.color || DEFAULT_COLOR,
-        currency: accountCurrency.value,
-        kind: accountKind.value,
-        position: parseInt(accountPosition.value),
+        kind: propertyKind.value,
+        currency: propertyCurrency.value,
+        amount: propertyAmount.value,
+        position: parseInt(propertyPosition.value),
       });
     } else {
-      await api.createAccount(token.value, {
-        name: accountName.value,
+      await api.createProperty(token.value, {
+        name: propertyName.value,
         color: DEFAULT_COLOR,
-        currency: accountCurrency.value,
-        kind: accountKind.value,
+        kind: propertyKind.value,
+        currency: propertyCurrency.value,
+        amount: propertyAmount.value,
       });
     }
 
@@ -59,43 +63,58 @@ const onSubmit = async () => {
 watch(
   () => props.item,
   (val) => {
-    accountName.value = val?.name ?? '';
-    accountKind.value = val?.kind ?? KINDS[0].value;
-    accountCurrency.value = val?.currency?.name ?? DEFAULT_CURRENCY;
-    accountPosition.value = val?.position ?? DEFAULT_POSITION;
+    propertyName.value = val?.name ?? '';
+    propertyKind.value = val?.kind ?? KINDS[0].value;
+    propertyAmount.value = val?.amount?.toString() ?? '0';
+    propertyCurrency.value = val?.currency?.name ?? DEFAULT_CURRENCY;
+    propertyPosition.value = val?.position ?? DEFAULT_POSITION;
   },
   { immediate: true }
 );
 </script>
 
 <template>
-  <ModalBase id='modal-account' is-focus @close="emit('close')">
+  <ModalBase id='modal-property' is-focus @close="emit('close')">
     <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
         <h5 class="modal-title">
-          {{ isEdit ? 'Редактирование счёта' : 'Новый счёт' }}
+          {{ isEdit ? 'Редактирование имущества' : 'Новое имущество' }}
         </h5>
-        <button class="btn-close" type="button" @click="emit('close')" />
+        <button class='btn-close' type='button' @click="emit('close')" />
       </div>
 
       <div class='modal-body'>
         <div class='mb-3'>
           <Label required>Название</Label>
           <Input
-            v-model='accountName'
+            v-model='propertyName'
             required
             type='text'
             class='form-control'
-            placeholder='Новый счёт'
+            placeholder='Название имущества'
             :disabled='isSubmitting'
           />
         </div>
 
         <div class='row mb-3'>
-          <div :class="isEdit ? 'col-lg-6' : ''" class='col-md-12'>
+          <div :class="isEdit ? 'col-lg-4' : 'col-lg-6'" class='col-md-12'>
+            <Label required>Текущая стоимость</Label>
+            <div class='input-group input-group-flat'>
+              <Input
+                v-model='propertyAmount'
+                required
+                type='string'
+                class='form-control'
+                placeholder='0'
+                :disabled='isSubmitting'
+              />
+              <span class='input-group-text'>{{ propertyCurrency }}</span>
+            </div>
+          </div>
+          <div :class="isEdit ? 'col-lg-4' : 'col-lg-6'" class='col-md-12'>
             <Label required>Валюта</Label>
             <Input
-              v-model='accountCurrency'
+              v-model='propertyCurrency'
               required
               type='string'
               class='form-control'
@@ -103,10 +122,10 @@ watch(
               :disabled='isSubmitting'
             />
           </div>
-          <div v-if='isEdit' class='col-lg-6 col-md-12'>
+          <div v-if='isEdit' class='col-lg-4 col-md-12'>
             <Label required>Позиция в списке</Label>
             <Input
-              v-model='accountPosition'
+              v-model='propertyPosition'
               required
               type='number'
               class='form-control'
@@ -117,7 +136,7 @@ watch(
         </div>
 
         <div class='mb-3'>
-          <Label>Тип счёта</Label>
+          <Label required>Тип</Label>
           <div class='form-selectgroup form-selectgroup-boxes d-flex'>
             <label
               v-for='kind in KINDS'
@@ -128,10 +147,10 @@ watch(
               <input
                 type='radio'
                 name='kinds'
-                :value='kind.value'
                 class='form-selectgroup-input'
-                :checked='accountKind == kind.value'
-                @change='accountKind = kind.value'
+                :value='kind.value'
+                :checked='propertyKind == kind.value'
+                @change='propertyKind = kind.value'
               >
               <div class='form-selectgroup-label d-flex align-items-center'>
                 <div class='me-3'>

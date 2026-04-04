@@ -9,7 +9,6 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
-const route = useRoute();
 const { token } = useAuth();
 
 const isLoading = ref(false);
@@ -111,7 +110,6 @@ watchEffect(() => {
                   <h2 class='mb-0'>Счета</h2>
                   <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
                 </div>
-                
                 <div class='col-auto'>
                   <div class='ms-auto d-flex flex-wrap btn-list'>
                     <button
@@ -134,7 +132,7 @@ watchEffect(() => {
                   <tr>
                     <th>Название</th>
                     <th class='text-end'>Баланс</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
@@ -144,10 +142,12 @@ watchEffect(() => {
                       <span v-if='isShowKind(item)' class='badge'>{{ kindDisplayName(item) }}</span>
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span :class="{
-                        'text-success': item.balance > 0,
-                        'text-danger': item.balance < 0
-                      }">
+                      <span
+                        :class="{
+                          'text-success': item.balance > 0,
+                          'text-danger': item.balance < 0
+                        }"
+                      >
                         <Amount
                           :value='item.balance'
                           :currency='item.currency.name'
@@ -156,15 +156,16 @@ watchEffect(() => {
                     </td>
                     <td>
                       <div class='btn-actions'>
-                        <a class='btn btn-action'
+                        <a
+class='btn btn-action'
                           @click.prevent='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
                         </a>
                         <a
+                            v-tooltip:bottom="'Скрыть счёт'"
                             class='btn btn-action'
                             @click.prevent='toggleHidden(item)'
-                            v-tooltip:bottom="'Скрыть счёт'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
@@ -180,7 +181,7 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>

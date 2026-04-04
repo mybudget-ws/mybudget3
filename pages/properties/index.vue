@@ -32,7 +32,7 @@ const load = async (isQuite = false) => {
   }
 
   try {
-    const items = await api.properties(token.value);
+    const items = await api.properties(token.value, { allData: true });
     if (items) {
       properties.value = items
     } else {
@@ -45,6 +45,14 @@ const load = async (isQuite = false) => {
     isQuiteLoading.value = false;
   }
 };
+
+
+const kindDisplayName = ({ kind }) => {
+  if (kind === 'realty') return 'Недвижимость';
+  if (kind === 'transport') return 'Транспорт';
+
+  return 'Другое';
+}
 
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
@@ -82,12 +90,12 @@ watchEffect(() => {
 </script>
 
 <template>
-  <!--ModalNewCategory
+  <ModalNewProperty
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
     @close="isShowModal = false"
-  /-->
+  />
 
   <div class='row'>
     <div class='col-12'>
@@ -120,29 +128,45 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Название</th>
-                    <th class='w-1'></th>
+                    <th>Тип</th>
+                    <th class='w-1'>Стоимость</th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="item in visibleItems" :key="item.id">
+                  <tr v-for='item in visibleItems' :key='item.id'>
                     <td>{{ item.name }}</td>
+                    <td>{{ kindDisplayName(item) }}</td>
+                    <td>
+                      <Amount
+                        :value='item.amount'
+                        :currency='item.currency.name'
+                      />
+                    </td>
                     <td>
                       <div class='btn-actions'>
-                        <a class='btn btn-action'
+                        <button
+                          type='button'
+                          class='btn btn-action'
                           @click.prevent='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
-                        </a>
-                        <a
-                            class='btn btn-action'
-                            @click.prevent='toggleHidden(item)'
-                            v-tooltip:bottom="'Скрыть имущество'"
+                        </button>
+                        <button
+                          v-tooltip:bottom="'Скрыть имущество'"
+                          type='button'
+                          class='btn btn-action'
+                          @click.prevent='toggleHidden(item)'
                         >
                           <IconEyeOff size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                        </button>
+                        <button
+                          type='button'
+                          class='btn btn-action'
+                          @click.prevent='destroy(item)'
+                        >
                           <IconTrash size=20 stroke-width=1 />
-                        </a>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -153,30 +177,38 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
-                  <tr v-for="item in hiddenItems" :key="item.id">
+                  <tr v-for='item in hiddenItems' :key='item.id'>
                     <td>
                       {{ item.name }}
                     </td>
                     <td>
                       <div class='btn-actions justify-content-end'>
-                        <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
+                        <button
+                          class='btn btn-action'
+                          type='button'
+                          @click.prevent='toggleHidden(item)'
+                        >
                           <IconEyeOff size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                        </button>
+                        <button
+                          class='btn btn-action'
+                          type='button'
+                          @click.prevent='destroy(item)'
+                        >
                           <IconTrash size=20 stroke-width=1 />
-                        </a>
+                        </button>
                       </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <div class='card-footer d-flex align-items-center'>
-              <i v-if='isEmpty' class='text-secondary'>
+            <div v-if='isEmpty' class='card-footer d-flex align-items-center'>
+              <i class='text-secondary'>
                 Похоже имущества ещё нет
               </i>
             </div>
