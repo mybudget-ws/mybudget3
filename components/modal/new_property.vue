@@ -156,9 +156,7 @@ watch(
                 <div class='me-3'>
                   <span class='form-selectgroup-check' />
                 </div>
-                <div>
-                  {{ kind.name }}
-                </div>
+                <div>{{ kind.name }}</div>
               </div>
             </label>
           </div>
