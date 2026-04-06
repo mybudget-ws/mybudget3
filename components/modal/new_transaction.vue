@@ -44,6 +44,17 @@ const modalTitle = computed(() => {
     return isEdit.value ? 'Редактировать расход' : 'Новый расход';
   }
 });
+const isShowModal = ref(false);
+const currentItem = ref(null);
+
+const openCreate = () => {
+  currentItem.value = null;
+  isShowModal.value = true;
+};
+const onSavedAccount = async () => {
+  isShowModal.value = false;
+  await loadAccounts();
+};
 
 const toggleAccountCallback = (account) => {
   // console.log('toggleAccountCallback', account);
@@ -215,7 +226,14 @@ const onSubmit = async () => {
               :ids='currentAccountIds'
             />
             <div v-if='isAccountEmpty' class='text-danger mt-1'>
-              Невозможно создать операцию без счета. Создайте счет
+              Невозможно создать операцию без счета.
+              <button
+                type="button"
+                class="btn btn-outline-danger btn-sm"
+                @click="openCreate"
+              >
+                Создать счет
+              </button>
             </div>
           </div>
           <div class='col'>
@@ -256,4 +274,10 @@ const onSubmit = async () => {
       </div>
     </form>
   </ModalBase>
+    <ModalNewAccount
+    v-if='isShowModal'
+    :item='currentItem'
+    @saved='onSavedAccount'
+    @close="isShowModal = false"
+  />
 </template>
