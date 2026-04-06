@@ -4,6 +4,11 @@ import api from '~/lib/api';
 const DEFAULT_COLOR = 'teal';
 const DEFAULT_CURRENCY = 'RUB';
 const DEFAULT_POSITION = 1;
+const CURRENCIES = [
+  { value: 'RUB', name: 'RUB — Российский рубль' },
+  { value: 'USD', name: 'USD — US Dollar' },
+  { value: 'EUR', name: 'EUR — Euro' },
+];
 const KINDS = [
   { value: 'debit', name: 'Дебетовый, наличные' },
   { value: 'credit', name: 'Кредитный' },
@@ -94,14 +99,16 @@ watch(
         <div class='row mb-3'>
           <div :class="isEdit ? 'col-lg-6' : ''" class='col-md-12'>
             <Label required>Валюта</Label>
-            <Input
-              v-model='accountCurrency'
+            <select
+              v-model="accountCurrency"
+              class="form-select"
+              :disabled="isSubmitting"
               required
-              type='string'
-              class='form-control'
-              placeholder='Валюта счёта'
-              :disabled='isSubmitting'
-            />
+            >
+              <option v-for="c in CURRENCIES" :key="c.value" :value="c.value">
+                {{ c.name }}
+              </option>
+            </select>
           </div>
           <div v-if='isEdit' class='col-lg-6 col-md-12'>
             <Label required>Позиция в списке</Label>
