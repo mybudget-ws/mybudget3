@@ -42,12 +42,17 @@ const onSubmit = async () => {
         position: parseInt(accountPosition.value),
       });
     } else {
-      await api.createAccount(token.value, {
-        name: accountName.value,
-        color: DEFAULT_COLOR,
-        currency: accountCurrency.value,
-        kind: accountKind.value,
-      });
+      const response = await api.createAccount(token.value, {
+      name: accountName.value,
+      color: DEFAULT_COLOR,
+      currency: accountCurrency.value,
+      kind: accountKind.value,
+    });
+
+
+const account = response?.data || response;
+
+emit('saved', account);
     }
 
     emit('saved');

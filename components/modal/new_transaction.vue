@@ -51,11 +51,15 @@ const openCreate = () => {
   currentItem.value = null;
   isShowModal.value = true;
 };
-const onSavedAccount = async () => {
-  isShowModal.value = false;
-  await loadAccounts();
-};
 
+const onSavedAccount = (account) => {
+  isShowModal.value = false;
+
+  if (account) {
+    currentAccount.value = account;
+    currentAccountIds.value = [account.id];
+  }
+};
 const toggleAccountCallback = (account) => {
   // console.log('toggleAccountCallback', account);
   if (account == null) return;
@@ -222,6 +226,7 @@ const onSubmit = async () => {
         <div class='row'>
           <div class='col'>
             <FormAccounts
+              :key="currentAccountIds.join('-')"
               @toggle-account='toggleAccountCallback'
               :ids='currentAccountIds'
             />
