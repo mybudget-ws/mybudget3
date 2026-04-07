@@ -14,6 +14,7 @@ const accountName = ref('');
 const accountKind = ref(KINDS[0].value);
 const accountCurrency = ref(DEFAULT_CURRENCY);
 const accountPosition = ref(DEFAULT_POSITION);
+const currencies = ref([]);
 const isSubmitting = ref(false);
 
 const props = defineProps({
@@ -27,6 +28,16 @@ const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item);
 
+onMounted(async () => {
+  const items = await api.currencies();
+  currencies.value = items.map(v => (
+    {
+      value: v.name,
+      name: `${v.name} — ${v.description}`,
+    }
+  ));
+});
+
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
 
@@ -39,7 +50,7 @@ const onSubmit = async () => {
         color: props.item.color || DEFAULT_COLOR,
         currency: accountCurrency.value,
         kind: accountKind.value,
-        position: parseInt(accountPosition.value),
+        position: Number(accountPosition.value) || DEFAULT_POSITION,
       });
     } else {
       await api.createAccount(token.value, {
@@ -94,14 +105,20 @@ watch(
         <div class='row mb-3'>
           <div :class="isEdit ? 'col-lg-6' : ''" class='col-md-12'>
             <Label required>Валюта</Label>
-            <Input
+            <select
               v-model='accountCurrency'
-              required
-              type='string'
-              class='form-control'
-              placeholder='Валюта счёта'
+              class='form-select'
               :disabled='isSubmitting'
-            />
+              required
+            >
+              <option
+                v-for='item in currencies'
+                :key='item.value'
+                :value='item.value'
+              >
+                {{ item.name }}
+              </option>
+            </select>
           </div>
           <div v-if='isEdit' class='col-lg-6 col-md-12'>
             <Label required>Позиция в списке</Label>
