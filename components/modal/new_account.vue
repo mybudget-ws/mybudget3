@@ -50,7 +50,7 @@ const onSubmit = async () => {
         color: props.item.color || DEFAULT_COLOR,
         currency: accountCurrency.value,
         kind: accountKind.value,
-        position: parseInt(accountPosition.value),
+        position: Number(accountPosition.value) || DEFAULT_POSITION,
       });
     } else {
       await api.createAccount(token.value, {
