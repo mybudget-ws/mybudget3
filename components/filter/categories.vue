@@ -77,37 +77,31 @@ watchEffect(() => {
 });
 
 const isShowModal = ref(false);
-const currentItem = ref(null);
-
-const openCreate = () => {
-  currentItem.value = null;
-  isShowModal.value = true;
-};
 
 const onSaved = async () => {
   isShowModal.value = false;
-  await load(); // обновляем список категорий
+  await load();
 };
 </script>
 
 <template>
   <ModalNewCategory
     v-if='isShowModal'
-    :item='currentItem'
     @saved='onSaved'
     @close="isShowModal = false"
   />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body p-3 pb-0'>
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <div class="subheader mb-0">Категории</div>
+    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
+      <div class='mb-2 d-flex align-items-center justify-content-between'>
+        <div class='subheader'>Категории</div>
         <button
-          class="btn btn-action"
-          @click="openCreate"
+          class='btn btn-action'
+          title='Создать категорию'
+          @click="isShowModal = true"
         >
-          <IconPlus size="20" stroke-width="1" fill="none"/>
+          <IconPlus size=20 stroke-width=1 />
         </button>
       </div>
       <div v-for='item in visibleItems' :key='item.id'>
