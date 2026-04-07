@@ -29,6 +29,7 @@ const isQuiteLoading = ref(false);
 const isCopyItem = ref(false);
 const isShowModal = ref(false);
 const isShowModalTransfer = ref(false);
+const isShowModalAccount = ref(false);
 const currentKind = ref(KIND_EXPENSE);
 const currentItem = ref(null);
 const page = ref(1);
@@ -146,6 +147,7 @@ const openCreateTransfer = () => {
 const onSaved = async () => {
   isShowModal.value = false;
   isShowModalTransfer.value = false;
+  isShowModalAccount.value = false;
   isCopyItem.value = false;
   await load(true);
 };
@@ -190,6 +192,11 @@ const onCategoryClick = (id) => {
 const onCategoriesChange = (categories) => {
   selectedCategories.value = categories;
 };
+
+const onAccountNew = () => {
+  isShowModal.value = false;
+  isShowModalAccount.value = true;
+};
 </script>
 
 <template>
@@ -200,11 +207,17 @@ const onCategoriesChange = (categories) => {
     :is-copy='isCopyItem'
     @saved='onSaved'
     @close="isShowModal = false"
+    @account-new='onAccountNew'
   />
   <ModalNewTransfer
     v-if='isShowModalTransfer'
     @saved='onSaved'
     @close="isShowModalTransfer = false"
+  />
+  <ModalNewAccount
+    v-if='isShowModalAccount'
+    @saved='onSaved'
+    @close="isShowModalAccount = false"
   />
 
   <div class='row'>
