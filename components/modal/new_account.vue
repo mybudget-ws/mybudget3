@@ -4,11 +4,6 @@ import api from '~/lib/api';
 const DEFAULT_COLOR = 'teal';
 const DEFAULT_CURRENCY = 'RUB';
 const DEFAULT_POSITION = 1;
-const CURRENCIES = [
-  { value: 'RUB', name: 'RUB — Российский рубль' },
-  { value: 'USD', name: 'USD — US Dollar' },
-  { value: 'EUR', name: 'EUR — Euro' },
-];
 const KINDS = [
   { value: 'debit', name: 'Дебетовый, наличные' },
   { value: 'credit', name: 'Кредитный' },
@@ -19,6 +14,7 @@ const accountName = ref('');
 const accountKind = ref(KINDS[0].value);
 const accountCurrency = ref(DEFAULT_CURRENCY);
 const accountPosition = ref(DEFAULT_POSITION);
+const currencies = ref([]);
 const isSubmitting = ref(false);
 
 const props = defineProps({
@@ -31,6 +27,16 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item);
+
+onMounted(async () => {
+  const items = await api.currencies();
+  currencies.value = items.map(v => (
+    {
+      value: v.name,
+      name: `${v.name} — ${v.description}`,
+    }
+  ));
+});
 
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
@@ -100,13 +106,17 @@ watch(
           <div :class="isEdit ? 'col-lg-6' : ''" class='col-md-12'>
             <Label required>Валюта</Label>
             <select
-              v-model="accountCurrency"
-              class="form-select"
-              :disabled="isSubmitting"
+              v-model='accountCurrency'
+              class='form-select'
+              :disabled='isSubmitting'
               required
             >
-              <option v-for="c in CURRENCIES" :key="c.value" :value="c.value">
-                {{ c.name }}
+              <option
+                v-for='item in currencies'
+                :key='item.value'
+                :value='item.value'
+              >
+                {{ item.name }}
               </option>
             </select>
           </div>
