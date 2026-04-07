@@ -32,7 +32,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['saved', 'close']);
+const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
 const isAccountEmpty = computed(() => !currentAccount.value?.id);
@@ -214,8 +214,17 @@ const onSubmit = async () => {
               @toggle-account='toggleAccountCallback'
               :ids='currentAccountIds'
             />
-            <div v-if='isAccountEmpty' class='text-danger mt-1'>
-              Невозможно создать операцию без счета. Создайте счет
+            <div v-if='isAccountEmpty'>
+              <p class='text-danger mt-1'>
+                Невозможно создать операцию без счета.
+              </p>
+              <button
+                type='button'
+                class='btn btn-outline btn-sm'
+                @click="emit('accountNew')"
+              >
+                Создайте счет
+              </button>
             </div>
           </div>
           <div class='col'>
