@@ -1,6 +1,6 @@
 <script setup>
 import api from '~/lib/api';
-
+import { nextTick, watch } from 'vue';
 const { token } = useAuth();
 
 const amountFrom = ref(undefined);
@@ -11,18 +11,33 @@ const isSubmitting = ref(false);
 const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
 const transactionEventTicks = ref(1);
-
+const amountFromRef = ref(null);
+const amountToRef = ref(null);
 const emit = defineEmits(['saved', 'close']);
 
-const toggleAccountFromCallback = (account) => {
-  if (account == null) return;
-  currentAccountFrom.value = account;
-}
+const focusAmountFrom = async () => {
+  await nextTick();
+  await new Promise(r => requestAnimationFrame(r));
 
-const toggleAccountToCallback = (account) => {
-  if (account == null) return;
+  const input = document.querySelector('input[placeholder="0.00"]');
+
+  input?.focus();
+};
+const toggleAccountFromCallback = async (account) => {
+  if (!account) return;
+
+  currentAccountFrom.value = account;
+
+  await focusAmountFrom();
+};
+
+const toggleAccountToCallback = async (account) => {
+  if (!account) return;
+
   currentAccountTo.value = account;
-}
+
+  await focusAmountFrom();
+};
 
 const currentCurrencyNameFrom = computed(() => {
   const account = currentAccountFrom.value;
@@ -97,6 +112,7 @@ watch(amountFrom, (newValue) => {
             <Label required>Величина (источник)</Label>
             <div class='input-group input-group-flat'>
               <Input
+                ref="amountFromRef"
                 type='text'
                 placeholder='0.00'
                 required
@@ -110,6 +126,7 @@ watch(amountFrom, (newValue) => {
             <Label required>Величина (получатель)</Label>
             <div class='input-group input-group-flat'>
               <Input
+                ref="amountToRef"
                 type='text'
                 placeholder='0.00'
                 required
