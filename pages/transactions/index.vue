@@ -213,6 +213,7 @@ const onAccountNew = () => {
     v-if='isShowModalTransfer'
     @saved='onSaved'
     @close="isShowModalTransfer = false"
+    @accountNew="isShowModalAccount = true"
   />
   <ModalNewAccount
     v-if='isShowModalAccount'

@@ -12,7 +12,7 @@ const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
 const transactionEventTicks = ref(1);
 
-const emit = defineEmits(['saved', 'close']);
+const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const toggleAccountFromCallback = (account) => {
   if (account == null) return;
@@ -34,8 +34,18 @@ const currentCurrencyNameTo = computed(() => {
   return account?.currency?.name || '';
 });
 
+const isAccountEmpty = computed(() => {
+  return !currentAccountFrom.value || !currentAccountTo.value;
+});
+
+const isSubmitDisabled = computed(() => {
+  return !token.value || isAccountEmpty.value;
+});
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
+    if (!currentAccountFrom.value?.id || !currentAccountTo.value?.id) {
+    return;
+  }
 
   isSubmitting.value = true;
   const transferData = {
@@ -82,6 +92,19 @@ watch(amountFrom, (newValue) => {
               radioGroupName='accountFrom'
               @toggle-account='toggleAccountFromCallback'
             />
+
+            <div v-if='isAccountEmpty'>
+              <p class='text-danger mt-1'>
+                Невозможно создать перевод без счетов.
+              </p>
+              <button
+                type='button'
+                class='btn btn-outline btn-sm'
+                @click="emit('accountNew')"
+              >
+                Создайте счет
+              </button>
+            </div>
           </div>
           <div class='col'>
             <FormAccounts
@@ -146,7 +169,7 @@ watch(amountFrom, (newValue) => {
           type='submit'
           class='btn-primary'
           :loading='isSubmitting'
-          :disabled='!token'
+          :disabled='isSubmitDisabled'
         >
           Сохранить
         </Button>
