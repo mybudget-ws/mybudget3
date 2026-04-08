@@ -98,7 +98,7 @@ watch(
           title='Создать счёт'
           @click="isShowModal = true"
         >
-          <IconPlus size="20" stroke-width="1" fill="none"/>
+          <IconPlus size="20" stroke-width="1"/>
         </button>
       </div>
       <div v-for='item in visibleItems' :key='item.id'>

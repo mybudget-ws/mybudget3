@@ -1,6 +1,8 @@
 <script setup>
 import api from '~/lib/api';
-
+import {
+  IconPlus,
+} from '@tabler/icons-vue';
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
@@ -58,14 +60,34 @@ watch(() => route, (newRoute) => {
 watchEffect(() => {
   if (token.value) load();
 });
+const isShowModal = ref(false);
+
+const onSaved = async () => {
+  isShowModal.value = false;
+  await load();
+};
 </script>
 
 <template>
+  <ModalNewProperty
+    v-if='isShowModal'
+    @saved='onSaved'
+    @close="isShowModal = false"
+  />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body p-3 pb-0'>
-      <div class='subheader mb-3'>Имущество</div>
+    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
+      <div class='mb-2 d-flex align-items-center justify-content-between'>
+        <div class='subheader'>Имущество</div>
+        <button
+          class='btn btn-action'
+          title='Создать имущество'
+          @click="isShowModal = true"
+        >
+          <IconPlus size=20 stroke-width=1 />
+        </button>
+      </div>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check'>
           <input

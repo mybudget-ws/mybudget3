@@ -85,14 +85,15 @@ watchEffect(() => {
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body p-3 pb-0'>
+    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
       <div class="d-flex align-items-center justify-content-between mb-3">
-        <div class="subheader mb-0">Проекты</div>
+        <div class="subheader">Проекты</div>
         <button
           class="btn btn-action"
-          @click="openCreate"
+          title='Создать проект'
+          @click="isShowModal = true"
         >
-          <IconPlus size="20" stroke-width="1" fill="none"/>
+          <IconPlus size="20" stroke-width="1"/>
         </button>
       </div>
       <div v-for='item in visibleItems' :key='item.id'>
