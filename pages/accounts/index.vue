@@ -9,13 +9,14 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
+const route = useRoute();
 const { token } = useAuth();
-
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const accounts = ref([]);
 const isShowModal = ref(false);
 const isError = ref(false);
+const errorMessage = ref('');
 const currentItem = ref(null);
 const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
@@ -26,41 +27,61 @@ const isEmpty = computed(() => {
   return accounts.value.length === 0;
 });
 
-const load = async (isQuite = false) => {
+const runLoad = async ({
+  request,
+  isQuite = false,
+  entityName = 'данные',
+}) => {
   isError.value = false;
+  errorMessage.value = '';
+
   if (isQuite) {
-    isQuiteLoading.value = true
+    isQuiteLoading.value = true;
   } else {
-    isLoading.value = true
+    isLoading.value = true;
   }
 
   try {
-    const items = await api.accounts(token.value);
-    if (items) {
-      accounts.value = items
-    } else {
-      console.log('TODO: error');
-    }
+    return await request();
   } catch (err) {
     console.error(err);
     isError.value = true;
+    errorMessage.value = `Ошибка: не удалось загрузить ${entityName}`;
+    return null;
   } finally {
     isLoading.value = false;
     isQuiteLoading.value = false;
   }
 };
 
-const toggleHidden = async ({ id }) => {
-  isQuiteLoading.value = true;
-  await api.toggleIsHidden(token.value, id, 'account');
-  await load(true);
+const load = async (isQuite = false) => {
+  const items = await runLoad({
+    request: () => api.accounts(token.value),
+    //request: () => { throw new Error('test error'); },
+    isQuite,
+    entityName: 'счета',
+  });
+
+  accounts.value = items ?? [];
 };
 
-const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить счёт, операция необратима?')) {
-    isQuiteLoading.value = true;
-    await api.destroyAccount(token.value, id);
+const mutate = async (action) => {
+  isQuiteLoading.value = true;
+
+  try {
+    await action();
     await load(true);
+  } finally {
+    isQuiteLoading.value = false;
+  }
+};
+
+const toggleHidden = (item) =>
+  mutate(() => api.toggleIsHidden(token.value, item.id, 'account'));
+
+const destroy = (item) => {
+  if (confirm('Вы уверены, что хотите удалить счёт, операция необратима?')) {
+    return mutate(() => api.destroyAccount(token.value, item.id));
   }
 };
 
@@ -87,9 +108,13 @@ const kindDisplayName = ({ kind }) => {
   return kind == 'credit' ? 'Кредит' : '';
 }
 
-watchEffect(() => {
-  if (token.value) load();
-});
+watch(
+  () => token.value,
+  (t) => {
+    if (t) load();
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -110,6 +135,7 @@ watchEffect(() => {
                   <h2 class='mb-0'>Счета</h2>
                   <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
                 </div>
+                
                 <div class='col-auto'>
                   <div class='ms-auto d-flex flex-wrap btn-list'>
                     <button
@@ -132,7 +158,7 @@ watchEffect(() => {
                   <tr>
                     <th>Название</th>
                     <th class='text-end'>Баланс</th>
-                    <th class='w-1'/>
+                    <th class='w-1'></th>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
@@ -142,12 +168,10 @@ watchEffect(() => {
                       <span v-if='isShowKind(item)' class='badge'>{{ kindDisplayName(item) }}</span>
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span
-                        :class="{
-                          'text-success': item.balance > 0,
-                          'text-danger': item.balance < 0
-                        }"
-                      >
+                      <span :class="{
+                        'text-success': item.balance > 0,
+                        'text-danger': item.balance < 0
+                      }">
                         <Amount
                           :value='item.balance'
                           :currency='item.currency.name'
@@ -156,16 +180,15 @@ watchEffect(() => {
                     </td>
                     <td>
                       <div class='btn-actions'>
-                        <a
-class='btn btn-action'
+                        <a class='btn btn-action'
                           @click.prevent='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
                         </a>
                         <a
-                            v-tooltip:bottom="'Скрыть счёт'"
                             class='btn btn-action'
                             @click.prevent='toggleHidden(item)'
+                            v-tooltip:bottom="'Скрыть счёт'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
@@ -181,7 +204,7 @@ class='btn btn-action'
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
-                    <th class='w-1'/>
+                    <th class='w-1'></th>
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
@@ -206,8 +229,10 @@ class='btn btn-action'
                 Похоже таких счетов ещё нет
               </i>
               <i v-if='isError' class='text-danger'>
-                Ошибка: не удалось загрузить счета.
-                Попробуйте повторить операцию, или обратитесь в поддержку.
+                {{ errorMessage }}
+                <a href="#" @click.prevent="load()" class="ms-2">
+                  Повторить
+                </a>
               </i>
             </div>
           </div>
