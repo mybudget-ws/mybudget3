@@ -66,7 +66,14 @@ const selectAll = () => {
   }
 }
 
+const focus = () => {
+  if (inputRef.value) {
+    inputRef.value.focus();
+  }
+}
+
 defineExpose({
-  selectAll
+  focus,
+  selectAll,
 });
 </script>
