@@ -8,6 +8,7 @@ const router = useRouter();
 const { token } = useAuth();
 
 const isLoading = ref(true);
+const isShowModal = ref(false);
 const items = ref([]);
 const selectedIds = ref(new Set());
 
@@ -53,6 +54,11 @@ const initSelectedItemsByQuery = (items = '') => {
   selectedIds.value = new Set(queryIds.map(id => Number(id)));
 }
 
+const onSaved = async () => {
+  isShowModal.value = false;
+  await load();
+};
+
 watch(() => route, (newRoute) => {
   initSelectedItemsByQuery(newRoute.query.properties);
 }, { immediate: true, deep: true })
@@ -60,12 +66,6 @@ watch(() => route, (newRoute) => {
 watchEffect(() => {
   if (token.value) load();
 });
-const isShowModal = ref(false);
-
-const onSaved = async () => {
-  isShowModal.value = false;
-  await load();
-};
 </script>
 
 <template>
@@ -104,5 +104,3 @@ const onSaved = async () => {
     </div>
   </div>
 </template>
-
-

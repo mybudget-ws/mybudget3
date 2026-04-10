@@ -8,6 +8,7 @@ const router = useRouter();
 const { token } = useAuth();
 
 const isLoading = ref(true);
+const isShowModal = ref(false);
 const items = ref([]);
 const selectedIds = ref(new Set());
 
@@ -53,18 +54,11 @@ const initSelectedItemsByQuery = (items = '') => {
   selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
 }
 
-const isShowModal = ref(false);
-const currentItem = ref(null);
-
-const openCreate = () => {
-  currentItem.value = null;
-  isShowModal.value = true;
-};
-
 const onSaved = async () => {
   isShowModal.value = false;
-  await load(); // обновляем список категорий
+  await load();
 };
+
 watch(() => route, (newRoute) => {
   initSelectedItemsByQuery(newRoute.query.projects);
 }, { immediate: true, deep: true })
@@ -78,7 +72,6 @@ watchEffect(() => {
 <template>
   <ModalNewProject
     v-if='isShowModal'
-    :item='currentItem'
     @saved='onSaved'
     @close="isShowModal = false"
   />

@@ -83,7 +83,6 @@ watch(
 <template>
   <ModalNewAccount
     v-if='isShowModal'
-    :item='currentItem'
     @saved='onSaved'
     @close="isShowModal = false"
   />
