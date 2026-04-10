@@ -1,4 +1,8 @@
 <script setup>
+import {
+  IconAlertTriangle,
+} from '@tabler/icons-vue';
+
 import api from '~/lib/api';
 
 const { token } = useAuth();
@@ -7,12 +11,13 @@ const amountFrom = ref(undefined);
 const amountTo = ref(undefined);
 const description = ref('');
 const date = ref(new Date());
+const isLoaded = ref(false);
 const isSubmitting = ref(false);
 const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
 const transactionEventTicks = ref(1);
 
-const emit = defineEmits(['saved', 'close']);
+const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const toggleAccountFromCallback = (account) => {
   if (account == null) return;
@@ -32,6 +37,15 @@ const currentCurrencyNameFrom = computed(() => {
 const currentCurrencyNameTo = computed(() => {
   const account = currentAccountTo.value;
   return account?.currency?.name || '';
+});
+
+const isAccountEmpty = computed(() => {
+  if (!isLoaded.value) return;
+  return !currentAccountFrom.value || !currentAccountTo.value;
+});
+
+const isSubmitDisabled = computed(() => {
+  return !token.value || isAccountEmpty.value;
 });
 
 const onSubmit = async () => {
@@ -81,7 +95,30 @@ watch(amountFrom, (newValue) => {
               label='Откуда'
               radioGroupName='accountFrom'
               @toggle-account='toggleAccountFromCallback'
+              @loaded="isLoaded = true"
             />
+
+            <div v-if='isAccountEmpty'>
+              <div class='alert alert-warning'>
+                <div class='alert-icon'>
+                  <IconAlertTriangle stroke-width=1.4 />
+                </div>
+                <div>
+                  <h4 class='alert-heading'>
+                    Невозможно создать перевод без&nbsp;счетов
+                  </h4>
+                  <div class='alert-description'>
+                    <button
+                      type='button'
+                      class='btn btn-outline-warning btn-sm'
+                      @click="emit('accountNew')"
+                    >
+                      Создайте счет
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class='col'>
             <FormAccounts
@@ -146,7 +183,7 @@ watch(amountFrom, (newValue) => {
           type='submit'
           class='btn-primary'
           :loading='isSubmitting'
-          :disabled='!token'
+          :disabled='isSubmitDisabled'
         >
           Сохранить
         </Button>
