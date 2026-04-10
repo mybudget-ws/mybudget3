@@ -41,11 +41,9 @@ const isAccountEmpty = computed(() => {
 const isSubmitDisabled = computed(() => {
   return !token.value || isAccountEmpty.value;
 });
+
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
-    if (!currentAccountFrom.value?.id || !currentAccountTo.value?.id) {
-    return;
-  }
 
   isSubmitting.value = true;
   const transferData = {
