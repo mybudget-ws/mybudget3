@@ -11,6 +11,7 @@ const amountFrom = ref(undefined);
 const amountTo = ref(undefined);
 const description = ref('');
 const date = ref(new Date());
+const isLoaded = ref(false);
 const isSubmitting = ref(false);
 const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
@@ -39,6 +40,7 @@ const currentCurrencyNameTo = computed(() => {
 });
 
 const isAccountEmpty = computed(() => {
+  if (!isLoaded.value) return;
   return !currentAccountFrom.value || !currentAccountTo.value;
 });
 
@@ -93,6 +95,7 @@ watch(amountFrom, (newValue) => {
               label='Откуда'
               radioGroupName='accountFrom'
               @toggle-account='toggleAccountFromCallback'
+              @loaded="isLoaded = true"
             />
 
             <div v-if='isAccountEmpty'>

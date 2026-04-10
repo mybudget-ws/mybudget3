@@ -9,7 +9,11 @@ const { token } = useAuth();
 const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref([]);
-const emit = defineEmits(['toggleAccount', 'toggleAccountIds']);
+const emit = defineEmits([
+  'toggleAccount',
+  'toggleAccountIds',
+  'loaded'
+]);
 
 const props = defineProps({
   label: {
@@ -43,7 +47,8 @@ const load = async () => {
   } catch (err) {
     console.error(err);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
+    emit('loaded');
   }
 };
 
