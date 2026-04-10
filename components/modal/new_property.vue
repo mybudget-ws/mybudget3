@@ -17,6 +17,7 @@ const propertyCurrency = ref(DEFAULT_CURRENCY);
 const propertyPosition = ref(DEFAULT_POSITION);
 const propertyAmount = ref('0');
 const isSubmitting = ref(false);
+const currencies = ref([]);
 
 const props = defineProps({
   item: {
@@ -28,6 +29,16 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item);
+
+onMounted(async () => {
+  const items = await api.currencies();
+  currencies.value = items.map(v => (
+    {
+      value: v.name,
+      name: `${v.name} — ${v.description}`,
+    }
+  ));
+});
 
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
@@ -113,14 +124,20 @@ watch(
           </div>
           <div :class="isEdit ? 'col-lg-4' : 'col-lg-6'" class='col-md-12'>
             <Label required>Валюта</Label>
-            <Input
+            <select
               v-model='propertyCurrency'
-              required
-              type='string'
-              class='form-control'
-              placeholder='Валюта счёта'
+              class='form-select'
               :disabled='isSubmitting'
-            />
+              required
+            >
+              <option
+                v-for='item in currencies'
+                :key='item.value'
+                :value='item.value'
+              >
+                {{ item.name }}
+              </option>
+            </select>
           </div>
           <div v-if='isEdit' class='col-lg-4 col-md-12'>
             <Label required>Позиция в списке</Label>
