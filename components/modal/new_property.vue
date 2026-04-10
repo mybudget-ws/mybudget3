@@ -29,6 +29,7 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item);
+
 onMounted(async () => {
   const items = await api.currencies();
   currencies.value = items.map(v => (
