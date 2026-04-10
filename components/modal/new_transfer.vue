@@ -15,19 +15,29 @@ const isLoaded = ref(false);
 const isSubmitting = ref(false);
 const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
-const transactionEventTicks = ref(1);
+const amountFromRef = ref(null);
 
 const emit = defineEmits(['saved', 'close', 'accountNew']);
 
+const focusAmountFrom = () => {
+  nextTick(() => {
+    if (amountFromRef.value?.focus) amountFromRef.value.focus();
+  });
+};
+
 const toggleAccountFromCallback = (account) => {
-  if (account == null) return;
+  if (!account) return;
+
   currentAccountFrom.value = account;
-}
+  focusAmountFrom();
+};
 
 const toggleAccountToCallback = (account) => {
-  if (account == null) return;
+  if (!account) return;
+
   currentAccountTo.value = account;
-}
+  focusAmountFrom();
+};
 
 const currentCurrencyNameFrom = computed(() => {
   const account = currentAccountFrom.value;
@@ -134,6 +144,7 @@ watch(amountFrom, (newValue) => {
             <Label required>Величина (источник)</Label>
             <div class='input-group input-group-flat'>
               <Input
+                ref='amountFromRef'
                 type='text'
                 placeholder='0.00'
                 required
