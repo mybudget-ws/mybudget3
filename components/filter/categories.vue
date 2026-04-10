@@ -94,7 +94,7 @@ const onSaved = async () => {
     <PlaceholderLoadingFilters v-if='isLoading' />
 
     <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
-      <div class='mb-2 d-flex align-items-center justify-content-between'>
+      <div class='d-flex align-items-center justify-content-between mb-2'>
         <div class='subheader'>Категории</div>
         <button
           class='btn btn-action'
