@@ -195,6 +195,7 @@ const onCategoriesChange = (categories) => {
 
 const onAccountNew = () => {
   isShowModal.value = false;
+  isShowModalTransfer.value = false;
   isShowModalAccount.value = true;
 };
 </script>
@@ -213,7 +214,7 @@ const onAccountNew = () => {
     v-if='isShowModalTransfer'
     @saved='onSaved'
     @close="isShowModalTransfer = false"
-    @accountNew="isShowModalAccount = true"
+    @account-new='onAccountNew'
   />
   <ModalNewAccount
     v-if='isShowModalAccount'
