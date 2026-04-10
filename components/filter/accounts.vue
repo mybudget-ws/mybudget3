@@ -1,6 +1,8 @@
 <script setup>
 import api from '~/lib/api';
-
+import {
+  IconPlus,
+} from '@tabler/icons-vue';
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
@@ -8,6 +10,7 @@ const { token } = useAuth();
 const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref(new Set());
+const isShowModal = ref(false);
 
 const props = defineProps({
   reload: Number,
@@ -56,6 +59,11 @@ const initSelectedItemsByQuery = (items = '') => {
   selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
 }
 
+const onSaved = async () => {
+  isShowModal.value = false;
+  await load(); 
+};
+
 watch(() => route, (newRoute) => {
   initSelectedItemsByQuery(newRoute.query.accounts);
 }, { immediate: true, deep: true })
@@ -73,11 +81,25 @@ watch(
 </script>
 
 <template>
+  <ModalNewAccount
+    v-if='isShowModal'
+    @saved='onSaved'
+    @close="isShowModal = false"
+  />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body p-3 pb-0'>
-      <div class='subheader mb-3'>Счета</div>
+    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
+      <div class='mb-2 d-flex align-items-center justify-content-between'>
+        <div class='subheader'>Счета</div>
+        <button
+          class='btn btn-action'
+          title='Создать счёт'
+          @click="isShowModal = true"
+        >
+          <IconPlus size="20" stroke-width="1"/>
+        </button>
+      </div>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check'>
           <input

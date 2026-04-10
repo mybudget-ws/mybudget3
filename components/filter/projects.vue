@@ -1,11 +1,14 @@
 <script setup>
 import api from '~/lib/api';
-
+import {
+  IconPlus,
+} from '@tabler/icons-vue';
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
 
 const isLoading = ref(true);
+const isShowModal = ref(false);
 const items = ref([]);
 const selectedIds = ref(new Set());
 
@@ -51,6 +54,11 @@ const initSelectedItemsByQuery = (items = '') => {
   selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
 }
 
+const onSaved = async () => {
+  isShowModal.value = false;
+  await load();
+};
+
 watch(() => route, (newRoute) => {
   initSelectedItemsByQuery(newRoute.query.projects);
 }, { immediate: true, deep: true })
@@ -58,14 +66,29 @@ watch(() => route, (newRoute) => {
 watchEffect(() => {
   if (token.value) load();
 });
+
 </script>
 
 <template>
+  <ModalNewProject
+    v-if='isShowModal'
+    @saved='onSaved'
+    @close="isShowModal = false"
+  />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body p-3 pb-0'>
-      <div class='subheader mb-3'>Проекты</div>
+    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="subheader">Проекты</div>
+        <button
+          class="btn btn-action"
+          title='Создать проект'
+          @click="isShowModal = true"
+        >
+          <IconPlus size="20" stroke-width="1"/>
+        </button>
+      </div>
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check'>
           <input
