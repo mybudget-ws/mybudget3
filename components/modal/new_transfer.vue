@@ -1,4 +1,8 @@
 <script setup>
+import {
+  IconAlertTriangle,
+} from '@tabler/icons-vue';
+
 import api from '~/lib/api';
 
 const { token } = useAuth();
@@ -92,16 +96,25 @@ watch(amountFrom, (newValue) => {
             />
 
             <div v-if='isAccountEmpty'>
-              <p class='text-danger mt-1'>
-                Невозможно создать перевод без счетов.
-              </p>
-              <button
-                type='button'
-                class='btn btn-outline btn-sm'
-                @click="emit('accountNew')"
-              >
-                Создайте счет
-              </button>
+              <div class='alert alert-warning'>
+                <div class='alert-icon'>
+                  <IconAlertTriangle stroke-width=1.4 />
+                </div>
+                <div>
+                  <h4 class='alert-heading'>
+                    Невозможно создать перевод без&nbsp;счетов
+                  </h4>
+                  <div class='alert-description'>
+                    <button
+                      type='button'
+                      class='btn btn-outline-warning btn-sm'
+                      @click="emit('accountNew')"
+                    >
+                      Создайте счет
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class='col'>
