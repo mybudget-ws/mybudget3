@@ -4,6 +4,10 @@ import {
   IconArrowUp,
   IconArrowsRightLeft,
 } from '@tabler/icons-vue';
+
+const onIncome = () => alert('новых доход');
+const onTransfer = () => alert('новых перевод')
+const onExpense = () => alert('новых расход');
 </script>
 
 <template>
@@ -17,21 +21,21 @@ import {
         <button
           class='btn btn-outline-green'
           type='button'
-          @click="alert('новых доход')"
+          @click='onIncome'
         >
           <IconArrowUp stroke-width=2 />
         </button>
         <button
           class='btn btn-outline-secondary'
           type='button'
-          @click="alert('новых перевод')"
+          @click='onTransfer'
         >
           <IconArrowsRightLeft stroke-width=2 />
         </button>
         <button
           class='btn btn-primary'
           type='button'
-          @click="alert('новых расход')"
+          @click='onExpense'
         >
           <IconArrowDown stroke-width=2 />
         </button>
