@@ -65,16 +65,16 @@ useHead({
           <div class='d-flex'>
             <div class='nav-item me-2'>
               <a
+                v-tooltip="'Включить темный режим'"
                 href='?theme=dark'
                 class='nav-link px-0 hide-theme-dark'
-                v-tooltip="'Включить темный режим'"
               >
                 <IconMoon size=20 stroke-width=1 />
               </a>
               <a
+                v-tooltip="'Включить светлый режим'"
                 href='?theme=light'
                 class='nav-link px-0 hide-theme-light'
-                v-tooltip="'Включить светлый режим'"
               >
                 <IconSun size=20 stroke-width=1 />
               </a>

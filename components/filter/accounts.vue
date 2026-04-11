@@ -13,7 +13,10 @@ const selectedIds = ref(new Set());
 const isShowModal = ref(false);
 
 const props = defineProps({
-  reload: Number,
+  reload: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const load = async (isQuite = false) => {
