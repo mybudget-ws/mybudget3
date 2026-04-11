@@ -99,7 +99,7 @@ useHead({
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/'>
+              <NuxtLink class='nav-link' href='/reports'>
                 <IconChartHistogram size=20 stroke-width=1 />
                 <span class='nav-link-title ms-1'>Отчёты</span>
               </NuxtLink>

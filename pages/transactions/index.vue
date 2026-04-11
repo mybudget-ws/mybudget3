@@ -248,18 +248,21 @@ const onAccountNew = () => {
                   </div-->
                   <button
                     class='btn btn-outline-green'
+                    type='button'
                     @click="openCreate(KIND_INCOME)"
                   >
                     <IconArrowUp stroke-width=2 />
                   </button>
                   <button
                     class='btn btn-outline-secondary'
+                    type='button'
                     @click="openCreateTransfer()"
                   >
                     <IconArrowsRightLeft stroke-width=2 />
                   </button>
                   <button
                     class='btn btn-primary'
+                    type='button'
                     @click="openCreate(KIND_EXPENSE)"
                   >
                     <IconArrowDown stroke-width=2 />
