@@ -6,6 +6,7 @@ import { nextTick } from 'vue';
 const { token } = useAuth();
 
 const amountInputRef = ref(null);
+const isLoaded = ref(false);
 const amount = ref(undefined);
 const evaluatedAmount = ref(undefined);
 const calculationError = ref('');
@@ -35,7 +36,10 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
-const isAccountEmpty = computed(() => !currentAccount.value?.id);
+const isAccountEmpty = computed(() => {
+  if (!isLoaded.value) return;
+  return !currentAccountFrom.value || !currentAccountTo.value;
+});
 const isSubmitDisabled = computed(() => !token || isAccountEmpty.value);
 const modalTitle = computed(() => {
   if (props.kind === 'income') {
@@ -212,6 +216,7 @@ const onSubmit = async () => {
           <div class='col'>
             <FormAccounts
               @toggle-account='toggleAccountCallback'
+              @loaded='isLoaded = true'
               :ids='currentAccountIds'
             />
             <div v-if='isAccountEmpty'>
