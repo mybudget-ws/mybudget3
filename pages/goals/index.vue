@@ -13,7 +13,7 @@ const LOCALE = 'ru-RU';
 
 const route = useRoute();
 const { token } = useAuth();
-
+const isError = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const items = ref([]);
@@ -24,10 +24,12 @@ const hiddenItems = computed(() => items.value.filter(v => v.isHidden));
 
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
+  if (isError.value) return false;
   return items.value.length === 0;
 });
 
 const load = async (isQuite = false) => {
+  is.Error.value = false;
   if (isQuite) {
     isQuiteLoading.value = true
   } else {
@@ -43,6 +45,7 @@ const load = async (isQuite = false) => {
     }
   } catch (err) {
     console.error(err);
+    isError.value = true;
   } finally {
     isLoading.value = false;
     isQuiteLoading.value = false;
@@ -260,6 +263,10 @@ watchEffect(() => {
             <div class='card-footer d-flex align-items-center'>
               <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких целей ещё нет
+              </i>
+              <i v-if='isError' class='text-danger'>
+                Ошибка: не удалось загрузить цели.
+                Попробуйте повторить операцию, или обратитесь в поддержку.
               </i>
             </div>
           </div>
