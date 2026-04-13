@@ -74,11 +74,10 @@ const chartOptions = {
   <p class='text-secondary'>
     TODO: Отчеты
   </p>
-  <client-only>
-    <VueApexCharts
-      type='line'
-      :options='chartOptions'
-      :series='series'
-    />
-  </client-only>
+
+  <VueApexCharts
+    type='line'
+    :options='chartOptions'
+    :series='series'
+  />
 </template>
