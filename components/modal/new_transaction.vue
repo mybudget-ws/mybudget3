@@ -214,18 +214,12 @@ const onSubmit = async () => {
               @toggle-account='toggleAccountCallback'
               :ids='currentAccountIds'
             />
-            <div v-if='isAccountEmpty'>
-              <p class='text-danger mt-1'>
-                Невозможно создать операцию без счета.
-              </p>
-              <button
-                type='button'
-                class='btn btn-outline btn-sm'
-                @click="emit('accountNew')"
-              >
-                Создайте счет
-              </button>
-            </div>
+            <AlertWarning
+              v-if="isAccountEmpty"
+              title="Невозможно создать перевод без счетов"
+              button-text="Создайте счет"
+              @action="emit('accountNew')"
+            />
           </div>
           <div class='col'>
             <FormCategories
