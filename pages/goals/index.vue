@@ -29,7 +29,7 @@ const isEmpty = computed(() => {
 });
 
 const load = async (isQuite = false) => {
-  is.Error.value = false;
+  isError.value = false;
   if (isQuite) {
     isQuiteLoading.value = true
   } else {
