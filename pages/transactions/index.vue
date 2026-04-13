@@ -9,8 +9,9 @@ import {
   IconPencil,
   IconTrash,
   IconX,
+  IconArrowNarrowLeft,
+  IconArrowNarrowRight,
 } from '@tabler/icons-vue';
-
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
@@ -347,14 +348,31 @@ const onAccountNew = () => {
                           <IconKeyFilled size=12 stroke-width=2 />
                           {{ item.property.name }}
                         </span>
-                        <span
+                        <template v-if="item.isTransfer">
+                          <span
+                            v-if="item.amount > 0"
+                            class="badge bg-green-lt text-green-lt-fg"
+                          >
+                            <IconArrowNarrowLeft size="16" />
+                          </span>
+
+                          <span
+                            v-else
+                            class="badge bg-red-lt text-red-lt-fg"
+                          >
+                            <IconArrowNarrowRight size="16" />
+                          </span>
+                        </template>
+                        <template v-else>
+                          <span
                             v-for='cat in item.categories'
                             :key='cat.id'
                             class='badge cursor-pointer'
                             @click="onCategoryClick(cat.id)"
                           >
                             {{ cat.name }}
-                        </span>
+                          </span>
+                        </template>
                       </div>
                     </td>
                     <td class='text-secondary'>{{ item.description }}</td>
