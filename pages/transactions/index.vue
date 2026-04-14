@@ -35,13 +35,24 @@ const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
-const selectedCategories = ref([]);
 
-const filters = reactive({
-  accountIds: [],
-  categoryIds: [],
-  projectIds: [],
-  propertyIds: []
+const filters = computed(() => {
+  const parse = (val) => {
+    if (typeof val === 'string') {
+      return val.split(',').map(Number).filter(Boolean);
+    }
+    if (Array.isArray(val)) {
+      return val.map(Number).filter(Boolean);
+    }
+    return [];
+  };
+
+  return {
+    accountIds: parse(route.query.accounts),
+    categoryIds: parse(route.query.categories),
+    projectIds: parse(route.query.projects),
+    propertyIds: parse(route.query.properties),
+  };
 });
 
 const params = computed(() => ({
@@ -49,7 +60,19 @@ const params = computed(() => ({
   perPage: PER_PAGE,
   filters
 }));
+const selectedProjects = computed(() => {
+  const map = new Map();
 
+  transactions.value.forEach(t => {
+    if (t.project) {
+      map.set(t.project.id, t.project);
+    }
+  });
+
+  return Array.from(map.values()).filter(p =>
+    filters.value.projectIds.includes(p.id)
+  );
+});
 const load = async (isQuite = false) => {
   if (isQuite) {
     isQuiteLoading.value = true
@@ -87,27 +110,6 @@ const badgeClasses = (kind) => {
     return kind === 'project' ?
       'bg-azure text-azure-fg' :
       'bg-teal text-teal-fg';
-  }
-};
-
-const filterKeys = {
-  accounts: 'accountIds',
-  categories: 'categoryIds',
-  projects: 'projectIds',
-  properties: 'propertyIds'
-};
-
-const applyFiltersFromQuery = () => {
-  for (const [queryKey, filterKey] of Object.entries(filterKeys)) {
-    const val = route.query[queryKey];
-
-    if (typeof val === 'string' && val.length > 0) {
-      filters[filterKey] = val.split(',').map(Number).filter(id => id > 0);
-    } else if (Array.isArray(val)) {
-      filters[filterKey] = val.map(Number).filter(id => id > 0);
-    } else {
-      filters[filterKey] = [];
-    }
   }
 };
 
@@ -161,7 +163,6 @@ const onSaved = async () => {
 watch(
   () => route.query,
   () => {
-    applyFiltersFromQuery();
     if (token.value) load();
   },
   { immediate: true }
@@ -189,14 +190,44 @@ const onCategoryClick = (id) => {
   router.replace({ query: nextQuery });
 };
 
-const onCategoriesChange = (categories) => {
-  selectedCategories.value = categories;
-};
+const selectedCategories = computed(() => {
+  const map = new Map();
+
+  transactions.value.forEach(t => {
+    t.categories?.forEach(cat => {
+      map.set(cat.id, cat);
+    });
+  });
+
+  return Array.from(map.values()).filter(c =>
+    filters.value.categoryIds.includes(c.id)
+  );
+});
 
 const onAccountNew = () => {
   isShowModal.value = false;
   isShowModalTransfer.value = false;
   isShowModalAccount.value = true;
+};
+
+const onProjectClick = (id) => {
+  const current = route.query.projects
+    ? route.query.projects.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newProjects = current.includes(id)
+    ? current.filter(p => p !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newProjects.length > 0) {
+    nextQuery.projects = newProjects.join(',');
+  } else {
+    delete nextQuery.projects;
+  }
+
+  router.replace({ query: nextQuery });
 };
 </script>
 
@@ -273,7 +304,7 @@ const onAccountNew = () => {
           </div>
 
           <div
-            v-if='selectedCategories.length'
+            v-if='selectedCategories.length || selectedProjects.length'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
@@ -286,6 +317,17 @@ const onAccountNew = () => {
                 {{ category.name }}
                 <IconX size='12' />
               </span>
+                <span
+                  v-for='project in selectedProjects'
+                  :key='project.id'
+                  class='badge cursor-pointer'
+                  :class='badgeClasses("project")'
+                  @click='onProjectClick(project.id)'
+                >
+                  <IconBulbFilled size=12 stroke-width=2 />
+                  {{ project.name }}
+                  <IconX size='12' />
+                </span>
             </div>
           </div>
 
@@ -333,8 +375,9 @@ const onAccountNew = () => {
                       <div class='badges-list'>
                         <span
                           v-if='item.project'
-                          class='badge'
+                          class='badge cursor-pointer'
                           :class='badgeClasses("project")'
+                          @click="onProjectClick(item.project.id)"
                         >
                           <IconBulbFilled size=12 stroke-width=2 />
                           {{ item.project.name }}
@@ -415,8 +458,8 @@ const onAccountNew = () => {
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
       <FilterAccounts :reload='transactionEventTicks' />
-      <FilterCategories @update:categories="onCategoriesChange" />
-      <FilterProjects />
+      <FilterCategories />
+      <FilterProjects/>
       <FilterProperties />
     </div>
   </div>
