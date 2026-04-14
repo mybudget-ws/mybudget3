@@ -38,7 +38,7 @@ const emit = defineEmits(['saved', 'close', 'accountNew']);
 const isEdit = computed(() => !!props.item && !props.isCopy);
 const isAccountEmpty = computed(() => {
   if (!isLoaded.value) return false;
-  return !currentAccountFrom.value || !currentAccountTo.value;
+  return !currentAccount.value?.id;
 });
 const isSubmitDisabled = computed(() => !token || !isLoaded.value || isAccountEmpty.value);
 const modalTitle = computed(() => {
