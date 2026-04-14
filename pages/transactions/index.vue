@@ -332,6 +332,20 @@ const onAccountNew = () => {
                     <td class='text-nowrap'>{{ item.account.name }}</td>
                     <td>
                       <div class='badges-list'>
+                        <template v-if='item.isTransfer'>
+                          <span
+                            v-if='item.amount > 0'
+                            class='badge bg-green-lt text-green-lt-fg'
+                          >
+                            <IconArrowNarrowLeft size=16 />
+                          </span>
+                          <span
+                            v-if='item.amount < 0'
+                            class='badge bg-red-lt text-red-lt-fg'
+                          >
+                            <IconArrowNarrowRight size=16 />
+                          </span>
+                        </template>
                         <span
                           v-if='item.project'
                           class='badge'
@@ -348,31 +362,14 @@ const onAccountNew = () => {
                           <IconKeyFilled size=12 stroke-width=2 />
                           {{ item.property.name }}
                         </span>
-                        <template v-if="item.isTransfer">
-                          <span
-                            v-if="item.amount > 0"
-                            class="badge bg-green-lt text-green-lt-fg"
-                          >
-                            <IconArrowNarrowLeft size="16" />
-                          </span>
-
-                          <span
-                            v-else
-                            class="badge bg-red-lt text-red-lt-fg"
-                          >
-                            <IconArrowNarrowRight size="16" />
-                          </span>
-                        </template>
-                        <template v-else>
-                          <span
-                            v-for='cat in item.categories'
-                            :key='cat.id'
-                            class='badge cursor-pointer'
-                            @click="onCategoryClick(cat.id)"
-                          >
-                            {{ cat.name }}
-                          </span>
-                        </template>
+                        <span
+                          v-for='cat in item.categories'
+                          :key='cat.id'
+                          class='badge cursor-pointer'
+                          @click="onCategoryClick(cat.id)"
+                        >
+                          {{ cat.name }}
+                        </span>
                       </div>
                     </td>
                     <td class='text-secondary'>{{ item.description }}</td>
