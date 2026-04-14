@@ -35,6 +35,8 @@ const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
+const selectedCategories = ref([]);
+const selectedProjects = ref([]);
 
 const filters = computed(() => {
   const parse = (val) => {
@@ -60,19 +62,15 @@ const params = computed(() => ({
   perPage: PER_PAGE,
   filters: filters.value,
 }));
-const selectedProjects = computed(() => {
-  const map = new Map();
 
-  transactions.value.forEach(t => {
-    if (t.project) {
-      map.set(t.project.id, t.project);
-    }
-  });
+const onCategoriesChange = (categories) => {
+  selectedCategories.value = categories;
+};
 
-  return Array.from(map.values()).filter(p =>
-    filters.value.projectIds.includes(p.id)
-  );
-});
+const onProjectsChange = (projects) => {
+  selectedProjects.value = projects;
+};
+
 const load = async (isQuite = false) => {
   if (isQuite) {
     isQuiteLoading.value = true
@@ -189,20 +187,6 @@ const onCategoryClick = (id) => {
 
   router.replace({ query: nextQuery });
 };
-
-const selectedCategories = computed(() => {
-  const map = new Map();
-
-  transactions.value.forEach(t => {
-    t.categories?.forEach(cat => {
-      map.set(cat.id, cat);
-    });
-  });
-
-  return Array.from(map.values()).filter(c =>
-    filters.value.categoryIds.includes(c.id)
-  );
-});
 
 const onAccountNew = () => {
   isShowModal.value = false;
@@ -458,8 +442,8 @@ const onProjectClick = (id) => {
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
       <FilterAccounts :reload='transactionEventTicks' />
-      <FilterCategories />
-      <FilterProjects/>
+      <FilterCategories @update:items='onCategoriesChange' />
+      <FilterProjects @update:items='onProjectsChange' />
       <FilterProperties />
     </div>
   </div>
