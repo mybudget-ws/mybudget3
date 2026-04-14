@@ -58,7 +58,7 @@ const filters = computed(() => {
 const params = computed(() => ({
   page: page.value,
   perPage: PER_PAGE,
-  filters
+  filters: filters.value,
 }));
 const selectedProjects = computed(() => {
   const map = new Map();
