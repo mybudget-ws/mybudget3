@@ -107,18 +107,22 @@ watch(amountFrom, (newValue) => {
               @toggle-account='toggleAccountFromCallback'
               @loaded="isLoaded = true"
             />
-            <AlertWarning
-              v-if="isAccountEmpty"
-              title="Невозможно создать перевод без счетов"
-              button-text="Создайте счет"
-              @action="emit('accountNew')"
-            />
           </div>
           <div class='col'>
             <FormAccounts
               label='Куда'
               radioGroupName='accountTo'
               @toggle-account='toggleAccountToCallback'
+            />
+          </div>
+        </div>
+
+        <div v-if='isAccountEmpty' class='row mb-3'>
+          <div class='col'>
+            <AlertWarning
+              title="Невозможно создать перевод без&nbsp;счетов"
+              button-text="Создайте счет"
+              @action="emit('accountNew')"
             />
           </div>
         </div>

@@ -216,7 +216,7 @@ const onSubmit = async () => {
             />
             <AlertWarning
               v-if="isAccountEmpty"
-              title="Невозможно создать перевод без счетов"
+              title="Невозможно создать операцию без&nbsp;счета"
               button-text="Создайте счет"
               @action="emit('accountNew')"
             />
