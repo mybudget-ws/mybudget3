@@ -219,18 +219,12 @@ const onSubmit = async () => {
               @loaded='isLoaded = true'
               :ids='currentAccountIds'
             />
-            <div v-if='isAccountEmpty'>
-              <p class='text-danger mt-1'>
-                Невозможно создать операцию без счета.
-              </p>
-              <button
-                type='button'
-                class='btn btn-outline btn-sm'
-                @click="emit('accountNew')"
-              >
-                Создайте счет
-              </button>
-            </div>
+            <AlertWarning
+              v-if="isAccountEmpty"
+              title="Невозможно создать операцию без&nbsp;счета"
+              button-text="Создайте счет"
+              @action="emit('accountNew')"
+            />
           </div>
           <div class='col'>
             <FormCategories
