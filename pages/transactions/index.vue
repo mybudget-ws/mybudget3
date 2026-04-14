@@ -9,8 +9,9 @@ import {
   IconPencil,
   IconTrash,
   IconX,
+  IconArrowNarrowLeft,
+  IconArrowNarrowRight,
 } from '@tabler/icons-vue';
-
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
@@ -331,6 +332,20 @@ const onAccountNew = () => {
                     <td class='text-nowrap'>{{ item.account.name }}</td>
                     <td>
                       <div class='badges-list'>
+                        <template v-if='item.isTransfer'>
+                          <span
+                            v-if='item.amount > 0'
+                            class='badge bg-green-lt text-green-lt-fg'
+                          >
+                            <IconArrowNarrowLeft size=16 />
+                          </span>
+                          <span
+                            v-if='item.amount < 0'
+                            class='badge bg-red-lt text-red-lt-fg'
+                          >
+                            <IconArrowNarrowRight size=16 />
+                          </span>
+                        </template>
                         <span
                           v-if='item.project'
                           class='badge'
@@ -348,12 +363,12 @@ const onAccountNew = () => {
                           {{ item.property.name }}
                         </span>
                         <span
-                            v-for='cat in item.categories'
-                            :key='cat.id'
-                            class='badge cursor-pointer'
-                            @click="onCategoryClick(cat.id)"
-                          >
-                            {{ cat.name }}
+                          v-for='cat in item.categories'
+                          :key='cat.id'
+                          class='badge cursor-pointer'
+                          @click="onCategoryClick(cat.id)"
+                        >
+                          {{ cat.name }}
                         </span>
                       </div>
                     </td>
