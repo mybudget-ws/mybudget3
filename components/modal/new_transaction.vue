@@ -37,10 +37,10 @@ const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
 const isAccountEmpty = computed(() => {
-  if (!isLoaded.value) return;
+  if (!isLoaded.value) return false;
   return !currentAccountFrom.value || !currentAccountTo.value;
 });
-const isSubmitDisabled = computed(() => !token || isAccountEmpty.value);
+const isSubmitDisabled = computed(() => !token || !isLoaded.value || isAccountEmpty.value);
 const modalTitle = computed(() => {
   if (props.kind === 'income') {
     return isEdit.value ? 'Редактировать доход' : 'Новый доход';
