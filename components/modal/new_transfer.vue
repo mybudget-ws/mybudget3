@@ -107,34 +107,22 @@ watch(amountFrom, (newValue) => {
               @toggle-account='toggleAccountFromCallback'
               @loaded="isLoaded = true"
             />
-
-            <div v-if='isAccountEmpty'>
-              <div class='alert alert-warning'>
-                <div class='alert-icon'>
-                  <IconAlertTriangle stroke-width=1.4 />
-                </div>
-                <div>
-                  <h4 class='alert-heading'>
-                    Невозможно создать перевод без&nbsp;счетов
-                  </h4>
-                  <div class='alert-description'>
-                    <button
-                      type='button'
-                      class='btn btn-outline-warning btn-sm'
-                      @click="emit('accountNew')"
-                    >
-                      Создайте счет
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <div class='col'>
             <FormAccounts
               label='Куда'
               radioGroupName='accountTo'
               @toggle-account='toggleAccountToCallback'
+            />
+          </div>
+        </div>
+
+        <div v-if='isAccountEmpty' class='row mb-3'>
+          <div class='col'>
+            <AlertWarning
+              title="Невозможно создать перевод без&nbsp;счетов"
+              button-text="Создайте счет"
+              @action="emit('accountNew')"
             />
           </div>
         </div>

@@ -9,8 +9,9 @@ import {
   IconPencil,
   IconTrash,
   IconX,
+  IconArrowNarrowLeft,
+  IconArrowNarrowRight,
 } from '@tabler/icons-vue';
-
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
@@ -36,19 +37,40 @@ const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
 const selectedCategories = ref([]);
+const selectedProjects = ref([]);
 
-const filters = reactive({
-  accountIds: [],
-  categoryIds: [],
-  projectIds: [],
-  propertyIds: []
+const filters = computed(() => {
+  const parse = (val) => {
+    if (typeof val === 'string') {
+      return val.split(',').map(Number).filter(Boolean);
+    }
+    if (Array.isArray(val)) {
+      return val.map(Number).filter(Boolean);
+    }
+    return [];
+  };
+
+  return {
+    accountIds: parse(route.query.accounts),
+    categoryIds: parse(route.query.categories),
+    projectIds: parse(route.query.projects),
+    propertyIds: parse(route.query.properties),
+  };
 });
 
 const params = computed(() => ({
   page: page.value,
   perPage: PER_PAGE,
-  filters
+  filters: filters.value,
 }));
+
+const onCategoriesChange = (categories) => {
+  selectedCategories.value = categories;
+};
+
+const onProjectsChange = (projects) => {
+  selectedProjects.value = projects;
+};
 
 const load = async (isQuite = false) => {
   if (isQuite) {
@@ -87,27 +109,6 @@ const badgeClasses = (kind) => {
     return kind === 'project' ?
       'bg-azure text-azure-fg' :
       'bg-teal text-teal-fg';
-  }
-};
-
-const filterKeys = {
-  accounts: 'accountIds',
-  categories: 'categoryIds',
-  projects: 'projectIds',
-  properties: 'propertyIds'
-};
-
-const applyFiltersFromQuery = () => {
-  for (const [queryKey, filterKey] of Object.entries(filterKeys)) {
-    const val = route.query[queryKey];
-
-    if (typeof val === 'string' && val.length > 0) {
-      filters[filterKey] = val.split(',').map(Number).filter(id => id > 0);
-    } else if (Array.isArray(val)) {
-      filters[filterKey] = val.map(Number).filter(id => id > 0);
-    } else {
-      filters[filterKey] = [];
-    }
   }
 };
 
@@ -161,7 +162,6 @@ const onSaved = async () => {
 watch(
   () => route.query,
   () => {
-    applyFiltersFromQuery();
     if (token.value) load();
   },
   { immediate: true }
@@ -189,14 +189,30 @@ const onCategoryClick = (id) => {
   router.replace({ query: nextQuery });
 };
 
-const onCategoriesChange = (categories) => {
-  selectedCategories.value = categories;
-};
-
 const onAccountNew = () => {
   isShowModal.value = false;
   isShowModalTransfer.value = false;
   isShowModalAccount.value = true;
+};
+
+const onProjectClick = (id) => {
+  const current = route.query.projects
+    ? route.query.projects.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newProjects = current.includes(id)
+    ? current.filter(p => p !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newProjects.length > 0) {
+    nextQuery.projects = newProjects.join(',');
+  } else {
+    delete nextQuery.projects;
+  }
+
+  router.replace({ query: nextQuery });
 };
 </script>
 
@@ -273,7 +289,7 @@ const onAccountNew = () => {
           </div>
 
           <div
-            v-if='selectedCategories.length'
+            v-if='selectedCategories.length || selectedProjects.length'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
@@ -286,6 +302,17 @@ const onAccountNew = () => {
                 {{ category.name }}
                 <IconX size='12' />
               </span>
+                <span
+                  v-for='project in selectedProjects'
+                  :key='project.id'
+                  class='badge cursor-pointer'
+                  :class='badgeClasses("project")'
+                  @click='onProjectClick(project.id)'
+                >
+                  <IconBulbFilled size=12 stroke-width=2 />
+                  {{ project.name }}
+                  <IconX size='12' />
+                </span>
             </div>
           </div>
 
@@ -331,10 +358,25 @@ const onAccountNew = () => {
                     <td class='text-nowrap'>{{ item.account.name }}</td>
                     <td>
                       <div class='badges-list'>
+                        <template v-if='item.isTransfer'>
+                          <span
+                            v-if='item.amount > 0'
+                            class='badge bg-green-lt text-green-lt-fg'
+                          >
+                            <IconArrowNarrowLeft size=16 />
+                          </span>
+                          <span
+                            v-if='item.amount < 0'
+                            class='badge bg-red-lt text-red-lt-fg'
+                          >
+                            <IconArrowNarrowRight size=16 />
+                          </span>
+                        </template>
                         <span
                           v-if='item.project'
-                          class='badge'
+                          class='badge cursor-pointer'
                           :class='badgeClasses("project")'
+                          @click="onProjectClick(item.project.id)"
                         >
                           <IconBulbFilled size=12 stroke-width=2 />
                           {{ item.project.name }}
@@ -348,12 +390,12 @@ const onAccountNew = () => {
                           {{ item.property.name }}
                         </span>
                         <span
-                            v-for='cat in item.categories'
-                            :key='cat.id'
-                            class='badge cursor-pointer'
-                            @click="onCategoryClick(cat.id)"
-                          >
-                            {{ cat.name }}
+                          v-for='cat in item.categories'
+                          :key='cat.id'
+                          class='badge cursor-pointer'
+                          @click="onCategoryClick(cat.id)"
+                        >
+                          {{ cat.name }}
                         </span>
                       </div>
                     </td>
@@ -415,8 +457,8 @@ const onAccountNew = () => {
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
       <FilterAccounts :reload='transactionEventTicks' />
-      <FilterCategories @update:categories='onCategoriesChange' />
-      <FilterProjects />
+      <FilterCategories @update:items='onCategoriesChange' />
+      <FilterProjects @update:items='onProjectsChange' />
       <FilterProperties />
     </div>
   </div>

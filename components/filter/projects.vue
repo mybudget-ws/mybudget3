@@ -12,6 +12,8 @@ const isShowModal = ref(false);
 const items = ref([]);
 const selectedIds = ref(new Set());
 
+const emit = defineEmits(['update:items']);
+
 const load = async () => {
   isLoading.value = true
   try {
@@ -62,6 +64,19 @@ const onSaved = async () => {
 watch(() => route, (newRoute) => {
   initSelectedItemsByQuery(newRoute.query.projects);
 }, { immediate: true, deep: true })
+
+watch(selectedIds, () => {
+  if (items.value.length === 0) return;
+  
+  const result = items.value
+    .filter(item => selectedIds.value.has(item.id))
+    .map(item => ({
+      id: item.id,
+      name: item.name,
+    }));
+
+  emit('update:items', result);
+}, { deep: true });
 
 watchEffect(() => {
   if (token.value) load();

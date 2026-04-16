@@ -11,7 +11,7 @@ const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref(new Set());
 
-const emit = defineEmits(['update:categories']);
+const emit = defineEmits(['update:items']);
 
 const load = async () => {
   isLoading.value = true
@@ -69,7 +69,7 @@ watch(selectedIds, () => {
       name: item.name,
     }));
 
-  emit('update:categories', result);
+  emit('update:items', result);
 }, { deep: true });
 
 watchEffect(() => {

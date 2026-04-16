@@ -10,7 +10,7 @@ import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
 const { token } = useAuth();
-
+const isError = ref(false)
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const categories = ref([]);
@@ -21,10 +21,12 @@ const hiddenItems = computed(() => categories.value.filter(v => v.isHidden));
 
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
+  if (isError.value) return false;
   return categories.value.length === 0;
 });
 
 const load = async (isQuite = false) => {
+  isError.value = false;
   if (isQuite) {
     isQuiteLoading.value = true
   } else {
@@ -32,6 +34,7 @@ const load = async (isQuite = false) => {
   }
 
   try {
+    //throw new Error('Test error');
     const items = await api.categories(token.value);
     if (items) {
       categories.value = items
@@ -40,6 +43,7 @@ const load = async (isQuite = false) => {
     }
   } catch (err) {
     console.error(err);
+    isError.value = true;
   } finally {
     isLoading.value = false;
     isQuiteLoading.value = false;
@@ -177,6 +181,10 @@ watchEffect(() => {
             <div class='card-footer d-flex align-items-center'>
               <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких категорий ещё нет
+              </i>
+              <i v-if='isError' class='text-danger'>
+                Ошибка: не удалось загрузить категории.
+                Попробуйте повторить операцию, или обратитесь в поддержку.
               </i>
             </div>
           </div>
