@@ -157,6 +157,12 @@ const chartOptions = {
           />
         </div>
       </div>
+
+      <AlertWarning
+        class='mt-3'
+        title='В разработке'
+        description='Не обращайте внимание'
+      />
     </div>
 
     <div class='col-sm-12 col-lg-3 col-xl-2'>
