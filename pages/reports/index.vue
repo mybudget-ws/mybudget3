@@ -3,6 +3,7 @@ import VueApexCharts from 'vue3-apexcharts';
 
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
+const CHART_HEIGTH = 400;
 
 const series = [
   {
@@ -22,7 +23,7 @@ const chartOptions = {
   chart: {
     type: 'line',
     fontFamily: 'inherit',
-    height: 240,
+    height: CHART_HEIGTH,
     parentHeightOffset: 0,
     toolbar: { show: false, },
     animations: { enabled: false },
@@ -94,12 +95,67 @@ onMounted(() => {
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <div class='card'>
-        <div class='card-header'>
+        <div class='card-header border-bottom-0'>
           <h2 class='my-2'>Отчёты</h2>
+          <div class='card-actions'>
+            <nav class='nav nav-segmented w-100' role='tablist'>
+              <button
+                class="nav-link active"
+                role="tab"
+                data-bs-toggle="tab"
+                aria-selected="true" aria-current="page"
+              >
+                Текущий месяц
+              </button>
+              <button
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                aria-selected="false"
+                tabindex="-1"
+              >
+                Год
+              </button>
+              <button
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                aria-selected="false"
+                tabindex="-1"
+              >
+                Два года
+              </button>
+              <button
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                aria-selected="false"
+                tabindex="-1"
+              >
+                Пять лет
+              </button>
+              <button
+                class="nav-link"
+                role="tab"
+                data-bs-toggle="tab"
+                aria-selected="false"
+                tabindex="-1"
+              >
+                Всё время
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <div class='card mt-3'>
+        <div class='card-header'>
+          <h3 class='card-title'>Баланс</h3>
         </div>
         <div class='card-body'>
           <VueApexCharts
             type='line'
+            :height='CHART_HEIGTH'
             :options='chartOptions'
             :series='series'
           />
