@@ -85,10 +85,6 @@ const chartOptions = {
     '2020-06-29', '2020-06-30', '2020-07-01', '2020-07-02'
   ],
 }
-
-onMounted(() => {
-  nextTick(() => {console.log('2. ', cssVar('--tblr-body-color'))});
-});
 </script>
 
 <template>
