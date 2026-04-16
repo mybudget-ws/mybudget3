@@ -1,6 +1,9 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
 
+const appConfig = useAppConfig()
+const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
+
 const series = [
   {
     name: 'Наличные',
@@ -40,13 +43,23 @@ const chartOptions = {
     strokeDashArray: 4,
   },
   xaxis: {
-    labels: { padding: 0, },
+    labels: {
+      padding: 0,
+      style: {
+        colors: textColor,
+      }
+    },
     tooltip: { enabled: false },
     type: 'datetime',
     // categories: [1991,1992,1993,1994,1995,1996,1997,1998,1999]
   },
   yaxis: {
-    labels: { padding: 4 },
+    labels: {
+      padding: 4,
+      style: {
+        colors: textColor,
+      }
+    },
   },
   legend: {
     show: true,
@@ -61,6 +74,9 @@ const chartOptions = {
       horizontal: 8,
       vertical: 8
     },
+    labels: {
+      colors: textColor,
+    },
   },
   labels: [
     '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24',
@@ -68,16 +84,31 @@ const chartOptions = {
     '2020-06-29', '2020-06-30', '2020-07-01', '2020-07-02'
   ],
 }
+
+onMounted(() => {
+  nextTick(() => {console.log('2. ', cssVar('--tblr-body-color'))});
+});
 </script>
 
 <template>
-  <p class='text-secondary'>
-    TODO: Отчеты
-  </p>
+  <div class='row'>
+    <div class='col-sm-12 col-lg-9 col-xl-10'>
+      <div class='card'>
+        <div class='card-body'>
+          <VueApexCharts
+            type='line'
+            :options='chartOptions'
+            :series='series'
+          />
+        </div>
+      </div>
+    </div>
 
-  <VueApexCharts
-    type='line'
-    :options='chartOptions'
-    :series='series'
-  />
+    <div class='col-sm-12 col-lg-3 col-xl-2'>
+      <FilterAccounts />
+      <FilterCategories />
+      <FilterProjects />
+      <FilterProperties />
+    </div>
+  </div>
 </template>

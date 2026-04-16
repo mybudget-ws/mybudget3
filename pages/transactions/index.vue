@@ -415,7 +415,7 @@ const onAccountNew = () => {
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
       <FilterAccounts :reload='transactionEventTicks' />
-      <FilterCategories @update:categories="onCategoriesChange" />
+      <FilterCategories @update:categories='onCategoriesChange' />
       <FilterProjects />
       <FilterProperties />
     </div>
