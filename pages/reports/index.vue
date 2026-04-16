@@ -94,6 +94,9 @@ onMounted(() => {
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <div class='card'>
+        <div class='card-header'>
+          <h2 class='my-2'>Отчёты</h2>
+        </div>
         <div class='card-body'>
           <VueApexCharts
             type='line'
