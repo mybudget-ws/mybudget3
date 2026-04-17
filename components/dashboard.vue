@@ -45,143 +45,27 @@ const onExpense = () => alert('новых расход');
 
   <div class='row row-deck row-cards'>
     <div class='col-lg-6'>
-      <div class='card'>
-        <div class='card-header border-0'>
-          <div class='card-title'>
-            Доходы
-          </div>
-        </div>
-
-        <div class='p-4 d-flex'>
-          <div class='mx-auto'>
-            TODO: График
-          </div>
-        </div>
-
-        <div class='card-table table-responsive'>
-          <table class='table table-vcenter'>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DashboardBlock
+        title='Доходы'
+      />
     </div>
 
     <div class='col-lg-6'>
-      <div class='card'>
-        <div class='card-header border-0'>
-          <div class='card-title'>
-            Расходы
-          </div>
-        </div>
-
-        <div class='p-4 d-flex'>
-          <div class='mx-auto'>
-            TODO: График
-          </div>
-        </div>
-
-        <div class='card-table table-responsive'>
-          <table class='table table-vcenter'>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DashboardBlock
+        title='Расходы'
+      />
     </div>
 
     <div class='col-lg-6'>
-      <div class='card'>
-        <div class='card-header border-0'>
-          <div class='card-title'>
-            Счета
-          </div>
-        </div>
-
-        <div class='p-4 d-flex'>
-          <div class='mx-auto'>
-            TODO: График
-          </div>
-        </div>
-
-        <div class='card-table table-responsive'>
-          <table class='table table-vcenter'>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DashboardBlock
+        title='Счета'
+      />
     </div>
 
     <div class='col-lg-6'>
-      <div class='card'>
-        <div class='card-header border-0'>
-          <div class='card-title'>
-            Все активы
-          </div>
-        </div>
-
-        <div class='p-4 d-flex'>
-          <div class='mx-auto'>
-            TODO: График
-          </div>
-        </div>
-
-        <div class='card-table table-responsive'>
-          <table class='table table-vcenter'>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DashboardBlock
+        title='Все активы'
+      />
     </div>
   </div>
 </template>
