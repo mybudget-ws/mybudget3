@@ -112,11 +112,11 @@ watch(
               required
             >
               <option
-                v-for='item in currencies'
-                :key='item.value'
-                :value='item.value'
+                v-for='currency in currencies'
+                :key='currency.value'
+                :value='currency.value'
               >
-                {{ item.name }}
+                {{ currency.name }}
               </option>
             </select>
           </div>

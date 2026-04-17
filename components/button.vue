@@ -1,21 +1,6 @@
-<template>
-  <button
-    :type='type'
-    :disabled='loading || disabled'
-    :class='buttonClass'
-    @click="$emit('click', $event)"
-  >
-    <span
-      v-if='loading'
-      class='spinner-border spinner-border-sm me-2'
-      role='status'
-      aria-hidden='true'
-    />
-    <slot />
-  </button>
-</template>
-
 <script setup>
+const emit = defineEmits(['click']);
+
 const props = defineProps({
   type: {
     type: String,
@@ -40,3 +25,21 @@ const buttonClass = computed(() => ([
   props.class,
 ]));
 </script>
+
+
+<template>
+  <button
+    :type='type'
+    :disabled='loading || disabled'
+    :class='buttonClass'
+    @click="emit('click', $event)"
+  >
+    <span
+      v-if='loading'
+      class='spinner-border spinner-border-sm me-2'
+      role='status'
+      aria-hidden='true'
+    />
+    <slot />
+  </button>
+</template>
