@@ -14,6 +14,7 @@ const accountName = ref('');
 const accountKind = ref(KINDS[0].value);
 const accountCurrency = ref(DEFAULT_CURRENCY);
 const accountPosition = ref(DEFAULT_POSITION);
+const accountDescription = ref('');
 const currencies = ref([]);
 const isSubmitting = ref(false);
 
