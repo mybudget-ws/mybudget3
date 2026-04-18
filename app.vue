@@ -90,7 +90,7 @@ useHead({
             </div>
           </div>
         </div>
-        <div id='navbar-menu' class='collapse navbar-collapse'>
+        <div v-if='isSignedIn' id='navbar-menu' class='collapse navbar-collapse'>
           <ul class='navbar-nav'>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/transactions'>
