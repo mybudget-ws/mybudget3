@@ -4,6 +4,7 @@ import VueApexCharts from 'vue3-apexcharts';
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const CHART_HEIGTH = 400;
+const CHART_TYPE = 'line'; // 'bar'
 
 const series = [
   {
@@ -21,7 +22,7 @@ const series = [
 
 const chartOptions = {
   chart: {
-    type: 'line',
+    type: CHART_TYPE,
     fontFamily: 'inherit',
     height: CHART_HEIGTH,
     parentHeightOffset: 0,
@@ -150,8 +151,8 @@ const chartOptions = {
         </div>
         <div class='card-body'>
           <VueApexCharts
-            type='line'
-            :height='CHART_HEIGTH'
+            :type=CHART_TYPE
+            :height=CHART_HEIGTH
             :options='chartOptions'
             :series='series'
           />
