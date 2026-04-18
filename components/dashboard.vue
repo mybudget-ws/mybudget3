@@ -13,8 +13,8 @@ const onExpense = () => alert('новых расход');
 <template>
   <div class='row align-items-center mb-4'>
     <div class='col'>
-      <div class='page-pretitle'>Overview</div>
-      <h2 class='page-title'>Dashboard</h2>
+      <div class='page-pretitle'>Обзор</div>
+      <h2 class='page-title'>Апрель 2026</h2>
     </div>
     <div class='col-md-auto col-sm-12'>
       <div class='ms-auto d-flex flex-wrap btn-list'>
@@ -65,6 +65,15 @@ const onExpense = () => alert('новых расход');
     <div class='col-lg-6'>
       <DashboardBlock
         title='Все активы'
+      />
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col'>
+      <AlertWarning
+        class='mt-3'
+        title='В разработке'
+        description='Не обращайте внимание'
       />
     </div>
   </div>

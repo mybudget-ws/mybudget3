@@ -29,10 +29,22 @@ const chartOptions = {
     toolbar: { show: false, },
     animations: { enabled: false },
     stacked: true,
+    sparkline: { enabled: true },
   },
   tooltip: { theme: 'dark' },
   grid: {
     show: false,
+    padding: {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    },
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: '86%',
+    }
   },
   dataLabels: {
     enabled: false,
@@ -41,6 +53,7 @@ const chartOptions = {
     categories: [
     '06.21', '06.22', '06.23', '06.24', '06.25', '06.26', '06.27', '06.28', '06.29', '06.30', '07.01', '07.02'
     ],
+    offsetY: 0,
     axisBorder: {
       show: false,
     },
@@ -64,6 +77,9 @@ const chartOptions = {
       }
     },
   },
+  colors: [
+    '#4263eb',
+  ],
 }
 </script>
 
@@ -75,7 +91,7 @@ const chartOptions = {
       </div>
     </div>
 
-    <div class='p-4 d-flex'>
+    <div class='p-3 d-flex'>
       <div class='w-full'>
         <VueApexCharts
           :type=CHART_TYPE
