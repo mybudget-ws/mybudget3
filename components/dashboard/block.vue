@@ -1,10 +1,70 @@
 <script setup>
+import VueApexCharts from 'vue3-apexcharts';
+
+const appConfig = useAppConfig()
+const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
+const CHART_HEIGTH = 200;
+const CHART_TYPE = 'bar';
+
 const props = defineProps({
   title: {
     type: String,
     default: '',
   },
 });
+
+const series = [
+  {
+    name: 'TODO',
+    data: [117, 92, 94, 98, 75, 110, 69, 80, 109, 113, 115, 95]
+  }
+]
+
+const chartOptions = {
+  chart: {
+    type: CHART_TYPE,
+    fontFamily: 'inherit',
+    height: CHART_HEIGTH,
+    parentHeightOffset: 0,
+    toolbar: { show: false, },
+    animations: { enabled: false },
+    stacked: true,
+  },
+  tooltip: { theme: 'dark' },
+  grid: {
+    show: false,
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  xaxis: {
+    categories: [
+    '06.21', '06.22', '06.23', '06.24', '06.25', '06.26', '06.27', '06.28', '06.29', '06.30', '07.01', '07.02'
+    ],
+    axisBorder: {
+      show: false,
+    },
+    axisTicks: {
+      show: false,
+    },
+    labels: {
+      show: false,
+      padding: 0,
+      style: {
+        colors: textColor,
+      }
+    },
+  },
+  yaxis: {
+    show: false,
+    labels: {
+      padding: 4,
+      style: {
+        colors: textColor,
+      }
+    },
+  },
+}
 </script>
 
 <template>
@@ -16,8 +76,13 @@ const props = defineProps({
     </div>
 
     <div class='p-4 d-flex'>
-      <div class='mx-auto'>
-        TODO: График
+      <div class='w-full'>
+        <VueApexCharts
+          :type=CHART_TYPE
+          :height=CHART_HEIGTH
+          :options='chartOptions'
+          :series='series'
+        />
       </div>
     </div>
 
