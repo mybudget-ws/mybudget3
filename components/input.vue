@@ -21,7 +21,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    required: true,
+    default: undefined,
   },
   autocomplete: {
     type: String,
@@ -34,7 +34,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  errorText: String,
+  errorText: {
+    type: String,
+    default: undefined,
+  }
 });
 
 const emit = defineEmits(['update:modelValue'])
