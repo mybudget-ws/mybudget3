@@ -3,36 +3,39 @@
     ref='inputRef'
     v-bind='inputAttrs'
     :class='inputClass'
-  />
+  >
   <div v-if='isShowErrorMessage' class='text-danger mt-1'>
     {{ errorText }}
   </div>
 </template>
 
 <script setup>
-import {ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 const props = defineProps({
+  id: String,
+  name: String,
+  modelValue: [String, Number],
   type: {
     type: String,
     default: 'text',
   },
-  placeholder: String,
+  placeholder: {
+    type: String,
+    required: true,
+  },
   autocomplete: {
     type: String,
     default: 'off',
   },
   required: Boolean,
-  isError:Boolean,
+  isError: Boolean,
   disabled: Boolean,
   class: {
     type: String,
     default: '',
   },
-  modelValue: [String, Number],
   errorText: String,
-  name: String,
-  id: String,
-})
+});
 
 const emit = defineEmits(['update:modelValue'])
 const inputRef = ref(null)

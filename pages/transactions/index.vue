@@ -12,6 +12,7 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
 } from '@tabler/icons-vue';
+
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
@@ -324,12 +325,7 @@ const onProjectClick = (id) => {
               <table class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
-                    <th class='w-1 text-nowrap'>
-                      <!--button class='table-sort d-flex' data-sort='sort-date'>
-                        Дата
-                      </button-->
-                      Дата
-                    </th>
+                    <th class='w-1 text-nowrap'>Дата</th>
                     <th class='w-1 text-nowrap text-end'>Величина</th>
                     <th class='w-1 text-nowrap'>Счёт</th>
                     <th>Категории</th>
