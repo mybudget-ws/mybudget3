@@ -10,7 +10,7 @@ import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 
 const { token } = useAuth();
-const isLoading = ref(false);
+const isLoading = ref(true);
 const isError = ref(false);
 const dashboard = ref({});
 
