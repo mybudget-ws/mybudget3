@@ -51,7 +51,7 @@ watch(token, (val) => {
       </div>
       <template v-else>
         <div class='page-pretitle'>Обзор</div>
-        <h2 class='page-title'>{{ dashboard.currentMonth }}</h2>
+        <h2 class='page-title'>{{ dashboard?.currentMonth }}</h2>
       </template>
     </div>
     <div class='col-md-auto col-sm-12'>
