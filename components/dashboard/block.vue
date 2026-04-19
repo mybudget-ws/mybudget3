@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  isLoading: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const series = [
@@ -92,7 +96,10 @@ const chartOptions = {
     </div>
 
     <div class='p-3 d-flex'>
-      <div class='w-full'>
+      <div v-if='isLoading' class='text-center w-full'>
+        <PlaceholderLoading />
+      </div>
+      <div v-else class='w-full'>
         <VueApexCharts
           :type=CHART_TYPE
           :height=CHART_HEIGTH
@@ -102,23 +109,7 @@ const chartOptions = {
       </div>
     </div>
 
-    <div class='card-table table-responsive'>
-      <table class='table table-vcenter'>
-        <thead>
-          <tr>
-            <th>Amount</th>
-            <th>Date</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>2</td>
-            <td>3</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <PlaceholderLoadingFilters v-if='isLoading' />
+    <slot v-else />
   </div>
 </template>

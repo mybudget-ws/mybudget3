@@ -10,12 +10,12 @@ import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
 const { token } = useAuth();
-const isError = ref(false)
+const isError = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const categories = ref([]);
-const isShowModal = ref(false)
-const currentItem = ref(null)
+const isShowModal = ref(false);
+const currentItem = ref(null);
 const visibleItems = computed(() => categories.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => categories.value.filter(v => v.isHidden));
 
@@ -124,7 +124,7 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Название</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
@@ -132,15 +132,16 @@ watchEffect(() => {
                     <td>{{ item.name }}</td>
                     <td>
                       <div class='btn-actions'>
-                        <a class='btn btn-action'
+                        <a
+class='btn btn-action'
                           @click.prevent='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
                         </a>
                         <a
+                            v-tooltip:bottom="'Скрыть категорию'"
                             class='btn btn-action'
                             @click.prevent='toggleHidden(item)'
-                            v-tooltip:bottom="'Скрыть категорию'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </a>
@@ -156,7 +157,7 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
