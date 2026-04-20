@@ -86,6 +86,7 @@ watch(token, (val) => {
       <DashboardBlock
         title='Доходы'
         :is-loading='isLoading'
+        :colors="['#0ca678']"
       >
         <div class='card-table table-responsive'>
           <table class='table table-vcenter'>

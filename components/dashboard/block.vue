@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  colors: {
+    type: Array,
+    default: () => ['#4263eb'],
+  },
   isLoading: {
     type: Boolean,
     default: true,
@@ -81,9 +85,7 @@ const chartOptions = {
       }
     },
   },
-  colors: [
-    '#4263eb',
-  ],
+  colors: props.colors,
 }
 </script>
 
