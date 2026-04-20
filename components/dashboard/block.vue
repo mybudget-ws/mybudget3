@@ -15,6 +15,14 @@ const props = defineProps({
     type: Array,
     default: () => ['#4263eb'],
   },
+  chartSeries: {
+    type: Array,
+    default: () => [],
+  },
+  chartCategories: {
+    type: Array,
+    default: () => [],
+  },
   isLoading: {
     type: Boolean,
     default: true,
@@ -23,10 +31,10 @@ const props = defineProps({
 
 const series = [
   {
-    name: 'TODO',
-    data: [117, 92, 94, 98, 75, 110, 69, 80, 109, 113, 115, 95]
+    name: props.title,
+    data: props.chartSeries,
   }
-]
+];
 
 const chartOptions = {
   chart: {
@@ -58,9 +66,7 @@ const chartOptions = {
     enabled: false,
   },
   xaxis: {
-    categories: [
-    '06.21', '06.22', '06.23', '06.24', '06.25', '06.26', '06.27', '06.28', '06.29', '06.30', '07.01', '07.02'
-    ],
+    categories: props.chartCategories,
     offsetY: 0,
     axisBorder: {
       show: false,
