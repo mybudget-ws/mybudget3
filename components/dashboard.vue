@@ -84,8 +84,12 @@ watch(token, (val) => {
   <div class='row row-deck row-cards'>
     <div class='col-lg-6'>
       <DashboardBlock
+        :key="`income-${isLoading}`"
         title='Доходы'
         :is-loading='isLoading'
+        :colors="['#0ca678']"
+        :chart-series='dashboard.incomeSeries'
+        :chart-categories='dashboard.incomeCategories'
       >
         <div class='card-table table-responsive'>
           <table class='table table-vcenter'>
@@ -117,8 +121,11 @@ watch(token, (val) => {
 
     <div class='col-lg-6'>
       <DashboardBlock
+        :key="`expenses-${isLoading}`"
         title='Расходы'
         :is-loading='isLoading'
+        :chart-series='dashboard.expenseSeries'
+        :chart-categories='dashboard.expenseCategories'
       >
         <div class='card-table table-responsive'>
           <table class='table table-vcenter'>
