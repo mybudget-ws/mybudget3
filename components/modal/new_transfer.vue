@@ -16,6 +16,7 @@ const isSubmitting = ref(false);
 const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
 const amountFromRef = ref(null);
+const submitError = ref('');
 
 const emit = defineEmits(['saved', 'close', 'accountNew']);
 
@@ -61,7 +62,23 @@ const isSubmitDisabled = computed(() => {
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
 
+  submitError.value = '';
+
+  const amountSrc = parseFloat(amountFrom.value?.replace(/,/g, '.'));
+  const amountDst = parseFloat(amountTo.value?.replace(/,/g, '.'));
+
+  if (amountSrc === 0 || amountDst === 0) {
+    submitError.value = 'Значение должно быть больше 0';
+    return;
+  }
+
+  if (currentAccountFrom.value?.id === currentAccountTo.value?.id) {
+    submitError.value = 'Нельзя переводить на тот же счет';
+    return;
+  }
+
   isSubmitting.value = true;
+
   const transferData = {
     amountSrc: amountFrom.value.replace(/,/g, '.'),
     amountDst: amountTo.value.replace(/,/g, '.'),
@@ -72,14 +89,10 @@ const onSubmit = async () => {
   };
 
   try {
-    await api.createTransactionTransfer(
-      token.value,
-      transferData
-    );
-
+    await api.createTransactionTransfer(token.value, transferData);
     emit('saved');
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 };
 
@@ -140,6 +153,9 @@ watch(amountFrom, (newValue) => {
                 v-model='amountFrom'
               />
               <span class='input-group-text'>{{ currentCurrencyNameFrom }}</span>
+            </div>
+            <div v-if="submitError" class="mt-3">
+              <AlertWarning :title="submitError" />
             </div>
           </div>
           <div class='col'>
