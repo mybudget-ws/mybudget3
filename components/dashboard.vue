@@ -88,8 +88,7 @@ watch(token, (val) => {
         title='Доходы'
         :is-loading='isLoading'
         :colors="['#0ca678']"
-        :chart-series='dashboard.incomeSeries'
-        :chart-categories='dashboard.incomeCategories'
+        :chart-data='dashboard.incomesChart'
       >
         <div class='card-table table-responsive'>
           <table class='table table-vcenter'>
@@ -124,8 +123,7 @@ watch(token, (val) => {
         :key="`expenses-${isLoading}`"
         title='Расходы'
         :is-loading='isLoading'
-        :chart-series='dashboard.expenseSeries'
-        :chart-categories='dashboard.expenseCategories'
+        :chart-data='dashboard.expensesChart'
       >
         <div class='card-table table-responsive'>
           <table class='table table-vcenter'>
@@ -157,8 +155,41 @@ watch(token, (val) => {
 
     <div class='col-lg-6'>
       <DashboardBlock
+        :key="`accounts-${isLoading}`"
         title='Счета'
-      />
+        chart-type='line'
+        :is-loading='isLoading'
+        :chart-data='dashboard.accountsChart'
+      >
+        <div class='card-table table-responsive'>
+          <table class='table table-vcenter'>
+            <thead>
+              <tr>
+                <th class='text-nowrap'>Название</th>
+                <th class='w-1 text-nowrap text-end'>Баланс</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for='item in dashboard.accounts.sort((a, b) => b.balanceBase - a.balanceBase)' :key='item.id'>
+                <td class='text-nowrap'>{{ item.name }}</td>
+                <td class='text-nowrap text-end'>
+                  <span
+                    :class="{
+                      'text-success': item.balance > 0,
+                      'text-danger': item.balance < 0
+                    }"
+                  >
+                    <Amount
+                      :value='item.balance'
+                      :currency='item.currency.name'
+                    />
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </DashboardBlock>
     </div>
 
     <div class='col-lg-6'>
