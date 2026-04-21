@@ -20,7 +20,7 @@ const props = defineProps({
   },
   chartData: {
     type: Object,
-    default: () => {},
+    default: undefined,
   },
   isLoading: {
     type: Boolean,

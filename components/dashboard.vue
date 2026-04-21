@@ -37,6 +37,15 @@ const load = async () => {
   }
 };
 
+const accountsOrdered = computed(() => {
+  if (isLoading.value) return [];
+  if (!dashboard.value.accounts) return [];
+
+  return [...dashboard.value.accounts].sort(
+    (a, b) => b.balanceBase - a.balanceBase
+  );
+});
+
 watch(token, (val) => {
   if (val) load();
 }, { immediate: true });
@@ -170,7 +179,7 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for='item in dashboard.accounts.sort((a, b) => b.balanceBase - a.balanceBase)' :key='item.id'>
+              <tr v-for='item in accountsOrdered' :key='item.id'>
                 <td class='text-nowrap'>{{ item.name }}</td>
                 <td class='text-nowrap text-end'>
                   <span
