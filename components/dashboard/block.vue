@@ -4,7 +4,6 @@ import VueApexCharts from 'vue3-apexcharts';
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const CHART_HEIGTH = 200;
-const CHART_TYPE = 'bar';
 
 const props = defineProps({
   title: {
@@ -15,13 +14,13 @@ const props = defineProps({
     type: Array,
     default: () => ['#4263eb'],
   },
-  chartSeries: {
-    type: Array,
-    default: () => [],
+  chartType: {
+    type: String,
+    default: 'bar',
   },
-  chartCategories: {
-    type: Array,
-    default: () => [],
+  chartData: {
+    type: Object,
+    default: undefined,
   },
   isLoading: {
     type: Boolean,
@@ -29,16 +28,12 @@ const props = defineProps({
   },
 });
 
-const series = [
-  {
-    name: props.title,
-    data: props.chartSeries,
-  }
-];
+const categories = computed(() => props.chartData?.categories || []);
+const series = computed(() => props.chartData?.series || []);
 
 const chartOptions = {
   chart: {
-    type: CHART_TYPE,
+    type: props.chartType,
     fontFamily: 'inherit',
     height: CHART_HEIGTH,
     parentHeightOffset: 0,
@@ -66,7 +61,7 @@ const chartOptions = {
     enabled: false,
   },
   xaxis: {
-    categories: props.chartCategories,
+    categories: categories.value,
     offsetY: 0,
     axisBorder: {
       show: false,
@@ -109,7 +104,7 @@ const chartOptions = {
       </div>
       <div v-else class='w-full'>
         <VueApexCharts
-          :type=CHART_TYPE
+          :type='props.chartType'
           :height=CHART_HEIGTH
           :options='chartOptions'
           :series='series'
