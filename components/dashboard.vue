@@ -18,6 +18,31 @@ const onIncome = () => alert('новых доход');
 const onTransfer = () => alert('новых перевод')
 const onExpense = () => alert('новых расход');
 
+const KIND_EXPENSE = 'expense';
+const KIND_INCOME = 'income';
+
+const isShowModal = ref(false);
+const isShowModalTransfer = ref(false);
+const currentKind = ref(KIND_INCOME);
+const currentItem = ref(null);
+const isCopyItem = ref(false);
+
+const openCreate = (kind) => {
+  currentKind.value = kind;
+  currentItem.value = null;
+  isCopyItem.value = false;
+  isShowModal.value = true;
+};
+
+const openCreateTransfer = () => {
+  isShowModalTransfer.value = true;
+};
+
+const onSaved = async () => {
+  isShowModal.value = false;
+  isShowModalTransfer.value = false;
+  await load();
+};
 const load = async () => {
   isLoading.value = true;
   isError.value = false;
@@ -52,6 +77,20 @@ watch(token, (val) => {
 </script>
 
 <template>
+  <ModalNewTransaction
+    v-if="isShowModal"
+    :kind="currentKind"
+    :item="currentItem"
+    :is-copy="isCopyItem"
+    @saved="onSaved"
+    @close="isShowModal = false"
+  />
+
+  <ModalNewTransfer
+    v-if="isShowModalTransfer"
+    @saved="onSaved"
+    @close="isShowModalTransfer = false"
+  />
   <div class='row align-items-center mb-4'>
     <div class='col'>
       <div v-if='isLoading' class='text-start placeholder-glow'>
@@ -68,21 +107,23 @@ watch(token, (val) => {
         <button
           class='btn btn-outline-green'
           type='button'
-          @click='onIncome'
+          @click="openCreate(KIND_INCOME)"
         >
           <IconArrowUp stroke-width=2 />
         </button>
+
         <button
           class='btn btn-outline-secondary'
           type='button'
-          @click='onTransfer'
+          @click="openCreateTransfer()"
         >
           <IconArrowsRightLeft stroke-width=2 />
         </button>
+
         <button
           class='btn btn-primary'
           type='button'
-          @click='onExpense'
+          @click="openCreate(KIND_EXPENSE)"
         >
           <IconArrowDown stroke-width=2 />
         </button>
