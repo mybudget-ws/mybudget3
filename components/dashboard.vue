@@ -3,6 +3,8 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
+  IconArrowNarrowLeft,
+  IconArrowNarrowRight,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -13,10 +15,6 @@ const { token } = useAuth();
 const isLoading = ref(true);
 const isError = ref(false);
 const dashboard = ref({});
-
-const onIncome = () => alert('новых доход');
-const onTransfer = () => alert('новых перевод')
-const onExpense = () => alert('новых расход');
 
 const KIND_EXPENSE = 'expense';
 const KIND_INCOME = 'income';
@@ -74,6 +72,7 @@ const accountsOrdered = computed(() => {
 watch(token, (val) => {
   if (val) load();
 }, { immediate: true });
+
 </script>
 
 <template>
@@ -155,11 +154,32 @@ watch(token, (val) => {
                   {{ formatDate(item.dateAt) }}
                 </td>
                 <td class='text-nowrap'>{{ item.account.name }}</td>
-                <td class='text-nowrap text-end text-success'>
-                  <Amount
-                    :value='item.amount'
-                    :currency='item.account.currency.name'
-                  />
+                <td class='text-nowrap text-end'>
+                  <div class="d-flex justify-content-end align-items-center gap-2">
+                    <template v-if='item.isTransfer'>
+                      <span
+                        v-if="item.amount > 0"
+                        class="badge bg-green-lt text-green-lt-fg"
+                      >
+                        <IconArrowNarrowLeft size="16" />
+                      </span>
+
+                      <span
+                        v-if="item.amount < 0"
+                        class="badge bg-red-lt text-red-lt-fg"
+                      >
+                        <IconArrowNarrowRight size="16" />
+                      </span>
+                    </template>
+
+                    <span class="text-success">
+                      <Amount
+                        :value='item.amount'
+                        :currency='item.account.currency.name'
+                      />
+                    </span>
+
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -190,11 +210,31 @@ watch(token, (val) => {
                   {{ formatDate(item.dateAt) }}
                 </td>
                 <td class='text-nowrap'>{{ item.account.name }}</td>
-                <td class='text-nowrap text-end text-danger'>
-                  <Amount
-                    :value='item.amount'
-                    :currency='item.account.currency.name'
-                  />
+                <td class='text-nowrap text-end'>
+                  <div class="d-flex justify-content-end align-items-center gap-2">
+                    <template v-if='item.isTransfer'>
+                      <span
+                        v-if="item.amount > 0"
+                        class="badge bg-green-lt text-green-lt-fg"
+                      >
+                        <IconArrowNarrowLeft size="16" />
+                      </span>
+
+                      <span
+                        v-if="item.amount < 0"
+                        class="badge bg-red-lt text-red-lt-fg"
+                      >
+                        <IconArrowNarrowRight size="16" />
+                      </span>
+                    </template>
+
+                    <span class="text-danger">
+                      <Amount
+                        :value='item.amount'
+                        :currency='item.account.currency.name'
+                      />
+                    </span>
+                  </div>
                 </td>
               </tr>
             </tbody>
