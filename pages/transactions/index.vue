@@ -39,6 +39,7 @@ const transactions = ref([]);
 const transactionEventTicks = ref(1);
 const selectedCategories = ref([]);
 const selectedProjects = ref([]);
+const selectedProperties = ref([]);
 
 const filters = computed(() => {
   const parse = (val) => {
@@ -71,6 +72,10 @@ const onCategoriesChange = (categories) => {
 
 const onProjectsChange = (projects) => {
   selectedProjects.value = projects;
+};
+
+const onPropertiesChange = (properties) => {
+  selectedProperties.value = properties;
 };
 
 const load = async (isQuite = false) => {
@@ -215,6 +220,25 @@ const onProjectClick = (id) => {
 
   router.replace({ query: nextQuery });
 };
+const onPropertyClick = (id) => {
+  const current = route.query.properties
+    ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newProperties = current.includes(id)
+    ? current.filter(p => p !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newProperties.length > 0) {
+    nextQuery.properties = newProperties.join(',');
+  } else {
+    delete nextQuery.properties;
+  }
+
+  router.replace({ query: nextQuery });
+};
 </script>
 
 <template>
@@ -290,7 +314,7 @@ const onProjectClick = (id) => {
           </div>
 
           <div
-            v-if='selectedCategories.length || selectedProjects.length'
+            v-if='selectedCategories.length || selectedProjects.length || selectedProperties.length'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
@@ -303,17 +327,28 @@ const onProjectClick = (id) => {
                 {{ category.name }}
                 <IconX size='12' />
               </span>
-                <span
-                  v-for='project in selectedProjects'
-                  :key='project.id'
-                  class='badge cursor-pointer'
-                  :class='badgeClasses("project")'
-                  @click='onProjectClick(project.id)'
-                >
-                  <IconBulbFilled size=12 stroke-width=2 />
-                  {{ project.name }}
-                  <IconX size='12' />
-                </span>
+              <span
+                v-for='project in selectedProjects'
+                :key='project.id'
+                class='badge cursor-pointer'
+                :class='badgeClasses("project")'
+                @click='onProjectClick(project.id)'
+              >
+                <IconBulbFilled size=12 stroke-width=2 />
+                {{ project.name }}
+                <IconX size='12' />
+              </span>
+              <span
+                v-for='property in selectedProperties'
+                :key='property.id'
+                class='badge cursor-pointer'
+                :class='badgeClasses("property")'
+                @click='onPropertyClick(property.id)'
+              >
+                <IconKeyFilled size=12 stroke-width=2 />
+                {{ property.name }}
+                <IconX size='12' />
+              </span>
             </div>
           </div>
 
@@ -379,8 +414,9 @@ const onProjectClick = (id) => {
                         </span>
                         <span
                           v-if='item.property'
-                          class='badge'
+                          class='badge cursor-pointer'
                           :class='badgeClasses("property")'
+                          @click="onPropertyClick(item.property.id)"
                         >
                           <IconKeyFilled size=12 stroke-width=2 />
                           {{ item.property.name }}
@@ -455,7 +491,7 @@ const onProjectClick = (id) => {
       <FilterAccounts :reload='transactionEventTicks' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
-      <FilterProperties />
+      <FilterProperties @update:items='onPropertiesChange' />
     </div>
   </div>
 </template>
