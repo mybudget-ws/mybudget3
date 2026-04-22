@@ -37,21 +37,30 @@ const toggleSelection = (id) => {
     selectedIds.value.add(id);
   }
 
-  router.replace({
-    query: {
-      ...route.query,
-      properties: Array.from(selectedIds.value).join(','),
-    },
-  });
+  const nextQuery = { ...route.query };
+  const propertyIds = Array.from(selectedIds.value).filter(Boolean);
+
+  if (propertyIds.length > 0) {
+    nextQuery.properties = propertyIds.join(',');
+  } else {
+    delete nextQuery.properties;
+  }
+
+  router.replace({ query: nextQuery });
 };
 
 const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
 
-const initSelectedItemsByQuery = (items = '') => {
-  const queryIds = items?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.map(id => Number(id)));
+const initSelectedItemsByQuery = (value = '') => {
+  const queryIds = value
+    ?.toString()
+    .split(',')
+    .map(Number)
+    .filter(Boolean) || [];
+
+  selectedIds.value = new Set(queryIds);
 }
 const selectedItems = computed(() => {
   return items.value.filter(item => selectedIds.value.has(item.id));
