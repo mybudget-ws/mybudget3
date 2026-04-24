@@ -58,7 +58,7 @@ const inputAttrs = computed(() => ({
 const inputClass = computed(() => ([
   'form-control',
   props.class,
-  props.isError === true ? 'border-red' : '',
+  props.isError === true ? 'border-danger' : '',
 ]));
 
 const isShowErrorMessage = computed(() => (
