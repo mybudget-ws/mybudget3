@@ -14,6 +14,7 @@ const accountName = ref('');
 const accountKind = ref(KINDS[0].value);
 const accountCurrency = ref(DEFAULT_CURRENCY);
 const accountPosition = ref(DEFAULT_POSITION);
+const accountDescription = ref('');
 const currencies = ref([]);
 const isSubmitting = ref(false);
 
@@ -47,6 +48,7 @@ const onSubmit = async () => {
       await api.updateAccount(token.value, {
         id: props.item.id,
         name: accountName.value,
+        description: accountDescription.value,
         color: props.item.color || DEFAULT_COLOR,
         currency: accountCurrency.value,
         kind: accountKind.value,
@@ -55,9 +57,11 @@ const onSubmit = async () => {
     } else {
       await api.createAccount(token.value, {
         name: accountName.value,
+        description: accountDescription.value,
         color: DEFAULT_COLOR,
         currency: accountCurrency.value,
         kind: accountKind.value,
+        position: Number(accountPosition.value) || DEFAULT_POSITION,
       });
     }
 
@@ -71,6 +75,7 @@ watch(
   () => props.item,
   (val) => {
     accountName.value = val?.name ?? '';
+    accountDescription.value = val?.description ?? '';
     accountKind.value = val?.kind ?? KINDS[0].value;
     accountCurrency.value = val?.currency?.name ?? DEFAULT_CURRENCY;
     accountPosition.value = val?.position ?? DEFAULT_POSITION;
@@ -90,20 +95,32 @@ watch(
       </div>
 
       <div class='modal-body'>
-        <div class='mb-3'>
-          <Label required>Название</Label>
-          <Input
-            v-model='accountName'
-            required
-            type='text'
-            class='form-control'
-            placeholder='Новый счёт'
-            :disabled='isSubmitting'
-          />
-        </div>
-
         <div class='row mb-3'>
-          <div :class="isEdit ? 'col-lg-6' : ''" class='col-md-12'>
+          <div class='col-md-6'>
+            <Label required>Название</Label>
+            <Input
+              v-model='accountName'
+              required
+              type='text'
+              class='form-control'
+              placeholder='Новый счёт'
+              :disabled='isSubmitting'
+            />
+          </div>
+
+          <div class='col-md-6'>
+            <Label>Описание</Label>
+            <Input
+              v-model='accountDescription'
+              type='text'
+              class='form-control'
+              placeholder='Описание счёта'
+              :disabled='isSubmitting'
+            />
+          </div>
+        </div>
+        <div class='row mb-3'>
+          <div class='col-md-6'>
             <Label required>Валюта</Label>
             <select
               v-model='accountCurrency'
@@ -120,7 +137,7 @@ watch(
               </option>
             </select>
           </div>
-          <div v-if='isEdit' class='col-lg-6 col-md-12'>
+          <div class='col-md-6'>
             <Label required>Позиция в списке</Label>
             <Input
               v-model='accountPosition'
@@ -132,7 +149,6 @@ watch(
             />
           </div>
         </div>
-
         <div class='mb-3'>
           <Label>Тип счёта</Label>
           <div class='form-selectgroup form-selectgroup-boxes d-flex'>

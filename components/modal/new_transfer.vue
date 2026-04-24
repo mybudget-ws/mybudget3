@@ -16,8 +16,15 @@ const isSubmitting = ref(false);
 const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
 const amountFromRef = ref(null);
+const amountFromError = ref('');
+const amountToError = ref('');
+const sameAccountError = ref('');
 
 const emit = defineEmits(['saved', 'close', 'accountNew']);
+
+const isSameAccountError = computed(() => sameAccountError.value !== '');
+const isAmountFromError = computed(() => amountFromError.value !== '');
+const isAmountToError = computed(() => amountToError.value !== '');
 
 const focusAmountFrom = () => {
   nextTick(() => {
@@ -61,6 +68,24 @@ const isSubmitDisabled = computed(() => {
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
 
+  sameAccountError.value = '';
+  amountFromError.value = '';
+  amountToError.value = '';
+
+  const amountSrc = parseFloat(amountFrom.value?.replace(/,/g, '.'));
+  const amountDst = parseFloat(amountTo.value?.replace(/,/g, '.'));
+
+  if (amountSrc <= 0 || amountDst <= 0) {
+    if (amountSrc <= 0) amountFromError.value = 'Значение должно быть больше 0';
+    if (amountDst <= 0) amountToError.value = 'Значение должно быть больше 0';
+    return;
+  }
+
+  if (currentAccountFrom.value?.id === currentAccountTo.value?.id) {
+    sameAccountError.value = 'Невозможно создать перевод на этот же счёт';
+    return;
+  }
+
   isSubmitting.value = true;
   const transferData = {
     amountSrc: amountFrom.value.replace(/,/g, '.'),
@@ -72,14 +97,10 @@ const onSubmit = async () => {
   };
 
   try {
-    await api.createTransactionTransfer(
-      token.value,
-      transferData
-    );
-
+    await api.createTransactionTransfer(token.value, transferData);
     emit('saved');
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 };
 
@@ -117,6 +138,12 @@ watch(amountFrom, (newValue) => {
           </div>
         </div>
 
+        <div v-if='isSameAccountError' class='row mb-3'>
+          <div class='col'>
+            <AlertWarning :title='sameAccountError' />
+          </div>
+        </div>
+
         <div v-if='isAccountEmpty' class='row mb-3'>
           <div class='col'>
             <AlertWarning
@@ -137,11 +164,18 @@ watch(amountFrom, (newValue) => {
                 placeholder='0.00'
                 required
                 :disabled='isSubmitting'
+                :is-error='isAmountFromError'
                 v-model='amountFrom'
               />
-              <span class='input-group-text'>{{ currentCurrencyNameFrom }}</span>
+              <span class='input-group-text' :class="isAmountFromError ? 'border-danger' : ''">
+                {{ currentCurrencyNameFrom }}
+              </span>
+            </div>
+            <div v-if='isAmountFromError' class='text-danger mt-1'>
+              {{ amountFromError }}
             </div>
           </div>
+
           <div class='col'>
             <Label required>Величина (получатель)</Label>
             <div class='input-group input-group-flat'>
@@ -150,9 +184,15 @@ watch(amountFrom, (newValue) => {
                 placeholder='0.00'
                 required
                 :disabled='isSubmitting'
+                :is-error='isAmountToError'
                 v-model='amountTo'
               />
-              <span class='input-group-text'>{{ currentCurrencyNameTo }}</span>
+              <span class='input-group-text' :class="isAmountToError ? 'border-danger' : ''">
+                {{ currentCurrencyNameTo }}
+              </span>
+            </div>
+            <div v-if='isAmountToError' class='text-danger mt-1'>
+              {{ amountToError }}
             </div>
           </div>
         </div>

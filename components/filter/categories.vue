@@ -55,9 +55,13 @@ const initSelectedItemsByQuery = (items = '') => {
   selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
 }
 
-watch(() => route, (newRoute) => {
-  initSelectedItemsByQuery(newRoute.query.categories);
-}, { immediate: true, deep: true })
+watch(
+  () => route.query.categories,
+  (value) => {
+    initSelectedItemsByQuery(value);
+  },
+  { immediate: true }
+);
 
 watch(selectedIds, () => {
   if (items.value.length === 0) return;

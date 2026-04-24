@@ -41,6 +41,7 @@ const transactionEventTicks = ref(1);
 const selectedCategories = ref([]);
 const selectedProjects = ref([]);
 const selectedAccounts = ref([]); 
+const selectedProperties = ref([]);
 
 const filters = computed(() => {
   const parse = (val) => {
@@ -77,6 +78,10 @@ const onProjectsChange = (projects) => {
 
 const onAccountsChange = (accounts) => {
   selectedAccounts.value = accounts;
+};
+
+const onPropertiesChange = (properties) => {
+  selectedProperties.value = properties;
 };
 
 const load = async (isQuite = false) => {
@@ -227,6 +232,26 @@ const onAccountClick = (id) => {
 
   router.replace({ query: nextQuery });
 };
+  
+const onPropertyClick = (id) => {
+  const current = route.query.properties
+    ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newProperties = current.includes(id)
+    ? current.filter(p => p !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+  
+  if (newProperties.length > 0) {
+    nextQuery.properties = newProperties.join(',');
+  } else {
+    delete nextQuery.properties;
+  }
+
+  router.replace({ query: nextQuery });
+};
 
 // Тут watchEffect не использую, т.к. похоже
 // watch на route.query срабатывает.
@@ -316,7 +341,7 @@ watch(
           </div>
 
           <div
-            v-if='selectedCategories.length || selectedProjects.length || selectedAccounts.length'
+            v-if='selectedCategories.length || selectedProjects.length || selectedAccounts.length || selectedProperties.length'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
@@ -329,27 +354,38 @@ watch(
                 {{ category.name }}
                 <IconX size='12' />
               </span>
-                <span
-                  v-for='project in selectedProjects'
-                  :key='project.id'
-                  class='badge cursor-pointer'
-                  :class='badgeClasses("project")'
-                  @click='onProjectClick(project.id)'
-                >
-                  <IconBulbFilled size=12 stroke-width=2 />
-                  {{ project.name }}
-                  <IconX size='12' />
-                </span>
-                <span
-                  v-for='account in selectedAccounts'
-                  :key='account.id'
-                  class='badge cursor-pointer'
-                  @click='onAccountClick(account.id)'
-                >
-                  <IconWallet size=14 stroke-width=2 />
-                  {{ account.name }}
-                  <IconX size='12' />
-                </span>
+              <span
+                v-for='project in selectedProjects'
+                :key='project.id'
+                class='badge cursor-pointer'
+                :class='badgeClasses("project")'
+                @click='onProjectClick(project.id)'
+              >
+                <IconBulbFilled size=12 stroke-width=2 />
+                {{ project.name }}
+                <IconX size='12' />
+              </span>
+              <span
+                v-for='account in selectedAccounts'
+                :key='account.id'
+                class='badge cursor-pointer'
+                @click='onAccountClick(account.id)'
+              >
+                <IconWallet size=14 stroke-width=2 />
+                {{ account.name }}
+                <IconX size='12' />
+              </span>
+              <span
+                v-for='property in selectedProperties'
+                :key='property.id'
+                class='badge cursor-pointer'
+                :class='badgeClasses("property")'
+                @click='onPropertyClick(property.id)'
+              >
+                <IconKeyFilled size=12 stroke-width=2 />
+                {{ property.name }}
+                <IconX size='12' />
+              </span>            
             </div>
           </div>
 
@@ -423,8 +459,9 @@ watch(
                         </span>
                         <span
                           v-if='item.property'
-                          class='badge'
+                          class='badge cursor-pointer'
                           :class='badgeClasses("property")'
+                          @click="onPropertyClick(item.property.id)"
                         >
                           <IconKeyFilled size=12 stroke-width=2 />
                           {{ item.property.name }}
@@ -499,7 +536,7 @@ watch(
       <FilterAccounts @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
-      <FilterProperties />
+      <FilterProperties @update:items='onPropertiesChange' />
     </div>
   </div>
 </template>
