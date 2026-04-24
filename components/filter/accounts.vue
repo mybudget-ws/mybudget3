@@ -11,7 +11,7 @@ const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref(new Set());
 const isShowModal = ref(false);
-
+const emit = defineEmits(['update:items']);
 const props = defineProps({
   reload: {
     type: Number,
@@ -37,6 +37,11 @@ const load = async (isQuite = false) => {
 };
 defineExpose({ load });
 
+const emitSelected = () => {
+  const selected = items.value.filter(i => selectedIds.value.has(i.id));
+  emit('update:items', selected);
+};
+
 const toggleSelection = (id) => {
   if (id === 0 || id === '0') return;
   if (selectedIds.value.has(id)) {
@@ -44,23 +49,25 @@ const toggleSelection = (id) => {
   } else {
     selectedIds.value.add(id);
   }
-
   router.replace({
     query: {
       ...route.query,
       accounts: Array.from(selectedIds.value).join(','),
     },
   });
+  emitSelected();
 };
 
 const visibleItems = computed(() => (
   items.value.filter(v => v.isHidden === false)
 ));
 
-const initSelectedItemsByQuery = (items = '') => {
-  const queryIds = items?.toString().split(',') || [];
+const initSelectedItemsByQuery = (itemsQuery = '') => {
+  const queryIds = itemsQuery?.toString().split(',') || [];
   selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
-}
+
+  emitSelected();
+};
 
 const onSaved = async () => {
   isShowModal.value = false;

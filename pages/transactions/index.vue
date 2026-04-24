@@ -11,6 +11,7 @@ import {
   IconX,
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
+  IconWallet
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -39,6 +40,7 @@ const transactions = ref([]);
 const transactionEventTicks = ref(1);
 const selectedCategories = ref([]);
 const selectedProjects = ref([]);
+const selectedAccounts = ref([]); 
 
 const filters = computed(() => {
   const parse = (val) => {
@@ -215,6 +217,28 @@ const onProjectClick = (id) => {
 
   router.replace({ query: nextQuery });
 };
+const onAccountClick = (id) => {
+  const current = route.query.accounts
+    ? route.query.accounts.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newAccounts = current.includes(id)
+    ? current.filter(a => a !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newAccounts.length > 0) {
+    nextQuery.accounts = newAccounts.join(',');
+  } else {
+    delete nextQuery.accounts;
+  }
+
+  router.replace({ query: nextQuery });
+};
+const onAccountsChange = (accounts) => {
+  selectedAccounts.value = accounts;
+};
 </script>
 
 <template>
@@ -290,7 +314,7 @@ const onProjectClick = (id) => {
           </div>
 
           <div
-            v-if='selectedCategories.length || selectedProjects.length'
+            v-if='selectedCategories.length || selectedProjects.length || selectedAccounts.length'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
@@ -312,6 +336,16 @@ const onProjectClick = (id) => {
                 >
                   <IconBulbFilled size=12 stroke-width=2 />
                   {{ project.name }}
+                  <IconX size='12' />
+                </span>
+                <span
+                  v-for='account in selectedAccounts'
+                  :key='account.id'
+                  class='badge cursor-pointer'
+                  @click='onAccountClick(account.id)'
+                >
+                  <IconWallet size=14 stroke-width=2 />
+                  {{ account.name }}
                   <IconX size='12' />
                 </span>
             </div>
@@ -351,7 +385,15 @@ const onProjectClick = (id) => {
                         />
                       </span>
                     </td>
-                    <td class='text-nowrap'>{{ item.account.name }}</td>
+                    <td class='text-secondary'>
+                      <span
+                        class='badge cursor-pointer'
+                        @click="onAccountClick(item.account.id)"
+                      >
+                        <IconWallet size=14 stroke-width=2 />
+                        {{ item.account.name }}
+                      </span>
+                    </td>
                     <td>
                       <div class='badges-list'>
                         <template v-if='item.isTransfer'>
@@ -452,7 +494,7 @@ const onProjectClick = (id) => {
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterAccounts :reload='transactionEventTicks' />
+      <FilterAccounts @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
       <FilterProperties />
