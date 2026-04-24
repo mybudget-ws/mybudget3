@@ -533,7 +533,7 @@ watch(
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterAccounts @update:items='onAccountsChange' />
+      <FilterAccounts @update:items='onAccountsChange' :reload='transactionEventTicks' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
       <FilterProperties @update:items='onPropertiesChange' />
