@@ -142,9 +142,7 @@ watchEffect(() => {
                       <span class='me-2'>{{ item.name }}</span>
                       <span v-if='isShowKind(item)' class='badge'>{{ kindDisplayName(item) }}</span>
                     </td>
-                    <td class="text-muted">
-                      {{ item.description || ' ' }}
-                    </td>
+                    <td class='text-secondary'>{{ item.description }}</td>
                     <td class='text-nowrap text-end'>
                       <span
                         :class="{
@@ -185,16 +183,14 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
-                     <th>Описание</th>
+                    <th>Описание</th>
                     <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
                   <tr v-for="item in hiddenItems" :key="item.id">
                     <td>{{ item.name }}</td>
-                    <td class="text-muted">
-                      {{ item.description || ' ' }}
-                    </td>
+                    <td class='text-secondary'>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions justify-content-end'>
                         <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
