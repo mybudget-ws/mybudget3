@@ -385,7 +385,7 @@ watch(
                 <IconKeyFilled size=12 stroke-width=2 />
                 {{ property.name }}
                 <IconX size='12' />
-              </span>            
+              </span>
             </div>
           </div>
 
