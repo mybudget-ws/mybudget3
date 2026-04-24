@@ -75,6 +75,10 @@ const onProjectsChange = (projects) => {
   selectedProjects.value = projects;
 };
 
+const onAccountsChange = (accounts) => {
+  selectedAccounts.value = accounts;
+};
+
 const load = async (isQuite = false) => {
   if (isQuite) {
     isQuiteLoading.value = true
@@ -156,20 +160,6 @@ const onSaved = async () => {
   await load(true);
 };
 
-// Тут watchEffect не использую, т.к. похоже
-// watch на route.query срабатывает.
-//
-// watchEffect(() => {
-//   if (token.value) load();
-// });
-watch(
-  () => route.query,
-  () => {
-    if (token.value) load();
-  },
-  { immediate: true }
-);
-
 // TODO: Подумать, унифицировать, этот код с кодом
 //       в components/categories.vue
 const onCategoryClick = (id) => {
@@ -217,6 +207,7 @@ const onProjectClick = (id) => {
 
   router.replace({ query: nextQuery });
 };
+
 const onAccountClick = (id) => {
   const current = route.query.accounts
     ? route.query.accounts.toString().split(',').map(Number).filter(Boolean)
@@ -236,9 +227,20 @@ const onAccountClick = (id) => {
 
   router.replace({ query: nextQuery });
 };
-const onAccountsChange = (accounts) => {
-  selectedAccounts.value = accounts;
-};
+
+// Тут watchEffect не использую, т.к. похоже
+// watch на route.query срабатывает.
+//
+// watchEffect(() => {
+//   if (token.value) load();
+// });
+watch(
+  () => route.query,
+  () => {
+    if (token.value) load();
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
