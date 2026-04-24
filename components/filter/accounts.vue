@@ -67,13 +67,13 @@ const onSaved = async () => {
   await load(); 
 };
 
-watch(() => route, (newRoute) => {
-  initSelectedItemsByQuery(newRoute.query.accounts);
-}, { immediate: true, deep: true })
-
-watchEffect(() => {
-  if (token.value) load();
-});
+watch(
+  () => route.query.accounts,
+  (value) => {
+    initSelectedItemsByQuery(value);
+  },
+  { immediate: true }
+);
 
 watch(
   () => props.reload,
@@ -81,6 +81,10 @@ watch(
     if (props.reload > 1) load(true);
   }
 );
+
+watchEffect(() => {
+  if (token.value) load();
+});
 </script>
 
 <template>

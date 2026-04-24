@@ -61,9 +61,13 @@ const onSaved = async () => {
   await load();
 };
 
-watch(() => route, (newRoute) => {
-  initSelectedItemsByQuery(newRoute.query.projects);
-}, { immediate: true, deep: true })
+watch(
+  () => route.query.projects,
+  (value) => {
+    initSelectedItemsByQuery(value);
+  },
+  { immediate: true }
+);
 
 watch(selectedIds, () => {
   if (items.value.length === 0) return;

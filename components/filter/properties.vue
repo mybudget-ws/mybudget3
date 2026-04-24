@@ -62,24 +62,28 @@ const initSelectedItemsByQuery = (value = '') => {
 
   selectedIds.value = new Set(queryIds);
 }
+
 const selectedItems = computed(() => {
   return items.value.filter(item => selectedIds.value.has(item.id));
 });
+
 const onSaved = async () => {
   isShowModal.value = false;
   await load();
 };
+
 watch(selectedItems, (val) => {
   emit('update:items', val);
 }, { immediate: true });
 
 watch(
   () => route.query.properties,
-  (val) => {
-    initSelectedItemsByQuery(val);
+  (value) => {
+    initSelectedItemsByQuery(value);
   },
   { immediate: true }
 );
+
 watchEffect(() => {
   if (token.value) load();
 });
