@@ -2,15 +2,21 @@
 const route = useRoute();
 const router = useRouter();
 
-const emit = defineEmits(['update:items']);
-
+const selectedIds = ref(new Set());
 const items = ref([
   { id: 'INCOME', name: 'Доход' },
   { id: 'EXPENSE', name: 'Расход' },
   { id: 'TRANSFER', name: 'Перевод' },
 ]);
 
-const selectedIds = ref(new Set());
+const emit = defineEmits(['update:items']);
+
+const props = defineProps({
+  isLoading: {
+    type: Boolean,
+    default: null,
+  }
+});
 
 const selectedItems = computed(() => {
   return items.value.filter(item => selectedIds.value.has(item.id));
@@ -51,7 +57,9 @@ watch(selectedItems, (val) => {
 
 <template>
   <div class="card mb-3">
-    <div class="card-body pt-3 pe-2 pb-0 ps-3 pb-1">
+    <PlaceholderLoadingFilters v-if='props.isLoading' />
+    
+    <div v-else class="card-body pt-3 pe-2 pb-0 ps-3 pb-1">
       <div class="subheader mb-3">
         Тип операций
       </div>

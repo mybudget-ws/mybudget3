@@ -29,6 +29,7 @@ const { token } = useAuth();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
+const isLoaded = ref(false);
 const isCopyItem = ref(false);
 const isShowModal = ref(false);
 const isShowModalTransfer = ref(false);
@@ -110,7 +111,8 @@ const load = async (isQuite = false) => {
   try {
     const items = await api.transactions(token.value, params.value);
     if (items) {
-      transactions.value = items
+      transactions.value = items;
+      isLoaded.value = true;
     } else {
       console.log('TODO: error');
     }
@@ -549,7 +551,7 @@ watch(
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterKinds @update:items="onKindsChange" />
+      <FilterKinds @update:items="onKindsChange" :isLoading="!isLoaded" />
       <FilterAccounts @update:items='onAccountsChange' :reload='transactionEventTicks' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
