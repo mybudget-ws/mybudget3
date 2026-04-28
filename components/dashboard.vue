@@ -125,7 +125,7 @@ watch(token, (val) => {
         <button
           class='btn btn-outline-secondary'
           type='button'
-          @click="openCreateTransfer()"
+          @click='openCreateTransfer'
         >
           <IconArrowsRightLeft stroke-width=2 />
         </button>
@@ -151,13 +151,13 @@ watch(token, (val) => {
         :chart-data='dashboard.incomesChart'
       >
         <div class='card-table table-responsive'>
-          <table class='table table-vcenter'>
+          <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
                 <th class='text-nowrap text-end'>Величина</th>
-                <th class='w-1'></th>
+                <th class='w-1'/>
               </tr>
             </thead>
             <tbody>
@@ -178,7 +178,7 @@ watch(token, (val) => {
                     class='btn btn-action'
                     @click.prevent='openCopy(item)'
                   >
-                    <IconCopy size=20 stroke-width=1 />
+                    <IconCopy size=18 stroke-width=1 />
                   </a>
                 </td>
               </tr>
@@ -196,13 +196,13 @@ watch(token, (val) => {
         :chart-data='dashboard.expensesChart'
       >
         <div class='card-table table-responsive'>
-          <table class='table table-vcenter'>
+          <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
                 <th class='text-nowrap text-end'>Величина</th>
-                <th class='w-1'></th>
+                <th class='w-1'/>
               </tr>
             </thead>
             <tbody>
@@ -219,12 +219,12 @@ watch(token, (val) => {
                 </td>
                 <td>
                   <button
-                    type='button'
                     v-tooltip:bottom="'Повторить операцию'"
+                    type='button'
                     class='btn btn-action'
-                    @click.prevent='openCopy(item)'
+                    @click='openCopy(item)'
                   >
-                    <IconCopy size=20 stroke-width=1 />
+                    <IconCopy size=18 stroke-width=1 />
                   </button>
                 </td>
               </tr>
@@ -243,11 +243,12 @@ watch(token, (val) => {
         :chart-data='dashboard.accountsChart'
       >
         <div class='card-table table-responsive'>
-          <table class='table table-vcenter'>
+          <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
                 <th class='text-nowrap'>Название</th>
                 <th class='w-1 text-nowrap text-end'>Баланс</th>
+                <th class='w-1' />
               </tr>
             </thead>
             <tbody>
@@ -265,6 +266,16 @@ watch(token, (val) => {
                       :currency='item.currency.name'
                     />
                   </span>
+                </td>
+                <td>
+                  <button
+                    v-tooltip:bottom="'Создать перевод'"
+                    type='button'
+                    class='btn btn-action'
+                    @click='openCreateTransfer'
+                  >
+                    <IconArrowsRightLeft size=18 stroke-width=1 />
+                  </button>
                 </td>
               </tr>
             </tbody>
