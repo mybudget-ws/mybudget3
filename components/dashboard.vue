@@ -148,8 +148,8 @@ watch(token, (val) => {
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
-                <th class='w-1 text-nowrap text-end'>Величина</th>
-                <th class='w-1 text-nowrap'></th>
+                <th class='text-nowrap text-end'>Величина</th>
+                <th class='w-1'></th>
               </tr>
             </thead>
             <tbody>
@@ -164,7 +164,7 @@ watch(token, (val) => {
                     :currency='item.account.currency.name'
                   />
                 </td>
-                <td style='width: 1%;' >
+                <td>
                   <a
                     v-tooltip:bottom="'Повторить операцию'"
                     class='btn btn-action'
@@ -193,8 +193,8 @@ watch(token, (val) => {
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
-                <th class='w-1 text-nowrap text-end'>Величина</th>
-                <th class='w-1 text-nowrap'></th>
+                <th class='text-nowrap text-end'>Величина</th>
+                <th class='w-1'></th>
               </tr>
             </thead>
             <tbody>
@@ -209,7 +209,7 @@ watch(token, (val) => {
                     :currency='item.account.currency.name'
                   />
                 </td>
-                <td style='width: 1%;' >
+                <td>
                   <a
                     v-tooltip:bottom="'Повторить операцию'"
                     class='btn btn-action'
