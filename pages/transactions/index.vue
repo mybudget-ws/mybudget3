@@ -29,6 +29,7 @@ const { token } = useAuth();
 
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
+const isLoaded = ref(false);
 const isCopyItem = ref(false);
 const isShowModal = ref(false);
 const isShowModalTransfer = ref(false);
@@ -42,6 +43,7 @@ const selectedCategories = ref([]);
 const selectedProjects = ref([]);
 const selectedAccounts = ref([]); 
 const selectedProperties = ref([]);
+const selectedKinds = ref([]);
 
 const filters = computed(() => {
   const parse = (val) => {
@@ -59,8 +61,19 @@ const filters = computed(() => {
     categoryIds: parse(route.query.categories),
     projectIds: parse(route.query.projects),
     propertyIds: parse(route.query.properties),
+    kinds: parseStringArray(route.query.kinds),
   };
 });
+
+const parseStringArray = (val) => {
+  if (typeof val === 'string') {
+    return val.split(',').filter(Boolean);
+  }
+  if (Array.isArray(val)) {
+    return val.filter(Boolean);
+  }
+  return [];
+};
 
 const params = computed(() => ({
   page: page.value,
@@ -84,6 +97,10 @@ const onPropertiesChange = (properties) => {
   selectedProperties.value = properties;
 };
 
+const onKindsChange = (kinds) => {
+  selectedKinds.value = kinds;
+};
+
 const load = async (isQuite = false) => {
   if (isQuite) {
     isQuiteLoading.value = true
@@ -94,7 +111,8 @@ const load = async (isQuite = false) => {
   try {
     const items = await api.transactions(token.value, params.value);
     if (items) {
-      transactions.value = items
+      transactions.value = items;
+      isLoaded.value = true;
     } else {
       console.log('TODO: error');
     }
@@ -533,6 +551,7 @@ watch(
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
+      <FilterKinds @update:items="onKindsChange" :isLoading="!isLoaded" />
       <FilterAccounts @update:items='onAccountsChange' :reload='transactionEventTicks' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
