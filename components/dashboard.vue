@@ -25,6 +25,7 @@ const isCopyItem = ref(false);
 const currentItem = ref(null);
 
 const openCreate = (kind) => {
+  currentItem.value = null;
   currentKind.value = kind;
   isCopyItem.value = false;
   isShowModal.value = true;
@@ -35,10 +36,17 @@ const openCreateTransfer = () => {
 };
 
 const onSaved = async () => {
-  isShowModal.value = false;
-  isShowModalTransfer.value = false;
+  closeModals();
   await load();
 };
+
+const closeModals = () => {
+  isShowModal.value = false;
+  isShowModalTransfer.value = false;
+  isCopyItem.value = false;
+  currentItem.value = null;
+};
+
 const load = async () => {
   isLoading.value = true;
   isError.value = false;
@@ -85,13 +93,13 @@ watch(token, (val) => {
     :item='currentItem'
     :is-copy="isCopyItem"
     @saved="onSaved"
-    @close="isShowModal = false"
+    @close="closeModals"
   />
 
   <ModalNewTransfer
     v-if="isShowModalTransfer"
     @saved="onSaved"
-    @close="isShowModalTransfer = false"
+    @close="closeModals"
   />
   <div class='row align-items-center mb-4'>
     <div class='col'>
