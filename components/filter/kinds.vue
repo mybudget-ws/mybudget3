@@ -12,6 +12,10 @@ const items = ref([
 
 const selectedIds = ref(new Set());
 
+const selectedItems = computed(() => {
+  return items.value.filter(item => selectedIds.value.has(item.id));
+});
+
 const initSelectedItemsByQuery = (val = '') => {
   const queryIds = val?.toString().split(',') || [];
   selectedIds.value = new Set(queryIds.filter(Boolean));
@@ -32,8 +36,6 @@ const toggleSelection = (id) => {
   });
 };
 
-const visibleItems = computed(() => items.value);
-
 watch(
   () => route.query.kinds,
   (value) => {
@@ -42,15 +44,9 @@ watch(
   { immediate: true }
 );
 
-watch(
-  selectedIds,
-  () => {
-    const result = Array.from(selectedIds.value);
-
-    emit('update:items', result);
-  },
-  { deep: true }
-);
+watch(selectedItems, (val) => {
+  emit('update:items', val);
+}, { immediate: true });
 </script>
 
 <template>
@@ -59,7 +55,7 @@ watch(
       <div class="subheader mb-3">
         Тип операций
       </div>
-      <div v-for="item in visibleItems" :key="item.id">
+      <div v-for="item in items" :key="item.id">
         <label class="form-check">
           <input
             class="form-check-input"
