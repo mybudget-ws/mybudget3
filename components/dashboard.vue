@@ -3,6 +3,7 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
+  IconCopy,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -21,8 +22,10 @@ const isShowModal = ref(false);
 const isShowModalTransfer = ref(false);
 const currentKind = ref(KIND_INCOME);
 const isCopyItem = ref(false);
+const currentItem = ref(null);
 
 const openCreate = (kind) => {
+  currentItem.value = null;
   currentKind.value = kind;
   isCopyItem.value = false;
   isShowModal.value = true;
@@ -33,10 +36,17 @@ const openCreateTransfer = () => {
 };
 
 const onSaved = async () => {
-  isShowModal.value = false;
-  isShowModalTransfer.value = false;
+  closeModals();
   await load();
 };
+
+const closeModals = () => {
+  isShowModal.value = false;
+  isShowModalTransfer.value = false;
+  isCopyItem.value = false;
+  currentItem.value = null;
+};
+
 const load = async () => {
   isLoading.value = true;
   isError.value = false;
@@ -64,7 +74,12 @@ const accountsOrdered = computed(() => {
     (a, b) => b.balanceBase - a.balanceBase
   );
 });
-
+const openCopy = (item) => {
+  currentItem.value = { ...item, id: undefined };
+  currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
+  isCopyItem.value = true;
+  isShowModal.value = true;
+};
 watch(token, (val) => {
   if (val) load();
 }, { immediate: true });
@@ -75,15 +90,16 @@ watch(token, (val) => {
   <ModalNewTransaction
     v-if="isShowModal"
     :kind="currentKind"
+    :item='currentItem'
     :is-copy="isCopyItem"
     @saved="onSaved"
-    @close="isShowModal = false"
+    @close="closeModals"
   />
 
   <ModalNewTransfer
     v-if="isShowModalTransfer"
     @saved="onSaved"
-    @close="isShowModalTransfer = false"
+    @close="closeModals"
   />
   <div class='row align-items-center mb-4'>
     <div class='col'>
@@ -140,7 +156,8 @@ watch(token, (val) => {
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
-                <th class='w-1 text-nowrap text-end'>Величина</th>
+                <th class='text-nowrap text-end'>Величина</th>
+                <th class='w-1'></th>
               </tr>
             </thead>
             <tbody>
@@ -154,6 +171,15 @@ watch(token, (val) => {
                     :value='item.amount'
                     :currency='item.account.currency.name'
                   />
+                </td>
+                <td>
+                  <a
+                    v-tooltip:bottom="'Повторить операцию'"
+                    class='btn btn-action'
+                    @click.prevent='openCopy(item)'
+                  >
+                    <IconCopy size=20 stroke-width=1 />
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -175,7 +201,8 @@ watch(token, (val) => {
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
-                <th class='w-1 text-nowrap text-end'>Величина</th>
+                <th class='text-nowrap text-end'>Величина</th>
+                <th class='w-1'></th>
               </tr>
             </thead>
             <tbody>
@@ -189,7 +216,17 @@ watch(token, (val) => {
                     :value='item.amount'
                     :currency='item.account.currency.name'
                   />
-                </td>                
+                </td>
+                <td>
+                  <button
+                    type='button'
+                    v-tooltip:bottom="'Повторить операцию'"
+                    class='btn btn-action'
+                    @click.prevent='openCopy(item)'
+                  >
+                    <IconCopy size=20 stroke-width=1 />
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
