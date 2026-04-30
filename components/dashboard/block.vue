@@ -12,7 +12,20 @@ const props = defineProps({
   },
   colors: {
     type: Array,
-    default: () => ['#4263eb'],
+    default: () => [
+      '#4263eb',
+      '#0ca678',
+      '#ae3ec9',
+      '#17a2b8',
+      '#f59f00',
+      '#066fd1',
+      '#74b816',
+      '#4299e1',
+      '#f76707',
+      '#2fb344',
+      '#d6336c',
+      '#d63939',
+    ],
   },
   chartType: {
     type: String,
@@ -31,10 +44,9 @@ const props = defineProps({
 const categories = computed(() => props.chartData?.categories || []);
 const series = computed(() => props.chartData?.series || []);
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   chart: {
     type: props.chartType,
-    fontFamily: 'inherit',
     height: CHART_HEIGTH,
     parentHeightOffset: 0,
     toolbar: { show: false, },
@@ -42,7 +54,10 @@ const chartOptions = {
     stacked: true,
     sparkline: { enabled: true },
   },
+  colors: props.colors,
+  labels: [...categories.value],
   tooltip: { theme: 'dark' },
+  stroke: { show: false },
   grid: {
     show: false,
     padding: {
@@ -61,7 +76,7 @@ const chartOptions = {
     enabled: false,
   },
   xaxis: {
-    categories: categories.value,
+    categories: [...categories.value],
     offsetY: 0,
     axisBorder: {
       show: false,
@@ -86,8 +101,7 @@ const chartOptions = {
       }
     },
   },
-  colors: props.colors,
-}
+}));
 </script>
 
 <template>

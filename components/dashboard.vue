@@ -70,9 +70,7 @@ const accountsOrdered = computed(() => {
   if (isLoading.value) return [];
   if (!dashboard.value.accounts) return [];
 
-  return [...dashboard.value.accounts].sort(
-    (a, b) => b.balanceBase - a.balanceBase
-  );
+  return dashboard.value.accounts;
 });
 const openCopy = (item) => {
   currentItem.value = { ...item, id: undefined };
@@ -238,7 +236,7 @@ watch(token, (val) => {
       <DashboardBlock
         :key="`accounts-${isLoading}`"
         title='Счета'
-        chart-type='line'
+        chart-type='donut'
         :is-loading='isLoading'
         :chart-data='dashboard.accountsChart'
       >
