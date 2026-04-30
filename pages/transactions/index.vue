@@ -497,22 +497,26 @@ watch(
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions'>
-                        <a
+                        <button
+                          type='button'
                           class='btn btn-action'
-                          @click.prevent='openEdit(item)'
+                          @click='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
-                        </a>
-                        <a
+                        </button>
+                        <button
+                          type='button'
                           v-tooltip:bottom="'Повторить операцию'"
                           class='btn btn-action'
-                          @click.prevent='openCopy(item)'
+                          @click='openCopy(item)'
                         >
                           <IconCopy size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                        </button>
+                        <button
+                          type='button'
+                          class='btn btn-action' @click='destroy(item)'>
                           <IconTrash size=20 stroke-width=1 />
-                        </a>
+                        </button>
                       </div>
                     </td>
                   </tr>
