@@ -2,6 +2,7 @@
 import VueApexCharts from 'vue3-apexcharts';
 
 import api from '~/lib/api';
+import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 
 const { token } = useAuth();
@@ -11,8 +12,8 @@ const chartData = ref({});
 
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
-const CHART_HEIGTH = 400;
-const CHART_TYPE = 'line'; // 'bar'
+const CHART_HEIGTH = 500;
+const CHART_TYPE = 'line';
 
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
@@ -49,6 +50,7 @@ const chartOptions = computed(() => ({
     toolbar: { show: false, },
     animations: { enabled: false },
   },
+  colors: CHART_COLORS,
   tooltip: { theme: 'dark' },
   stroke: {
     width: 3,
@@ -73,7 +75,6 @@ const chartOptions = computed(() => ({
     },
     tooltip: { enabled: false },
     type: 'datetime',
-    // categories: [1991,1992,1993,1994,1995,1996,1997,1998,1999]
     categories: [...categories.value],
   },
   yaxis: {

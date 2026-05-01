@@ -1,5 +1,6 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
+import { CHART_COLORS } from '~/lib/consts';
 
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
@@ -12,20 +13,7 @@ const props = defineProps({
   },
   colors: {
     type: Array,
-    default: () => [
-      '#4263eb',
-      '#0ca678',
-      '#ae3ec9',
-      '#17a2b8',
-      '#f59f00',
-      '#066fd1',
-      '#74b816',
-      '#4299e1',
-      '#f76707',
-      '#2fb344',
-      '#d6336c',
-      '#d63939',
-    ],
+    default: () => CHART_COLORS,
   },
   chartType: {
     type: String,
