@@ -397,6 +397,16 @@ watch(
                 <IconX size='12' />
               </span>
               <span
+                v-for='account in selectedAccounts'
+                :key='account.id'
+                class='badge cursor-pointer'
+                @click='onAccountClick(account.id)'
+              >
+                <IconWallet size=14 stroke-width=2 />
+                {{ account.name }}
+                <IconX size='12' />
+              </span>
+              <span
                 v-for='category in selectedCategories'
                 :key='category.id'
                 class='badge cursor-pointer'
@@ -414,16 +424,6 @@ watch(
               >
                 <IconBulbFilled size=12 stroke-width=2 />
                 {{ project.name }}
-                <IconX size='12' />
-              </span>
-              <span
-                v-for='account in selectedAccounts'
-                :key='account.id'
-                class='badge cursor-pointer'
-                @click='onAccountClick(account.id)'
-              >
-                <IconWallet size=14 stroke-width=2 />
-                {{ account.name }}
                 <IconX size='12' />
               </span>
               <span
