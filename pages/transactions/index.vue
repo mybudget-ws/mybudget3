@@ -65,6 +65,14 @@ const filters = computed(() => {
   };
 });
 
+const isTopFiltersVisible = computed(() => (
+  selectedCategories.value.length
+    || selectedProjects.value.length
+    || selectedAccounts.value.length
+    || selectedProperties.value.length
+    || selectedKinds.value.length
+));
+
 const parseStringArray = (val) => {
   if (typeof val === 'string') {
     return val.split(',').filter(Boolean);
@@ -379,11 +387,7 @@ watch(
           </div>
 
           <div
-            v-if='selectedCategories.length
-            || selectedProjects.length
-            || selectedAccounts.length
-            || selectedProperties.length
-            || selectedKinds.length'
+            v-if='isTopFiltersVisible'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
