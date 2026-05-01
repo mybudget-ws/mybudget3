@@ -1,26 +1,46 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
 
+import api from '~/lib/api';
+import { useAuth } from '~/composables/use_auth';
+
+const { token } = useAuth();
+const isLoading = ref(true);
+const isError = ref(false);
+const chartData = ref({});
+
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const CHART_HEIGTH = 400;
 const CHART_TYPE = 'line'; // 'bar'
 
-const series = [
-  {
-    name: 'Наличные',
-    data: [117, 92, 94, 98, 75, 110, 69, 80, 109, 113, 115,
-      95]
-  }, {
-    name: 'Счёт 2',
-    data: [59, 80, 61, 66, 70, 84, 87, 64, 94, 56, 55, 67]
-  }, {
-    name: 'Счёт 3',
-    data: [53, 51, 52, 41, 46, 60, 45, 43, 30, 50, 58, 59]
-  }
-]
+const series = computed(() => chartData.value.series);
+const categories = computed(() => chartData.value.categories);
 
-const chartOptions = {
+const load = async () => {
+  isLoading.value = true;
+  isError.value = false;
+
+  try {
+    const result = await api.chartBalances(token.value);
+    if (result) {
+      chartData.value = result;
+    } else {
+      isError.value = true;
+    }
+  } catch (err) {
+    console.error(err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+watch(token, (val) => {
+  if (val) load();
+}, { immediate: true });
+
+const chartOptions = computed(() => ({
   chart: {
     type: CHART_TYPE,
     fontFamily: 'inherit',
@@ -54,6 +74,7 @@ const chartOptions = {
     tooltip: { enabled: false },
     type: 'datetime',
     // categories: [1991,1992,1993,1994,1995,1996,1997,1998,1999]
+    categories: [...categories.value],
   },
   yaxis: {
     labels: {
@@ -80,12 +101,12 @@ const chartOptions = {
       colors: textColor,
     },
   },
-  labels: [
-    '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24',
-    '2020-06-25', '2020-06-26', '2020-06-27', '2020-06-28',
-    '2020-06-29', '2020-06-30', '2020-07-01', '2020-07-02'
-  ],
-}
+  // labels: [
+  //   '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24',
+  //   '2020-06-25', '2020-06-26', '2020-06-27', '2020-06-28',
+  //   '2020-06-29', '2020-06-30', '2020-07-01', '2020-07-02'
+  // ],
+}));
 </script>
 
 <template>
@@ -150,12 +171,17 @@ const chartOptions = {
           <h3 class='card-title'>Баланс</h3>
         </div>
         <div class='card-body'>
-          <VueApexCharts
-            :type=CHART_TYPE
-            :height=CHART_HEIGTH
-            :options='chartOptions'
-            :series='series'
-          />
+          <div v-if='isLoading' class='text-center w-full'>
+            <PlaceholderLoading />
+          </div>
+          <div v-else class='w-full'>
+            <VueApexCharts
+              :type=CHART_TYPE
+              :height=CHART_HEIGTH
+              :options='chartOptions'
+              :series='series'
+            />
+          </div>
         </div>
       </div>
 
