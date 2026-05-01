@@ -32,6 +32,9 @@ const props = defineProps({
     type: Array,
     default: [],
   },
+  initialSelectedId: {
+    type: Number,
+  },
 });
 
 const load = async () => {
@@ -53,7 +56,9 @@ const load = async () => {
 };
 
 const initSelectedIds = (query = route.query) => {
-  if (props.ids.length === 0) {
+  if (props.initialSelectedId) {
+    selectedIds.value = [props.initialSelectedId];
+  } else if (props.ids.length === 0) {
     const queryIds = query.accounts?.toString().split(',').filter(v => v !== '') || [];
     selectedIds.value = queryIds.map(id => Number(id)).filter(id => id > 0);
   } else {

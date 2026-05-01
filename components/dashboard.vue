@@ -23,6 +23,7 @@ const isShowModalTransfer = ref(false);
 const currentKind = ref(KIND_INCOME);
 const isCopyItem = ref(false);
 const currentItem = ref(null);
+const selectedTransferAccountId = ref(null);
 
 const openCreate = (kind) => {
   currentItem.value = null;
@@ -31,7 +32,8 @@ const openCreate = (kind) => {
   isShowModal.value = true;
 };
 
-const openCreateTransfer = () => {
+const openCreateTransfer = (accountId = NaN) => {
+  selectedTransferAccountId.value = accountId;
   isShowModalTransfer.value = true;
 };
 
@@ -96,6 +98,7 @@ watch(token, (val) => {
 
   <ModalNewTransfer
     v-if="isShowModalTransfer"
+    :initial-account-id="selectedTransferAccountId"
     @saved="onSaved"
     @close="closeModals"
   />
@@ -123,7 +126,7 @@ watch(token, (val) => {
         <button
           class='btn btn-outline-secondary'
           type='button'
-          @click='openCreateTransfer'
+          @click='openCreateTransfer()'
         >
           <IconArrowsRightLeft stroke-width=2 />
         </button>
@@ -271,7 +274,7 @@ watch(token, (val) => {
                     v-tooltip:bottom="'Создать перевод'"
                     type='button'
                     class='btn btn-action'
-                    @click='openCreateTransfer'
+                    @click='openCreateTransfer(item.id)'
                   >
                     <IconArrowsRightLeft size=18 stroke-width=1 />
                   </button>

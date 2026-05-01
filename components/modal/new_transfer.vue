@@ -1,8 +1,4 @@
 <script setup>
-import {
-  IconAlertTriangle,
-} from '@tabler/icons-vue';
-
 import api from '~/lib/api';
 
 const { token } = useAuth();
@@ -19,6 +15,12 @@ const amountFromRef = ref(null);
 const amountFromError = ref('');
 const amountToError = ref('');
 const sameAccountError = ref('');
+
+const props = defineProps({
+  initialAccountId: {
+    type: Number,
+  },
+});
 
 const emit = defineEmits(['saved', 'close', 'accountNew']);
 
@@ -125,6 +127,7 @@ watch(amountFrom, (newValue) => {
             <FormAccounts
               label='Откуда'
               radioGroupName='accountFrom'
+              :initialSelectedId='props.initialAccountId'
               @toggle-account='toggleAccountFromCallback'
               @loaded="isLoaded = true"
             />
