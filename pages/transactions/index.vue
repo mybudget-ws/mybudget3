@@ -65,6 +65,14 @@ const filters = computed(() => {
   };
 });
 
+const isTopFiltersVisible = computed(() => (
+  selectedCategories.value.length
+    || selectedProjects.value.length
+    || selectedAccounts.value.length
+    || selectedProperties.value.length
+    || selectedKinds.value.length
+));
+
 const parseStringArray = (val) => {
   if (typeof val === 'string') {
     return val.split(',').filter(Boolean);
@@ -271,6 +279,26 @@ const onPropertyClick = (id) => {
   router.replace({ query: nextQuery });
 };
 
+const onKindClick = (id) => {
+  const current = route.query.kinds
+    ? route.query.kinds.toString().split(',').filter(Boolean)
+    : [];
+
+  const newKinds = current.includes(id)
+    ? current.filter(k => k !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newKinds.length > 0) {
+    nextQuery.kinds = newKinds.join(',');
+  } else {
+    delete nextQuery.kinds;
+  }
+
+  router.replace({ query: nextQuery });
+};
+
 // Тут watchEffect не использую, т.к. похоже
 // watch на route.query срабатывает.
 //
@@ -359,10 +387,29 @@ watch(
           </div>
 
           <div
-            v-if='selectedCategories.length || selectedProjects.length || selectedAccounts.length || selectedProperties.length'
+            v-if='isTopFiltersVisible'
             class='card-body border-bottom'
           >
             <div class='badges-list'>
+              <span
+                v-for='kind in selectedKinds'
+                :key='kind.id'
+                class='badge cursor-pointer'
+                @click='onKindClick(kind.id)'
+              >
+                {{ kind.name }}
+                <IconX size='12' />
+              </span>
+              <span
+                v-for='account in selectedAccounts'
+                :key='account.id'
+                class='badge cursor-pointer'
+                @click='onAccountClick(account.id)'
+              >
+                <IconWallet size=14 stroke-width=2 />
+                {{ account.name }}
+                <IconX size='12' />
+              </span>
               <span
                 v-for='category in selectedCategories'
                 :key='category.id'
@@ -381,16 +428,6 @@ watch(
               >
                 <IconBulbFilled size=12 stroke-width=2 />
                 {{ project.name }}
-                <IconX size='12' />
-              </span>
-              <span
-                v-for='account in selectedAccounts'
-                :key='account.id'
-                class='badge cursor-pointer'
-                @click='onAccountClick(account.id)'
-              >
-                <IconWallet size=14 stroke-width=2 />
-                {{ account.name }}
                 <IconX size='12' />
               </span>
               <span
