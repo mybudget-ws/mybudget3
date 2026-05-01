@@ -174,7 +174,7 @@ const chartOptions = computed(() => ({
           <div v-if='isLoading' class='text-center w-full'>
             <PlaceholderLoading />
           </div>
-          <div v-else class='w-full'>
+          <div v-else-if='!isError' class='w-full'>
             <VueApexCharts
               :type=CHART_TYPE
               :height=CHART_HEIGTH
@@ -182,6 +182,11 @@ const chartOptions = computed(() => ({
               :series='series'
             />
           </div>
+          <AlertWarning
+            v-else
+            title='Не удалось загрузить график'
+            description='Попробуйте обновить страницу'
+          />
         </div>
       </div>
 
