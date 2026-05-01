@@ -22,7 +22,7 @@ const load = async () => {
   isError.value = false;
 
   try {
-    const result = await api.chartBalances(token.value);
+    const result = await api.chartBalances(token.value, 'CURRENT_MONTH');
     if (result) {
       chartData.value = result;
     } else {
