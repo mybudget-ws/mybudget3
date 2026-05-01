@@ -158,22 +158,26 @@ watchEffect(() => {
                     </td>
                     <td>
                       <div class='btn-actions'>
-                        <a
+                        <button
+                          type='button'
                           class='btn btn-action'
-                          @click.prevent='openEdit(item)'
+                          @click='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
-                        </a>
-                        <a
-                            v-tooltip:bottom="'Скрыть счёт'"
-                            class='btn btn-action'
-                            @click.prevent='toggleHidden(item)'
+                        </button>
+                        <button
+                          type='button'
+                          v-tooltip:bottom="'Скрыть счёт'"
+                          class='btn btn-action'
+                          @click='toggleHidden(item)'
                         >
                           <IconEyeOff size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                        </button>
+                        <button
+                          type='button'
+                          class='btn btn-action' @click='destroy(item)'>
                           <IconTrash size=20 stroke-width=1 />
-                        </a>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -193,12 +197,16 @@ watchEffect(() => {
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions justify-content-end'>
-                        <a class='btn btn-action' @click.prevent='toggleHidden(item)'>
+                        <button
+                          type='button' 
+                          class='btn btn-action' @click='toggleHidden(item)'>
                           <IconEyeOff size=20 stroke-width=1 />
-                        </a>
-                        <a class='btn btn-action' @click.prevent='destroy(item)'>
+                        </button>
+                        <button
+                          type='button'
+                          class='btn btn-action' @click='destroy(item)'>
                           <IconTrash size=20 stroke-width=1 />
-                        </a>
+                        </button>
                       </div>
                     </td>
                   </tr>

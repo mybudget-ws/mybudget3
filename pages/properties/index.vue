@@ -151,7 +151,7 @@ watchEffect(() => {
                         <button
                           type='button'
                           class='btn btn-action'
-                          @click.prevent='openEdit(item)'
+                          @click='openEdit(item)'
                         >
                           <IconPencil size=20 stroke-width=1 />
                         </button>
@@ -159,14 +159,14 @@ watchEffect(() => {
                           v-tooltip:bottom="'Скрыть имущество'"
                           type='button'
                           class='btn btn-action'
-                          @click.prevent='toggleHidden(item)'
+                          @click='toggleHidden(item)'
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </button>
                         <button
                           type='button'
                           class='btn btn-action'
-                          @click.prevent='destroy(item)'
+                          @click='destroy(item)'
                         >
                           <IconTrash size=20 stroke-width=1 />
                         </button>
@@ -193,14 +193,14 @@ watchEffect(() => {
                         <button
                           class='btn btn-action'
                           type='button'
-                          @click.prevent='toggleHidden(item)'
+                          @click='toggleHidden(item)'
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </button>
                         <button
                           class='btn btn-action'
                           type='button'
-                          @click.prevent='destroy(item)'
+                          @click='destroy(item)'
                         >
                           <IconTrash size=20 stroke-width=1 />
                         </button>

@@ -171,13 +171,14 @@ watch(token, (val) => {
                   />
                 </td>
                 <td>
-                  <a
+                  <button
+                    type='button'
                     v-tooltip:bottom="'Повторить операцию'"
                     class='btn btn-action'
-                    @click.prevent='openCopy(item)'
+                    @click='openCopy(item)'
                   >
                     <IconCopy size=18 stroke-width=1 />
-                  </a>
+                  </button>
                 </td>
               </tr>
             </tbody>
