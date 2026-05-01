@@ -4,10 +4,10 @@
     <div class="list-group list-group-transparent">
       <NuxtLink
         class="active list-group-item list-group-item-action"
-        to='/profile/email'>Почта</NuxtLink>  
+        to='/profile/'>Профиль</NuxtLink>  
       <NuxtLink
         class="list-group-item list-group-item-action"
-        to='/profile/email'>Пароль</NuxtLink>  
+        to='/profile/email'>Почта</NuxtLink>  
     </div>
   </div>
 </template>
