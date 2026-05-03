@@ -11,7 +11,6 @@ import {
   IconX,
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
-  IconWallet
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -400,16 +399,13 @@ watch(
                 {{ kind.name }}
                 <IconX size='12' />
               </span>
-              <span
+              <BadgeAccount
                 v-for='account in selectedAccounts'
                 :key='account.id'
-                class='badge cursor-pointer'
+                :name='account.name'
+                :is-x='true'
                 @click='onAccountClick(account.id)'
-              >
-                <IconWallet size=14 stroke-width=2 />
-                {{ account.name }}
-                <IconX size='12' />
-              </span>
+              />
               <span
                 v-for='category in selectedCategories'
                 :key='category.id'
@@ -479,13 +475,10 @@ watch(
                       </span>
                     </td>
                     <td class='text-secondary'>
-                      <span
-                        class='badge cursor-pointer'
+                      <BadgeAccount
+                        :name='item.account.name'
                         @click="onAccountClick(item.account.id)"
-                      >
-                        <IconWallet size=14 stroke-width=2 />
-                        {{ item.account.name }}
-                      </span>
+                      />
                     </td>
                     <td>
                       <div class='badges-list'>

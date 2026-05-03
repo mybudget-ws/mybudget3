@@ -166,7 +166,9 @@ watch(token, (val) => {
                 <td :title='formatDateFull(item.dateAt)'>
                   {{ formatDate(item.dateAt) }}
                 </td>
-                <td class='text-nowrap'>{{ item.account.name }}</td>
+                <td class='text-nowrap'>
+                  <BadgeAccount :name='item.account.name' />
+                </td>
                 <td class='text-nowrap text-end text-success'>
                   <Amount
                     :value='item.amount'
@@ -175,8 +177,8 @@ watch(token, (val) => {
                 </td>
                 <td>
                   <button
-                    type='button'
                     v-tooltip:bottom="'Повторить операцию'"
+                    type='button'
                     class='btn btn-action'
                     @click='openCopy(item)'
                   >
@@ -212,7 +214,9 @@ watch(token, (val) => {
                 <td :title='formatDateFull(item.dateAt)'>
                   {{ formatDate(item.dateAt) }}
                 </td>
-                <td class='text-nowrap'>{{ item.account.name }}</td>
+                <td class='text-nowrap'>
+                  <BadgeAccount :name='item.account.name' />
+                </td>
                 <td class='text-nowrap text-end text-danger'>
                   <Amount
                     :value='item.amount'
