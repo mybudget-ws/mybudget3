@@ -28,7 +28,7 @@ const props = defineProps({
     :class="props.isClickable ? 'cursor-pointer' : ''"
     @click="emit('click', $event)"
   >
-    <IconWallet size=14 stroke-width=2 />
+    <IconWallet size=14 stroke-width=2 class='text-cyan opacity-80' />
     {{ props.name }}
     <IconX v-if='props.isX' size='12' />
   </span>
