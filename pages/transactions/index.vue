@@ -41,7 +41,7 @@ const transactions = ref([]);
 const transactionEventTicks = ref(1);
 const selectedCategories = ref([]);
 const selectedProjects = ref([]);
-const selectedAccounts = ref([]); 
+const selectedAccounts = ref([]);
 const selectedProperties = ref([]);
 const selectedKinds = ref([]);
 
@@ -258,7 +258,7 @@ const onAccountClick = (id) => {
 
   router.replace({ query: nextQuery });
 };
-  
+
 const onPropertyClick = (id) => {
   const current = route.query.properties
     ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
@@ -269,7 +269,7 @@ const onPropertyClick = (id) => {
     : [...current, id];
 
   const nextQuery = { ...route.query };
-  
+
   if (newProperties.length > 0) {
     nextQuery.properties = newProperties.join(',');
   } else {
@@ -542,8 +542,8 @@ watch(
                           <IconPencil size=20 stroke-width=1 />
                         </button>
                         <button
-                          type='button'
                           v-tooltip:bottom="'Повторить операцию'"
+                          type='button'
                           class='btn btn-action'
                           @click='openCopy(item)'
                         >
@@ -592,8 +592,8 @@ watch(
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterKinds @update:items="onKindsChange" :isLoading="!isLoaded" />
-      <FilterAccounts @update:items='onAccountsChange' :reload='transactionEventTicks' />
+      <FilterKinds :is-loading="!isLoaded" @update:items="onKindsChange" />
+      <FilterAccounts :reload='transactionEventTicks' @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
       <FilterProperties @update:items='onPropertiesChange' />
