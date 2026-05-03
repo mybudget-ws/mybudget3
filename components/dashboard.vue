@@ -168,7 +168,7 @@ watch(token, (val) => {
                   {{ formatDate(item.dateAt) }}
                 </td>
                 <td>
-                  <BadgeAccount :name='item.account.name' />
+                  <BadgeAccount :name='item.account.name' :is-clickable='false' />
                 </td>
                 <td>
                   <div class='badges-list'>
@@ -176,6 +176,7 @@ watch(token, (val) => {
                       v-for='cat in item.categories'
                       :key='cat.id'
                       :name='cat.name'
+                      :is-clickable='false'
                       @click="onCategoryClick(cat.id)"
                     />
                   </div>
@@ -227,7 +228,7 @@ watch(token, (val) => {
                   {{ formatDate(item.dateAt) }}
                 </td>
                 <td>
-                  <BadgeAccount :name='item.account.name' />
+                  <BadgeAccount :name='item.account.name' :is-clickable='false' />
                 </td>
                 <td>
                   <div class='badges-list'>
@@ -235,6 +236,7 @@ watch(token, (val) => {
                       v-for='cat in item.categories'
                       :key='cat.id'
                       :name='cat.name'
+                      :is-clickable='false'
                       @click="onCategoryClick(cat.id)"
                     />
                   </div>

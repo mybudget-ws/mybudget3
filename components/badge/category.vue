@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  isClickable: {
+    type: Boolean,
+    default: true,
+  },
   isX: {
     type: Boolean,
     default: false,
@@ -19,7 +23,8 @@ const props = defineProps({
 
 <template>
   <span
-    class='badge cursor-pointer'
+    class='badge'
+    :class="props.isClickable ? 'cursor-pointer' : ''"
     @click="emit('click', $event)"
   >
     {{ props.name }}
