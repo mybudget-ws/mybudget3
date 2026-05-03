@@ -406,15 +406,13 @@ watch(
                 :is-x='true'
                 @click='onAccountClick(account.id)'
               />
-              <span
+              <BadgeCategory
                 v-for='category in selectedCategories'
                 :key='category.id'
-                class='badge cursor-pointer'
+                :name='category.name'
+                :is-x='true'
                 @click='onCategoryClick(category.id)'
-              >
-                {{ category.name }}
-                <IconX size='12' />
-              </span>
+              />
               <span
                 v-for='project in selectedProjects'
                 :key='project.id'
@@ -514,14 +512,12 @@ watch(
                           <IconKeyFilled size=12 stroke-width=2 />
                           {{ item.property.name }}
                         </span>
-                        <span
+                        <BadgeCategory
                           v-for='cat in item.categories'
                           :key='cat.id'
-                          class='badge cursor-pointer'
+                          :name='cat.name'
                           @click="onCategoryClick(cat.id)"
-                        >
-                          {{ cat.name }}
-                        </span>
+                        />
                       </div>
                     </td>
                     <td class='text-secondary'>{{ item.description }}</td>

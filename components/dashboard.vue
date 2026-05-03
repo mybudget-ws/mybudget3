@@ -157,6 +157,7 @@ watch(token, (val) => {
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
+                <th>Категории</th>
                 <th class='text-nowrap text-end'>Величина</th>
                 <th class='w-1'/>
               </tr>
@@ -166,8 +167,18 @@ watch(token, (val) => {
                 <td :title='formatDateFull(item.dateAt)'>
                   {{ formatDate(item.dateAt) }}
                 </td>
-                <td class='text-nowrap'>
+                <td>
                   <BadgeAccount :name='item.account.name' />
+                </td>
+                <td>
+                  <div class='badges-list'>
+                    <BadgeCategory
+                      v-for='cat in item.categories'
+                      :key='cat.id'
+                      :name='cat.name'
+                      @click="onCategoryClick(cat.id)"
+                    />
+                  </div>
                 </td>
                 <td class='text-nowrap text-end text-success'>
                   <Amount
@@ -205,6 +216,7 @@ watch(token, (val) => {
               <tr>
                 <th class='w-1 text-nowrap'>Дата</th>
                 <th class='w-1 text-nowrap'>Счёт</th>
+                <th>Категории</th>
                 <th class='text-nowrap text-end'>Величина</th>
                 <th class='w-1'/>
               </tr>
@@ -214,8 +226,18 @@ watch(token, (val) => {
                 <td :title='formatDateFull(item.dateAt)'>
                   {{ formatDate(item.dateAt) }}
                 </td>
-                <td class='text-nowrap'>
+                <td>
                   <BadgeAccount :name='item.account.name' />
+                </td>
+                <td>
+                  <div class='badges-list'>
+                    <BadgeCategory
+                      v-for='cat in item.categories'
+                      :key='cat.id'
+                      :name='cat.name'
+                      @click="onCategoryClick(cat.id)"
+                    />
+                  </div>
                 </td>
                 <td class='text-nowrap text-end text-danger'>
                   <Amount
