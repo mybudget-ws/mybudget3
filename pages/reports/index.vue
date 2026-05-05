@@ -14,6 +14,7 @@ const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const CHART_HEIGTH = 500;
 const CHART_TYPE = 'line';
+const period = ref('CURRENT_MONTH');
 
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
@@ -23,7 +24,7 @@ const load = async () => {
   isError.value = false;
 
   try {
-    const result = await api.chartBalances(token.value, 'CURRENT_MONTH');
+    const result = await api.chartBalances(token.value, period.value);
     if (result) {
       chartData.value = result;
     } else {
@@ -37,8 +38,8 @@ const load = async () => {
   }
 };
 
-watch(token, (val) => {
-  if (val) load();
+watch([token, period], ([t]) => {
+  if (t) load();
 }, { immediate: true });
 
 const chartOptions = computed(() => ({
@@ -119,46 +120,37 @@ const chartOptions = computed(() => ({
           <div class='card-actions'>
             <nav class='nav nav-segmented w-100' role='tablist'>
               <button
-                class="nav-link active"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="true" aria-current="page"
+                class="nav-link"
+                :class="{ active: period === 'CURRENT_MONTH' }"
+                @click="period = 'CURRENT_MONTH'"
               >
                 Текущий месяц
               </button>
               <button
                 class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
+                :class="{ active: period === 'YEARS_1' }"
+                @click="period = 'YEARS_1'"
               >
                 Год
               </button>
               <button
                 class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
+                :class="{ active: period === 'YEARS_2' }"
+                @click="period = 'YEARS_2'"
               >
                 Два года
               </button>
               <button
                 class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
+                :class="{ active: period === 'YEARS_5' }"
+                @click="period = 'YEARS_5'"
               >
                 Пять лет
               </button>
               <button
                 class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
+                :class="{ active: period === 'ALL' }"
+                @click="period = 'ALL'"
               >
                 Всё время
               </button>
