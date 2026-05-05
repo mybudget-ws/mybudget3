@@ -1,31 +1,47 @@
 <script setup>
-  import { useAuth } from '~/composables/use_auth';
+import { useAuth } from '~/composables/use_auth';
 
-  definePageMeta({
-    middleware: ['authenticated']
-  });
+definePageMeta({
+  middleware: ['authenticated']
+});
 
-  const { token, isSignedIn, signOut } = useAuth();
+const { token, isSignedIn, signOut } = useAuth();
+const email = ref('');
 
-  const exit = () => {
-    signOut();
-    navigateTo('/');
-  };
+const onSignOut = () => {
+  signOut();
+  navigateTo('/');
+}
 </script>
 
 <template>
-  <div>
-    <h1>Мой профиль</h1>
-    <h2>Is signed in:</h2>
-    <div>{{ isSignedIn }}</div>
-    <!--
-    <h2>Token:</h2>
-    <div>{{ token }}</div>
-    -->
+  <div class="card">
+    <div class='row g-0'>
+      <ProfileMenu />
+      <div class='col-sm-12 col-lg-9 col-xl-10'>
+        <div class="card-body">
+          <h1>Ваш профиль</h1>
+          <div class='row mb-3'>
+            <div class='col-sm-12 col-md-6 col-lg-6 col-xl-4'>
+              <Input
+                type='email'
+                placeholder='мой@email.ru'
+                v-model='email'
+                :disabled=true
+              />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class='d-flex justify-content-end'>
     <Button
-      class='btn-primary'
-      @click='exit'
+      v-if='isSignedIn'
+      class='btn-outline-danger  mt-3'
+      @click='onSignOut()'
     >
       Выход
     </Button>
