@@ -30,11 +30,13 @@ const { token, isSignedIn, signOut } = useAuth();
     </div>
   </div>
 
-  <Button
-    v-if='isSignedIn'
-    class='btn-primary mt-3'
-    @click='signOut()'
-  >
-    Выход
-  </Button>
+  <div class='d-flex justify-content-end'>
+    <Button
+      v-if='isSignedIn'
+      class='btn-outline-danger  mt-3'
+      @click='signOut()'
+    >
+      Выход
+    </Button>
+  </div>
 </template>
