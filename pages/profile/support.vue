@@ -1,3 +1,9 @@
+<script setup>
+definePageMeta({
+  middleware: ['authenticated']
+})
+</script>
+
 <template>
   <div class="card">
     <div class='row g-0'>
