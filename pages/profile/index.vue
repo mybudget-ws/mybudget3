@@ -7,6 +7,11 @@ definePageMeta({
 
 const { token, isSignedIn, signOut } = useAuth();
 const email = ref('');
+
+const onSignOut = () => {
+  signOut();
+  navigateTo('/');
+}
 </script>
 
 <template>
@@ -36,7 +41,7 @@ const email = ref('');
     <Button
       v-if='isSignedIn'
       class='btn-outline-danger  mt-3'
-      @click='signOut()'
+      @click='onSignOut()'
     >
       Выход
     </Button>
