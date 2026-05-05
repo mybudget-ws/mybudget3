@@ -14,8 +14,17 @@ const { token, isSignedIn, signOut } = useAuth();
       <ProfileMenu />
       <div class='col-sm-12 col-lg-9 col-xl-10'>
         <div class="card-body">
-          <h1>Мой профиль</h1>
-          <p class='text-secondary'>TODO</p>
+          <h1>Ваш профиль</h1>
+          <div class="col-4">
+            <div class="mb-3">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="E-mail"
+              >
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
       </div>
     </div>

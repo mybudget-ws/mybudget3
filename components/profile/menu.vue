@@ -4,11 +4,21 @@
       <h4 class="subheader">Настройки</h4>
       <div class="list-group list-group-transparent">
         <NuxtLink
-          class="active list-group-item list-group-item-action"
+          class="list-group-item list-group-item-action"
+          exact-active-class="active"
           to='/profile/'>Профиль</NuxtLink>  
         <NuxtLink
           class="list-group-item list-group-item-action"
-          to='/profile/email'>Почта</NuxtLink>  
+          exact-active-class="active"
+          to='/profile/email'>Почта</NuxtLink>
+          <NuxtLink
+          class="list-group-item list-group-item-action"
+          exact-active-class="active"
+          to='/profile/password'>Пароль</NuxtLink>
+        <NuxtLink
+          class="list-group-item list-group-item-action"
+          exact-active-class="active"
+          to='/profile/support'>Поддержка</NuxtLink>  
       </div>
     </div>
   </div>
