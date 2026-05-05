@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const { token, isSignedIn, signOut } = useAuth();
+const email = ref('');
 </script>
 
 <template>
@@ -15,13 +16,14 @@ const { token, isSignedIn, signOut } = useAuth();
       <div class='col-sm-12 col-lg-9 col-xl-10'>
         <div class="card-body">
           <h1>Ваш профиль</h1>
-          <div class="col-4">
-            <div class="mb-3">
-              <input
-                type="email"
-                class="form-control"
-                placeholder="E-mail"
-              >
+          <div class='row mb-3'>
+            <div class='col-sm-12 col-md-6 col-lg-6 col-xl-4'>
+              <Input
+                type='email'
+                placeholder='мой@email.ru'
+                v-model='email'
+                :disabled=true
+              />
             </div>
           </div>
           <button type="submit" class="btn btn-primary">Сохранить</button>
