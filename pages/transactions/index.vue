@@ -413,28 +413,22 @@ watch(
                 :is-x='true'
                 @click='onCategoryClick(category.id)'
               />
-              <span
+              <BadgeProjects
                 v-for='project in selectedProjects'
                 :key='project.id'
-                class='badge cursor-pointer'
+                :name='project.name'
+                :is-x='true'
                 :class='badgeClasses("project")'
                 @click='onProjectClick(project.id)'
-              >
-                <IconBulbFilled size=12 stroke-width=2 />
-                {{ project.name }}
-                <IconX size='12' />
-              </span>
-              <span
+              />
+              <BadgeProperty
                 v-for='property in selectedProperties'
                 :key='property.id'
-                class='badge cursor-pointer'
+                :name='property.name'
+                :is-x='true'
                 :class='badgeClasses("property")'
                 @click='onPropertyClick(property.id)'
-              >
-                <IconKeyFilled size=12 stroke-width=2 />
-                {{ property.name }}
-                <IconX size='12' />
-              </span>
+              />
             </div>
           </div>
 
