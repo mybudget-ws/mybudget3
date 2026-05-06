@@ -10,11 +10,15 @@ const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
 
+const route = useRoute();
+const router = useRouter();
+const period = ref(route.query.period || 'CURRENT_MONTH');
+
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const CHART_HEIGTH = 500;
 const CHART_TYPE = 'line';
-const period = ref('CURRENT_MONTH');
+
 
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
@@ -38,10 +42,26 @@ const load = async () => {
   }
 };
 
+const setPeriod = (value) => {
+  period.value = value;
+
+  router.replace({
+    query: {
+      ...route.query,
+      period: value,
+    },
+  });
+};
+
 watch([token, period], ([t]) => {
   if (t) load();
 }, { immediate: true });
 
+watch(() => route.query.period, (newPeriod) => {
+  if (newPeriod && newPeriod !== period.value) {
+    period.value = newPeriod;
+  }
+});
 const chartOptions = computed(() => ({
   chart: {
     type: CHART_TYPE,
@@ -122,35 +142,35 @@ const chartOptions = computed(() => ({
               <button
                 class="nav-link"
                 :class="{ active: period === 'CURRENT_MONTH' }"
-                @click="period = 'CURRENT_MONTH'"
+                @click="setPeriod('CURRENT_MONTH')"
               >
                 Текущий месяц
               </button>
               <button
                 class="nav-link"
                 :class="{ active: period === 'YEARS_1' }"
-                @click="period = 'YEARS_1'"
+                @click="setPeriod('YEARS_1')"
               >
                 Год
               </button>
               <button
                 class="nav-link"
                 :class="{ active: period === 'YEARS_2' }"
-                @click="period = 'YEARS_2'"
+                @click="setPeriod('YEARS_2')"
               >
                 Два года
               </button>
               <button
                 class="nav-link"
                 :class="{ active: period === 'YEARS_5' }"
-                @click="period = 'YEARS_5'"
+                @click="setPeriod('YEARS_5')"
               >
                 Пять лет
               </button>
               <button
                 class="nav-link"
                 :class="{ active: period === 'ALL' }"
-                @click="period = 'ALL'"
+                @click="setPeriod('ALL')"
               >
                 Всё время
               </button>
