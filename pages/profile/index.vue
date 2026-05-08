@@ -15,7 +15,21 @@ const isLoading = ref(true);
 const onSignOut = () => {
   signOut();
   navigateTo('/');
-}
+};
+
+const currenciesOptions = computed(() => (
+  currencies.value.map(c => ({
+    value: c.name,
+    label: `${c.displayName} — ${c.description}`
+  })) 
+));
+
+const onSubmit = async () => {
+  const result = await api.updateProfile(token.value, selectedCurrency.value);
+  if (!result) {
+    // как-то показать ошибку - "Не удалось сохранить изменения"
+  }
+};
 
 onMounted(async () => {
   isLoading.value = true;
@@ -26,11 +40,8 @@ onMounted(async () => {
       api.fetchProfile(token.value),
       api.currencies()
     ]);
-    currencies.value = currencyList.map(c => ({
-      value: c.id,
-      label: `${c.name} — ${c.description}`
-    }));
-    selectedCurrency.value = profile.defaultCurrency?.id;
+    currencies.value = currencyList;
+    selectedCurrency.value = profile.defaultCurrency?.name;
     email.value = profile.email;
   } catch (e) {
     console.error(e);
@@ -63,7 +74,7 @@ onMounted(async () => {
                 <select v-model='selectedCurrency' class='form-select'>
                   <option disabled value="">Выберите валюту</option>
                   <option
-                    v-for='c in currencies'
+                    v-for='c in currenciesOptions'
                     :key='c.value'
                     :value='c.value'
                   >
