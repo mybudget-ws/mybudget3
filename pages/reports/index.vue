@@ -12,7 +12,6 @@ const chartData = ref({});
 
 const route = useRoute();
 const router = useRouter();
-const period = ref(route.query.period || 'CURRENT_MONTH');
 
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
@@ -25,7 +24,8 @@ const PERIODS = {
   YEARS_5: 'Пять лет',
   ALL: 'Всё время',
 };
-
+const isPeriodValid = (value) => (!!PERIODS[value]);
+const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
 
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
@@ -60,8 +60,6 @@ const setPeriod = (value) => {
   });
 };
 
-const isPeriodValid = (value) => (!!PERIODS[value]);
-
 watch([token, period], ([tokenValue, periodValue]) => {
   if (tokenValue && isPeriodValid(periodValue)) {
     load();
@@ -70,7 +68,7 @@ watch([token, period], ([tokenValue, periodValue]) => {
 
 watch(() => route.query.period, (newPeriod) => {
   if (isPeriodValid(newPeriod) && newPeriod !== period.value) {
-    period.value = next;
+    period.value = newPeriod;
   }
 });
 
