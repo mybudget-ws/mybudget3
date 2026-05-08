@@ -1,5 +1,6 @@
 <script setup>
 import { useAuth } from '~/composables/use_auth';
+import api from '~/lib/api';
 
 definePageMeta({
   middleware: ['authenticated']
@@ -7,31 +8,85 @@ definePageMeta({
 
 const { token, isSignedIn, signOut } = useAuth();
 const email = ref('');
+const currencies = ref([]);
+const selectedCurrency = ref(null);
+const isLoading = ref(true);
 
 const onSignOut = () => {
   signOut();
   navigateTo('/');
-}
+};
+
+const currenciesOptions = computed(() => (
+  currencies.value.map(c => ({
+    value: c.name,
+    label: `${c.displayName} — ${c.description}`
+  })) 
+));
+
+const onSubmit = async () => {
+  const result = await api.updateProfile(token.value, selectedCurrency.value);
+  if (!result) {
+    // как-то показать ошибку - "Не удалось сохранить изменения"
+  }
+};
+
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    // const profile = await api.fetchProfile(token.value);
+    // const currencyList = await api.currencies();
+    const [profile, currencyList] = await Promise.all([
+      api.fetchProfile(token.value),
+      api.currencies()
+    ]);
+    currencies.value = currencyList;
+    selectedCurrency.value = profile.defaultCurrency?.name;
+    email.value = profile.email;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>
-  <div class="card">
+  <div class='card'>
     <div class='row g-0'>
       <ProfileMenu />
       <div class='col-sm-12 col-lg-9 col-xl-10'>
-        <div class="card-body">
+        <div class='card-body'>
           <h1>Ваш профиль</h1>
-          <div class='row mb-3'>
-            <div class='col-sm-12 col-md-6 col-lg-6 col-xl-4'>
-              <Input
-                type='email'
-                placeholder='мой@email.ru'
-                v-model='email'
-                :disabled=true
-              />
+          <div v-if='isLoading' class='spinner-border' />
+          <div v-else>
+            <div class='row mb-3'>
+              <div class='col-md-6 col-lg-4'>
+                <Input
+                  type='email'
+                  v-model='email'
+                  disabled
+                />
+              </div>
             </div>
+            <div class='row mb-3'>
+              <div class='col-md-6 col-lg-4'>
+                <select v-model='selectedCurrency' class='form-select'>
+                  <option disabled value="">Выберите валюту</option>
+                  <option
+                    v-for='c in currenciesOptions'
+                    :key='c.value'
+                    :value='c.value'
+                  >
+                    {{ c.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <button class='btn btn-primary'>
+              Сохранить
+            </button>
           </div>
-          <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
       </div>
     </div>
@@ -40,8 +95,8 @@ const onSignOut = () => {
   <div class='d-flex justify-content-end'>
     <Button
       v-if='isSignedIn'
-      class='btn-outline-danger  mt-3'
-      @click='onSignOut()'
+      class='btn-outline-danger mt-3'
+      @click='onSignOut'
     >
       Выход
     </Button>
