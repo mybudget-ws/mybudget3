@@ -3,9 +3,7 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
-  IconBulbFilled,
   IconCopy,
-  IconKeyFilled,
   IconPencil,
   IconTrash,
   IconX,
@@ -413,28 +411,22 @@ watch(
                 :is-x='true'
                 @click='onCategoryClick(category.id)'
               />
-              <span
+              <BadgeProject
                 v-for='project in selectedProjects'
                 :key='project.id'
-                class='badge cursor-pointer'
+                :name='project.name'
+                :is-x='true'
                 :class='badgeClasses("project")'
                 @click='onProjectClick(project.id)'
-              >
-                <IconBulbFilled size=12 stroke-width=2 />
-                {{ project.name }}
-                <IconX size='12' />
-              </span>
-              <span
+              />
+              <BadgeProperty
                 v-for='property in selectedProperties'
                 :key='property.id'
-                class='badge cursor-pointer'
+                :name='property.name'
+                :is-x='true'
                 :class='badgeClasses("property")'
                 @click='onPropertyClick(property.id)'
-              >
-                <IconKeyFilled size=12 stroke-width=2 />
-                {{ property.name }}
-                <IconX size='12' />
-              </span>
+              />
             </div>
           </div>
 
@@ -494,24 +486,18 @@ watch(
                             <IconArrowNarrowRight size=16 />
                           </span>
                         </template>
-                        <span
+                        <BadgeProject
                           v-if='item.project'
-                          class='badge cursor-pointer'
+                          :name='item.project.name'
                           :class='badgeClasses("project")'
-                          @click="onProjectClick(item.project.id)"
-                        >
-                          <IconBulbFilled size=12 stroke-width=2 />
-                          {{ item.project.name }}
-                        </span>
-                        <span
+                          @click='onProjectClick(item.project.id)'
+                        />
+                        <BadgeProperty
                           v-if='item.property'
-                          class='badge cursor-pointer'
+                          :name='item.property.name'
                           :class='badgeClasses("property")'
-                          @click="onPropertyClick(item.property.id)"
-                        >
-                          <IconKeyFilled size=12 stroke-width=2 />
-                          {{ item.property.name }}
-                        </span>
+                          @click='onPropertyClick(item.property.id)'
+                        />
                         <BadgeCategory
                           v-for='cat in item.categories'
                           :key='cat.id'
