@@ -10,36 +10,28 @@ const { token, isSignedIn, signOut } = useAuth();
 const email = ref('');
 const currencies = ref([]);
 const selectedCurrency = ref(null);
-
 const isLoading = ref(true);
 
 const onSignOut = () => {
   signOut();
   navigateTo('/');
 }
+
 onMounted(async () => {
   isLoading.value = true;
-
   try {
-    if (!token.value) {
-      console.warn('No token yet');
-      return;
-    }
-
+    // const profile = await api.fetchProfile(token.value);
+    // const currencyList = await api.currencies();
     const [profile, currencyList] = await Promise.all([
       api.fetchProfile(token.value),
       api.currencies()
     ]);
-
-    email.value = profile.email;
-
     currencies.value = currencyList.map(c => ({
       value: c.id,
       label: `${c.name} — ${c.description}`
     }));
-
-    selectedCurrency.value = profile.defaultCurrency?.id ?? null;
-
+    selectedCurrency.value = profile.defaultCurrency?.id;
+    email.value = profile.email;
   } catch (e) {
     console.error(e);
   } finally {
