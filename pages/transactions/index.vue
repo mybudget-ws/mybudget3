@@ -3,9 +3,7 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
-  IconBulbFilled,
   IconCopy,
-  IconKeyFilled,
   IconPencil,
   IconTrash,
   IconX,
@@ -413,7 +411,7 @@ watch(
                 :is-x='true'
                 @click='onCategoryClick(category.id)'
               />
-              <BadgeProjects
+              <BadgeProject
                 v-for='project in selectedProjects'
                 :key='project.id'
                 :name='project.name'
@@ -488,24 +486,18 @@ watch(
                             <IconArrowNarrowRight size=16 />
                           </span>
                         </template>
-                        <span
+                        <BadgeProject
                           v-if='item.project'
-                          class='badge cursor-pointer'
+                          :name='item.project.name'
                           :class='badgeClasses("project")'
-                          @click="onProjectClick(item.project.id)"
-                        >
-                          <IconBulbFilled size=12 stroke-width=2 />
-                          {{ item.project.name }}
-                        </span>
-                        <span
+                          @click='onProjectClick(item.project.id)'
+                        />
+                        <BadgeProperty
                           v-if='item.property'
-                          class='badge cursor-pointer'
+                          :name='item.property.name'
                           :class='badgeClasses("property")'
-                          @click="onPropertyClick(item.property.id)"
-                        >
-                          <IconKeyFilled size=12 stroke-width=2 />
-                          {{ item.property.name }}
-                        </span>
+                          @click='onPropertyClick(item.property.id)'
+                        />
                         <BadgeCategory
                           v-for='cat in item.categories'
                           :key='cat.id'
