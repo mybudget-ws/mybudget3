@@ -10,10 +10,22 @@ const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
 
+const route = useRoute();
+const router = useRouter();
+
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const CHART_HEIGTH = 500;
 const CHART_TYPE = 'line';
+const PERIODS = {
+  CURRENT_MONTH: 'Текущий месяц',
+  YEARS_1: 'Год',
+  YEARS_2: 'Два года',
+  YEARS_5: 'Пять лет',
+  ALL: 'Всё время',
+};
+const isPeriodValid = (value) => (!!PERIODS[value]);
+const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
 
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
@@ -23,7 +35,7 @@ const load = async () => {
   isError.value = false;
 
   try {
-    const result = await api.chartBalances(token.value, 'CURRENT_MONTH');
+    const result = await api.chartBalances(token.value, period.value);
     if (result) {
       chartData.value = result;
     } else {
@@ -37,9 +49,28 @@ const load = async () => {
   }
 };
 
-watch(token, (val) => {
-  if (val) load();
+const setPeriod = (value) => {
+  period.value = value;
+
+  router.push({
+    query: {
+      ...route.query,
+      period: value,
+    },
+  });
+};
+
+watch([token, period], ([tokenValue, periodValue]) => {
+  if (tokenValue && isPeriodValid(periodValue)) {
+    load();
+  }
 }, { immediate: true });
+
+watch(() => route.query.period, (newPeriod) => {
+  if (isPeriodValid(newPeriod) && newPeriod !== period.value) {
+    period.value = newPeriod;
+  }
+});
 
 const chartOptions = computed(() => ({
   chart: {
@@ -119,48 +150,13 @@ const chartOptions = computed(() => ({
           <div class='card-actions'>
             <nav class='nav nav-segmented w-100' role='tablist'>
               <button
-                class="nav-link active"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="true" aria-current="page"
+                v-for="[key, label] in Object.entries(PERIODS)"
+                :key='key'
+                class='nav-link'
+                :class="{ active: period === key }"
+                @click="setPeriod(key)"
               >
-                Текущий месяц
-              </button>
-              <button
-                class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
-              >
-                Год
-              </button>
-              <button
-                class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
-              >
-                Два года
-              </button>
-              <button
-                class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
-              >
-                Пять лет
-              </button>
-              <button
-                class="nav-link"
-                role="tab"
-                data-bs-toggle="tab"
-                aria-selected="false"
-                tabindex="-1"
-              >
-                Всё время
+                {{ label }}
               </button>
             </nav>
           </div>
