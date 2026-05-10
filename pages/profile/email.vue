@@ -1,6 +1,10 @@
 <script setup>
 import api from '~/lib/api'
 import { useAuth } from '~/composables/use_auth'
+import {
+  IconCheck,
+  IconAlertCircle,
+} from '@tabler/icons-vue';
 
 definePageMeta({
   middleware: ['authenticated']
@@ -108,10 +112,12 @@ onMounted(async () => {
               </div>
             </div>
             <div v-if="saveError" class="alert alert-danger">
+              <IconAlertCircle :size="20" class="text-danger" />
               {{ saveError }}
             </div>
-            <div v-if="saveSuccess" class="alert alert-success">
-              E-mail успешно обновлён
+            <div v-if="saveSuccess" class="alert alert-success flex items-center gap-2 text-green-lt-fg">
+              <IconCheck :size="20" class="text-success" />
+              <span>E-mail успешно обновлён</span>
             </div>
             <button
               type="submit"
