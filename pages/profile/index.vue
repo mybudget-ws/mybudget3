@@ -1,7 +1,10 @@
 <script setup>
 import { useAuth } from '~/composables/use_auth';
 import api from '~/lib/api';
-
+import {
+  IconCheck,
+  IconAlertCircle,
+} from '@tabler/icons-vue';
 definePageMeta({
   middleware: ['authenticated']
 });
@@ -13,6 +16,7 @@ const selectedCurrency = ref(null);
 const isLoading = ref(true);
 const isSaving = ref(false);
 const saveError = ref('');
+const saveSuccess = ref(false);
 
 const onSignOut = () => {
   signOut();
@@ -28,19 +32,26 @@ const currenciesOptions = computed(() => (
 
 const onSubmit = async () => {
   saveError.value = '';
+  saveSuccess.value = false;
   isSaving.value = true;
 
   try {
     await api.updateProfile(token.value, {
       currency: selectedCurrency.value
     });
+
+    saveSuccess.value = true;
+
+    setTimeout(() => {
+      saveSuccess.value = false;
+    }, 3000);
+
   } catch (e) {
     console.error(e);
     saveError.value = 'Не удалось сохранить изменения';
   } finally {
     isSaving.value = false;
   }
-
 };
 
 onMounted(async () => {
@@ -93,8 +104,14 @@ onMounted(async () => {
                     {{ c.label }}
                   </option>
                 </select>
-                <div v-if='saveError' class='text-danger mt-2'>
-                  {{ saveError }}
+                <div v-if="saveError" class="alert alert-danger mt-3 d-flex align-items-center gap-2">
+                  <IconAlertCircle :size="20" class="text-danger" />
+                  <span>{{ saveError }}</span>
+                </div>
+
+                <div v-if="saveSuccess" class="alert alert-success mt-3 d-flex align-items-center gap-2">
+                  <IconCheck :size="20" class="text-success" />
+                  <span>Валюта успешно сохранена</span>
                 </div>
               </div>
             </div>
