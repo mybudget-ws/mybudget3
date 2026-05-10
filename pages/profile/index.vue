@@ -28,7 +28,7 @@ const currenciesOptions = computed(() => (
 
 const onSubmit = async () => {
   saveError.value = '';
-  isSaving.value
+  isSaving.value = true;
 
   try {
     await api.updateProfile(token.value, {
