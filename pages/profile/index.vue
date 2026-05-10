@@ -11,6 +11,8 @@ const email = ref('');
 const currencies = ref([]);
 const selectedCurrency = ref(null);
 const isLoading = ref(true);
+const isSaving = ref(false);
+const saveError = ref('');
 
 const onSignOut = () => {
   signOut();
@@ -25,10 +27,20 @@ const currenciesOptions = computed(() => (
 ));
 
 const onSubmit = async () => {
-  const result = await api.updateProfile(token.value, selectedCurrency.value);
-  if (!result) {
-    // как-то показать ошибку - "Не удалось сохранить изменения"
+  saveError.value = '';
+  isSaving.value
+
+  try {
+    await api.updateProfile(token.value, {
+      currency: selectedCurrency.value
+    });
+  } catch (e) {
+    console.error(e);
+    saveError.value = 'Не удалось сохранить изменения';
+  } finally {
+    isSaving.value = false;
   }
+
 };
 
 onMounted(async () => {
@@ -81,10 +93,17 @@ onMounted(async () => {
                     {{ c.label }}
                   </option>
                 </select>
+                <div v-if='saveError' class='text-danger mt-2'>
+                  {{ saveError }}
+                </div>
               </div>
             </div>
-            <button class='btn btn-primary'>
-              Сохранить
+            <button
+              class='btn btn-primary'
+              :disabled='isSaving'
+              @click='onSubmit'
+            >
+              {{ isSaving ? 'Сохранение...' : 'Сохранить' }}
             </button>
           </div>
         </div>
