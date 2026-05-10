@@ -56,8 +56,8 @@ const onSubmit = async () => {
       <div class="col-sm-12 col-lg-9 col-xl-10">
         <div class="card-body">
           <h1>Изменить пароль</h1>
-          <form class="col-4" @submit.prevent="onSubmit">
-            <div class="mb-3">
+          <form class="row g-3 col-12 col-md-8 col-lg-6" @submit.prevent="onSubmit">
+            <div class="col-12">
               <input
                 v-model="password"
                 type="password"
@@ -66,7 +66,7 @@ const onSubmit = async () => {
                 required
               >
             </div>
-            <div class="mb-3">
+            <div class="col-12">
               <input
                 v-model="newPassword"
                 type="password"
@@ -75,33 +75,31 @@ const onSubmit = async () => {
                 minlength="6"
                 required
               >
-              <div class="form-hint fs-5">
+              <div class="form-hint fs-5 mt-1">
                 Минимум 6 символов
               </div>
             </div>
-            <div
-              v-if="saveError"
-              class="alert alert-danger"
-            >
-              {{ saveError }}
+            <div class="col-12">
+              <div v-if="saveError" class="alert alert-danger">
+                {{ saveError }}
+              </div>
+              <div v-if="saveSuccess" class="alert alert-success">
+                Пароль успешно обновлён
+              </div>
             </div>
-            <div
-              v-if="saveSuccess"
-              class="alert alert-success"
-            >
-              Пароль успешно обновлён
+            <div class="col-12">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="isSaving"
+              >
+                <span
+                  v-if="isSaving"
+                  class="spinner-border spinner-border-sm me-2"
+                />
+                Сохранить
+              </button>
             </div>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="isSaving"
-            >
-              <span
-                v-if="isSaving"
-                class="spinner-border spinner-border-sm me-2"
-              />
-              Сохранить
-            </button>
           </form>
         </div>
       </div>
