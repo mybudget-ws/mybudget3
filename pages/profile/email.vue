@@ -7,47 +7,55 @@ definePageMeta({
 })
 
 const { token } = useAuth()
-
 const currentEmail = ref('')
 const newEmail = ref('')
 const password = ref('')
-
-const isLoading = ref(false)
 const isSaving = ref(false)
-
-const errorMessage = ref('')
-const successMessage = ref('')
+const saveError = ref('')
+const saveSuccess = ref(false)
+const isLoading = ref(false)
 
 const onSubmit = async () => {
-  errorMessage.value = ''
-  successMessage.value = ''
+  saveError.value = ''
+  saveSuccess.value = false
+
+  if (!newEmail.value || !password.value) {
+    saveError.value = 'Заполните все поля'
+    return
+  }
+
   isSaving.value = true
 
   try {
-    const res = await api.updateEmail(token.value, {
+    const result = await api.updateEmail(token.value, {
       password: password.value,
       newEmail: newEmail.value,
     })
 
-    if (res.error) {
-      errorMessage.value = res.error
+    if (!result) {
+      saveError.value = 'Не удалось изменить e-mail'
       return
     }
 
-    successMessage.value = 'E-mail успешно обновлён'
+    if (result.error) {
+      saveError.value = result.error
+      return
+    }
 
-    if (res.user?.email) {
-      currentEmail.value = res.user.email
+    if (result.user?.email) {
+      currentEmail.value = result.user.email
     }
 
     newEmail.value = ''
     password.value = ''
-  } catch (e) {
-    errorMessage.value = 'Ошибка сервера'
+
+    saveSuccess.value = true
+  } catch (error) {
+    saveError.value = error?.message || 'Не удалось обновить e-mail'
   } finally {
     isSaving.value = false
   }
-};
+}
 
 onMounted(async () => {
   isLoading.value = true
@@ -60,7 +68,7 @@ onMounted(async () => {
   } finally {
     isLoading.value = false
   }
-});
+})
 </script>
 
 <template>
@@ -71,7 +79,7 @@ onMounted(async () => {
         <div class="card-body">
           <h1>Изменить E-mail</h1>
           <div v-if="isLoading" class="spinner-border" />
-          <div v-else>
+          <form v-else @submit.prevent="onSubmit">
             <div class="row mb-3">
               <div class="col-md-6 col-lg-4">
                 <Input
@@ -99,20 +107,24 @@ onMounted(async () => {
                 />
               </div>
             </div>
-            <div v-if="errorMessage" class="text-danger mb-2">
-              {{ errorMessage }}
+            <div v-if="saveError" class="alert alert-danger">
+              {{ saveError }}
             </div>
-            <div v-if="successMessage" class="text-success mb-2">
-              {{ successMessage }}
+            <div v-if="saveSuccess" class="alert alert-success">
+              E-mail успешно обновлён
             </div>
             <button
+              type="submit"
               class="btn btn-primary"
               :disabled="isSaving"
-              @click="onSubmit"
             >
-              {{ isSaving ? 'Сохранение...' : 'Сохранить' }}
+              <span
+                v-if="isSaving"
+                class="spinner-border spinner-border-sm me-2"
+              />
+              Сохранить
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
