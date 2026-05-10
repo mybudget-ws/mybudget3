@@ -1,6 +1,10 @@
 <script setup>
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
+import {
+  IconCheck,
+  IconAlertCircle,
+} from '@tabler/icons-vue';
 
 const { token } = useAuth();
 
@@ -81,10 +85,12 @@ const onSubmit = async () => {
             </div>
             <div class="col-12">
               <div v-if="saveError" class="alert alert-danger">
+                <IconAlertCircle :size="20" class="text-danger" />
                 {{ saveError }}
               </div>
               <div v-if="saveSuccess" class="alert alert-success">
-                Пароль успешно обновлён
+                <IconCheck :size="20" class="text-success" />
+                <span>Пароль успешно обновлён</span>
               </div>
             </div>
             <div class="col-12">
