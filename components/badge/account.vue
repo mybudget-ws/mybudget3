@@ -4,7 +4,6 @@ import {
   IconX,
 } from '@tabler/icons-vue';
 
-// TODO: Если isClickable == false, то всё ещё продолжается emit при клике
 const emit = defineEmits(['click']);
 
 const props = defineProps({
@@ -21,13 +20,18 @@ const props = defineProps({
     default: false,
   },
 });
+
+const onClick = (event) => {
+  if (!props.isClickable) return;
+  emit('click', event);
+};
 </script>
 
 <template>
   <span
     class='badge'
     :class="props.isClickable ? 'cursor-pointer' : ''"
-    @click="emit('click', $event)"
+    @click='onClick'
   >
     <IconWallet size=14 stroke-width=2 class='text-cyan opacity-80' />
     {{ props.name }}

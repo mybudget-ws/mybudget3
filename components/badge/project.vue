@@ -20,13 +20,18 @@ const props = defineProps({
     default: false,
   },
 });
+
+const onClick = (event) => {
+  if (!props.isClickable) return;
+  emit('click', event);
+};
 </script>
 
 <template>
   <span
     class='badge'
     :class="props.isClickable ? 'cursor-pointer' : ''"
-    @click="emit('click', $event)"
+    @click='onClick'
   >
     <IconBulbFilled size=14 stroke-width=2 class='text-white opacity-80' />
     {{ props.name }}

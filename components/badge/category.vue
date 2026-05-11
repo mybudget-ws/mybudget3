@@ -19,13 +19,18 @@ const props = defineProps({
     default: false,
   },
 });
+
+const onClick = (event) => {
+  if (!props.isClickable) return;
+  emit('click', event);
+};
 </script>
 
 <template>
   <span
     class='badge'
     :class="props.isClickable ? 'cursor-pointer' : ''"
-    @click="emit('click', $event)"
+    @click='onClick'
   >
     {{ props.name }}
     <IconX v-if='props.isX' size='12' />
