@@ -4,6 +4,7 @@ import {
   IconX,
 } from '@tabler/icons-vue';
 
+// TODO: Если isClickable == false, то всё ещё продолжается emit при клике
 const emit = defineEmits(['click']);
 
 const props = defineProps({
