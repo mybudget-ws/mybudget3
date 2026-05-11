@@ -4,6 +4,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import api from '~/lib/api';
 import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
+import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 
 const { token } = useAuth();
 const isLoading = ref(true);
@@ -12,6 +13,13 @@ const chartData = ref({});
 
 const route = useRoute();
 const router = useRouter();
+
+// Filters:
+const selectedAccounts = ref([]);
+const selectedCategories = ref([]);
+const selectedKinds = ref([]);
+const selectedProjects = ref([]);
+const selectedProperties = ref([]);
 
 const appConfig = useAppConfig()
 const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
@@ -30,12 +38,39 @@ const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CUR
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
 
+const filters = computed(() => {
+  return {
+    period: period.value,
+    accountIds: parseNumberArray(route.query.accounts),
+    categoryIds: parseNumberArray(route.query.categories),
+    projectIds: parseNumberArray(route.query.projects),
+    propertyIds: parseNumberArray(route.query.properties),
+    kinds: parseStringArray(route.query.kinds),
+  };
+});
+
+const onAccountsChange = (accounts) => {
+  selectedAccounts.value = accounts;
+};
+
+const onCategoriesChange = (categories) => {
+  selectedCategories.value = categories;
+};
+
+const onProjectsChange = (projects) => {
+  selectedProjects.value = projects;
+};
+
+const onPropertiesChange = (properties) => {
+  selectedProperties.value = properties;
+};
+
 const load = async () => {
   isLoading.value = true;
   isError.value = false;
 
   try {
-    const result = await api.chartBalances(token.value, period.value);
+    const result = await api.chartBalances(token.value, filters.value);
     if (result) {
       chartData.value = result;
     } else {
@@ -60,17 +95,19 @@ const setPeriod = (value) => {
   });
 };
 
-watch([token, period], ([tokenValue, periodValue]) => {
-  if (tokenValue && isPeriodValid(periodValue)) {
-    load();
-  }
-}, { immediate: true });
-
 watch(() => route.query.period, (newPeriod) => {
   if (isPeriodValid(newPeriod) && newPeriod !== period.value) {
     period.value = newPeriod;
   }
 });
+
+watch(
+  () => route.query,
+  () => {
+    if (token.value) load();
+  },
+  { immediate: true }
+);
 
 const chartOptions = computed(() => ({
   chart: {
@@ -195,10 +232,10 @@ const chartOptions = computed(() => ({
     </div>
 
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterAccounts />
-      <FilterCategories />
-      <FilterProjects />
-      <FilterProperties />
+      <FilterAccounts @update:items='onAccountsChange' />
+      <FilterCategories @update:items='onCategoriesChange' />
+      <FilterProjects @update:items='onProjectsChange' />
+      <FilterProperties @update:items='onPropertiesChange' />
     </div>
   </div>
 </template>

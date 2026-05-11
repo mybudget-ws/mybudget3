@@ -13,17 +13,16 @@ import {
 
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
+import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
+import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
 
-const PER_PAGE = 50;
-const KIND_EXPENSE = 'expense';
-const KIND_INCOME = 'income';
-
-const appConfig = useAppConfig();
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
+const appConfig = useAppConfig();
 
+const PER_PAGE = 50;
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const isLoaded = ref(false);
@@ -36,28 +35,18 @@ const currentItem = ref(null);
 const page = ref(1);
 const transactions = ref([]);
 const transactionEventTicks = ref(1);
-const selectedCategories = ref([]);
-const selectedProjects = ref([]);
 const selectedAccounts = ref([]);
-const selectedProperties = ref([]);
+const selectedCategories = ref([]);
 const selectedKinds = ref([]);
+const selectedProjects = ref([]);
+const selectedProperties = ref([]);
 
 const filters = computed(() => {
-  const parse = (val) => {
-    if (typeof val === 'string') {
-      return val.split(',').map(Number).filter(Boolean);
-    }
-    if (Array.isArray(val)) {
-      return val.map(Number).filter(Boolean);
-    }
-    return [];
-  };
-
   return {
-    accountIds: parse(route.query.accounts),
-    categoryIds: parse(route.query.categories),
-    projectIds: parse(route.query.projects),
-    propertyIds: parse(route.query.properties),
+    accountIds: parseNumberArray(route.query.accounts),
+    categoryIds: parseNumberArray(route.query.categories),
+    projectIds: parseNumberArray(route.query.projects),
+    propertyIds: parseNumberArray(route.query.properties),
     kinds: parseStringArray(route.query.kinds),
   };
 });
@@ -69,16 +58,6 @@ const isTopFiltersVisible = computed(() => (
     || selectedProperties.value.length
     || selectedKinds.value.length
 ));
-
-const parseStringArray = (val) => {
-  if (typeof val === 'string') {
-    return val.split(',').filter(Boolean);
-  }
-  if (Array.isArray(val)) {
-    return val.filter(Boolean);
-  }
-  return [];
-};
 
 const params = computed(() => ({
   page: page.value,
