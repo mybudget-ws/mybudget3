@@ -82,6 +82,7 @@ onMounted(async () => {
     currentEmail.value = profile.email
   } catch (e) {
     console.error(e)
+    saveError.value = 'Не удалось загрузить профиль'
   } finally {
     isLoading.value = false
   }
