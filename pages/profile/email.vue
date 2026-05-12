@@ -22,7 +22,20 @@ const isLoading = ref(false)
 const onSubmit = async () => {
   saveError.value = ''
   saveSuccess.value = false
+  const normalizedNewEmail = newEmail.value.trim()
 
+  if (!normalizedNewEmail) {
+    saveError.value = 'Введите новый E-mail'
+    return
+  }
+  if (!password.value) {
+    saveError.value = 'Введите пароль'
+    return
+  }
+  if (normalizedNewEmail === currentEmail.value) {
+    saveError.value = 'Новый E-mail должен отличаться от текущего'
+    return
+  }
   if (!newEmail.value || !password.value) {
     saveError.value = 'Заполните все поля'
     return
@@ -33,7 +46,7 @@ const onSubmit = async () => {
   try {
     const result = await api.updateEmail(token.value, {
       password: password.value,
-      newEmail: newEmail.value,
+      newEmail: normalizedNewEmail,
     })
 
     if (!result) {
