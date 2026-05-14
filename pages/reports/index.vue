@@ -1,6 +1,8 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
-
+import {
+  IconX,
+} from '@tabler/icons-vue';
 import api from '~/lib/api';
 import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
@@ -21,8 +23,33 @@ const selectedKinds = ref([]);
 const selectedProjects = ref([]);
 const selectedProperties = ref([]);
 
-const appConfig = useAppConfig()
-const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
+const isTopFiltersVisible = computed(() => (
+  selectedCategories.value.length
+    || selectedProjects.value.length
+    || selectedAccounts.value.length
+    || selectedProperties.value.length
+    || selectedKinds.value.length
+));
+
+const appConfig = useAppConfig();
+const textColor = computed(() =>
+  appConfig.theme.dark ? '#e2e8f0' : '#334155'
+);
+
+const badgeClasses = (kind) => {
+  const dark = appConfig.theme.dark;
+
+  if (dark) {
+    return kind === 'project'
+      ? 'bg-azure-lt text-azure-lt-fg'
+      : 'bg-teal-lt text-teal-lt-fg';
+  }
+
+  return kind === 'project'
+    ? 'bg-azure text-azure-fg'
+    : 'bg-teal text-teal-fg';
+};
+
 const CHART_HEIGTH = 500;
 const CHART_TYPE = 'line';
 const PERIODS = {
@@ -93,6 +120,91 @@ const setPeriod = (value) => {
       period: value,
     },
   });
+};
+
+const onCategoryClick = (id) => {
+  const current = route.query.categories
+    ? route.query.categories.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newCategories = current.includes(id)
+    ? current.filter(c => c !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newCategories.length) nextQuery.categories = newCategories.join(',');
+  else delete nextQuery.categories;
+
+  router.replace({ query: nextQuery });
+};
+
+const onAccountClick = (id) => {
+  const current = route.query.accounts
+    ? route.query.accounts.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newAccounts = current.includes(id)
+    ? current.filter(a => a !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newAccounts.length) nextQuery.accounts = newAccounts.join(',');
+  else delete nextQuery.accounts;
+
+  router.replace({ query: nextQuery });
+};
+
+const onProjectClick = (id) => {
+  const current = route.query.projects
+    ? route.query.projects.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newProjects = current.includes(id)
+    ? current.filter(p => p !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newProjects.length) nextQuery.projects = newProjects.join(',');
+  else delete nextQuery.projects;
+
+  router.replace({ query: nextQuery });
+};
+
+const onPropertyClick = (id) => {
+  const current = route.query.properties
+    ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
+    : [];
+
+  const newProperties = current.includes(id)
+    ? current.filter(p => p !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newProperties.length) nextQuery.properties = newProperties.join(',');
+  else delete nextQuery.properties;
+
+  router.replace({ query: nextQuery });
+};
+
+const onKindClick = (id) => {
+  const current = route.query.kinds
+    ? route.query.kinds.toString().split(',').filter(Boolean)
+    : [];
+
+  const newKinds = current.includes(id)
+    ? current.filter(k => k !== id)
+    : [...current, id];
+
+  const nextQuery = { ...route.query };
+
+  if (newKinds.length) nextQuery.kinds = newKinds.join(',');
+  else delete nextQuery.kinds;
+
+  router.replace({ query: nextQuery });
 };
 
 watch(() => route.query.period, (newPeriod) => {
@@ -196,6 +308,53 @@ const chartOptions = computed(() => ({
                 {{ label }}
               </button>
             </nav>
+          </div>
+        </div>
+        <div v-if="isTopFiltersVisible" class="card-body border-top">
+          <div class="badges-list">
+            <span
+              v-for="kind in selectedKinds"
+              :key="kind.id"
+              class="badge cursor-pointer"
+              @click="onKindClick(kind.id)"
+            >
+              {{ kind.name }}
+              <IconX size="12" />
+            </span>
+
+            <BadgeAccount
+              v-for="account in selectedAccounts"
+              :key="account.id"
+              :name="account.name"
+              :is-x="true"
+              @click="onAccountClick(account.id)"
+            />
+
+            <BadgeCategory
+              v-for="category in selectedCategories"
+              :key="category.id"
+              :name="category.name"
+              :is-x="true"
+              @click="onCategoryClick(category.id)"
+            />
+
+            <BadgeProject
+              v-for="project in selectedProjects"
+              :key="project.id"
+              :name="project.name"
+              :is-x="true"
+              :class="badgeClasses('project')"
+              @click="onProjectClick(project.id)"
+            />
+
+            <BadgeProperty
+              v-for="property in selectedProperties"
+              :key="property.id"
+              :name="property.name"
+              :is-x="true"
+              :class="badgeClasses('property')"
+              @click="onPropertyClick(property.id)"
+            />
           </div>
         </div>
       </div>
