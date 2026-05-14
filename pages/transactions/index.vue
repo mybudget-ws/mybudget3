@@ -22,7 +22,9 @@ const router = useRouter();
 const { token } = useAuth();
 const appConfig = useAppConfig();
 
-const PER_PAGE = 50;
+const PER_PAGE = 10;
+const hasMore = ref(true);
+const isLoadingMore = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const isLoaded = ref(false);
@@ -85,20 +87,24 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
-const load = async (isQuite = false) => {
+const load = async (isQuite = false, append = false) => {
   if (isQuite) {
-    isQuiteLoading.value = true
+    isQuiteLoading.value = true;
   } else {
-    isLoading.value = true
+    isLoading.value = true;
   }
 
   try {
     const items = await api.transactions(token.value, params.value);
+
     if (items) {
-      transactions.value = items;
+      if (append) {
+        transactions.value = [...transactions.value, ...items];
+      } else {
+        transactions.value = items;
+      }
+      hasMore.value = items.length === PER_PAGE;
       isLoaded.value = true;
-    } else {
-      console.log('TODO: error');
     }
   } catch (err) {
     console.error(err);
@@ -275,6 +281,16 @@ const onKindClick = (id) => {
   router.replace({ query: nextQuery });
 };
 
+const loadMore = async () => {
+  if (isLoadingMore.value) return;
+
+  isLoadingMore.value = true;
+  page.value += 1;
+
+  await load(true, true);
+
+  isLoadingMore.value = false;
+};
 // Тут watchEffect не использую, т.к. похоже
 // watch на route.query срабатывает.
 //
@@ -284,7 +300,10 @@ const onKindClick = (id) => {
 watch(
   () => route.query,
   () => {
-    if (token.value) load();
+    if (!token.value) return;
+
+    page.value = 1;          // важно
+    load(false, false);
   },
   { immediate: true }
 );
@@ -514,10 +533,29 @@ watch(
                 </tbody>
               </table>
             </div>
-            <div class='card-footer d-flex align-items-center'>
-              <i v-if='isEmpty' class='text-secondary'>
+            <div class="card-footer d-flex justify-content-center align-items-center">
+              <i v-if="isEmpty" class="text-secondary">
                 Похоже таких операций ещё нет
               </i>
+              <button
+                v-else
+                class="btn btn-outline-primary"
+                :disabled="!hasMore || isLoadingMore"
+                @click="loadMore"
+              >
+                <template v-if="isLoadingMore">
+                  Загрузка...
+                </template>
+
+                <template v-else-if="hasMore">
+                  Загрузить ещё
+                </template>
+
+                <template v-else>
+                  Больше операций нет
+                </template>
+              </button>
+
               <!--div class='dropdown'>
                 <a class='btn dropdown-toggle' data-bs-toggle='dropdown'>
                   <span id='page-count' class='me-1'>20</span>
