@@ -9,6 +9,7 @@ import {
   IconX,
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
+  IconSearch,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -40,6 +41,7 @@ const selectedCategories = ref([]);
 const selectedKinds = ref([]);
 const selectedProjects = ref([]);
 const selectedProperties = ref([]);
+const description = ref(route.query.description?.toString() || '');
 
 const filters = computed(() => {
   return {
@@ -48,6 +50,7 @@ const filters = computed(() => {
     projectIds: parseNumberArray(route.query.projects),
     propertyIds: parseNumberArray(route.query.properties),
     kinds: parseStringArray(route.query.kinds),
+    description: route.query.description?.toString().trim() || null,
   };
 });
 
@@ -275,6 +278,27 @@ const onKindClick = (id) => {
   router.replace({ query: nextQuery });
 };
 
+const onDescriptionSearch = () => {
+  const nextQuery = { ...route.query };
+
+  if (description.value.trim()) {
+    nextQuery.description = description.value.trim();
+  } else {
+    delete nextQuery.description;
+  }
+
+  router.replace({ query: nextQuery });
+};
+
+const clearDescriptionSearch = () => {
+  description.value = '';
+
+  const nextQuery = { ...route.query };
+  delete nextQuery.description;
+
+  router.replace({ query: nextQuery });
+};
+
 // Тут watchEffect не использую, т.к. похоже
 // watch на route.query срабатывает.
 //
@@ -287,6 +311,12 @@ watch(
     if (token.value) load();
   },
   { immediate: true }
+);
+watch(
+  () => route.query.description,
+  (value) => {
+    description.value = value?.toString() || '';
+  }
 );
 </script>
 
@@ -327,22 +357,32 @@ watch(
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex flex-wrap btn-list'>
-                  <!--div class="input-group input-group-flat w-auto">
+                  <div class="input-group input-group-flat w-auto">
                     <span class="input-group-text">
-                      <IconSearch size=20 stroke-width=1 />
+                      <IconSearch size="20" stroke-width="1" />
                     </span>
-                    <input id='advanced-table-search' type='text' class='form-control'>
+
+                    <input
+                      id="advanced-table-search"
+                      v-model="description"
+                      type="text"
+                      class="form-control"
+                      placeholder="Поиск по описанию"
+                      @keyup.enter="onDescriptionSearch"
+                    >
                     <span class="input-group-text">
                       <kbd>Enter</kbd>
                     </span>
-                  </div-->
+                  </div>
                   <button
-                    class='btn btn-outline-green'
-                    type='button'
-                    @click="openCreate(KIND_INCOME)"
+                    v-if="route.query.description"
+                    type="button"
+                    class="btn btn-icon btn-ghost-secondary h-100"
+                    @click="clearDescriptionSearch"
                   >
-                    <IconArrowUp stroke-width=2 />
+                    <IconX size="18" />
                   </button>
+
                   <button
                     class='btn btn-outline-secondary'
                     type='button'
