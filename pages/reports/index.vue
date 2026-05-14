@@ -1,6 +1,5 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
-
 import api from '~/lib/api';
 import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
@@ -63,6 +62,10 @@ const onProjectsChange = (projects) => {
 
 const onPropertiesChange = (properties) => {
   selectedProperties.value = properties;
+};
+
+const onKindsChange = (kinds) => {
+  selectedKinds.value = kinds;
 };
 
 const load = async () => {
@@ -232,6 +235,7 @@ const chartOptions = computed(() => ({
     </div>
 
     <div class='col-sm-12 col-lg-3 col-xl-2'>
+      <FilterKinds @update:items="onKindsChange" />
       <FilterAccounts @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />
