@@ -6,7 +6,6 @@ import {
   IconCopy,
   IconPencil,
   IconTrash,
-  IconX,
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
 } from '@tabler/icons-vue';
@@ -367,15 +366,13 @@ watch(
             class='card-body border-bottom'
           >
             <div class='badges-list'>
-              <span
+              <BadgeCategory
                 v-for='kind in selectedKinds'
                 :key='kind.id'
-                class='badge cursor-pointer'
+                :name='kind.name'
+                :is-x='true'
                 @click='onKindClick(kind.id)'
-              >
-                {{ kind.name }}
-                <IconX size='12' />
-              </span>
+              />
               <BadgeAccount
                 v-for='account in selectedAccounts'
                 :key='account.id'

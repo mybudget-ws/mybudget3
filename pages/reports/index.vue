@@ -1,8 +1,5 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
-import {
-  IconX,
-} from '@tabler/icons-vue';
 import api from '~/lib/api';
 import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
@@ -312,15 +309,13 @@ const chartOptions = computed(() => ({
         </div>
         <div v-if="isTopFiltersVisible" class="card-body border-top">
           <div class="badges-list">
-            <span
+            <BadgeCategory
               v-for="kind in selectedKinds"
               :key="kind.id"
-              class="badge cursor-pointer"
+              :name="kind.name"
+              :is-x="true"              
               @click="onKindClick(kind.id)"
-            >
-              {{ kind.name }}
-              <IconX size="12" />
-            </span>
+            />
 
             <BadgeAccount
               v-for="account in selectedAccounts"
