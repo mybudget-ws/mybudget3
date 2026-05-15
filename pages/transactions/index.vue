@@ -6,7 +6,6 @@ import {
   IconCopy,
   IconPencil,
   IconTrash,
-  IconX,
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
 } from '@tabler/icons-vue';
@@ -20,7 +19,6 @@ import { useAuth } from '~/composables/use_auth';
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
-const appConfig = useAppConfig();
 
 const PER_PAGE = 50;
 const hasMore = ref(true);
@@ -129,18 +127,6 @@ const loadMore = async () => {
   await load(true, true);
 
   isLoadingMore.value = false;
-};
-
-const badgeClasses = (kind) => {
-  if (appConfig.theme.dark) {
-    return kind === 'project' ?
-      'bg-azure-lt text-azure-lt-fg' :
-      'bg-teal-lt text-teal-lt-fg';
-  } else {
-    return kind === 'project' ?
-      'bg-azure text-azure-fg' :
-      'bg-teal text-teal-fg';
-  }
 };
 
 const destroy = async ({ id }) => {
@@ -387,15 +373,13 @@ watch(
             class='card-body border-bottom'
           >
             <div class='badges-list'>
-              <span
+              <BadgeCategory
                 v-for='kind in selectedKinds'
                 :key='kind.id'
-                class='badge cursor-pointer'
+                :name='kind.name'
+                :is-x='true'
                 @click='onKindClick(kind.id)'
-              >
-                {{ kind.name }}
-                <IconX size='12' />
-              </span>
+              />
               <BadgeAccount
                 v-for='account in selectedAccounts'
                 :key='account.id'
@@ -415,7 +399,6 @@ watch(
                 :key='project.id'
                 :name='project.name'
                 :is-x='true'
-                :class='badgeClasses("project")'
                 @click='onProjectClick(project.id)'
               />
               <BadgeProperty
@@ -423,7 +406,6 @@ watch(
                 :key='property.id'
                 :name='property.name'
                 :is-x='true'
-                :class='badgeClasses("property")'
                 @click='onPropertyClick(property.id)'
               />
             </div>
@@ -488,13 +470,11 @@ watch(
                         <BadgeProject
                           v-if='item.project'
                           :name='item.project.name'
-                          :class='badgeClasses("project")'
                           @click='onProjectClick(item.project.id)'
                         />
                         <BadgeProperty
                           v-if='item.property'
                           :name='item.property.name'
-                          :class='badgeClasses("property")'
                           @click='onPropertyClick(item.property.id)'
                         />
                         <BadgeCategory

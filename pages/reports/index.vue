@@ -7,22 +7,14 @@ import { useAuth } from '~/composables/use_auth';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 
 const { token } = useAuth();
+const route = useRoute();
+const router = useRouter();
+const appConfig = useAppConfig();
+
 const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
 
-const route = useRoute();
-const router = useRouter();
-
-// Filters:
-const selectedAccounts = ref([]);
-const selectedCategories = ref([]);
-const selectedKinds = ref([]);
-const selectedProjects = ref([]);
-const selectedProperties = ref([]);
-
-const appConfig = useAppConfig()
-const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const CHART_HEIGTH = 500;
 const CHART_TYPE = 'line';
 const PERIODS = {
@@ -35,6 +27,9 @@ const PERIODS = {
 const isPeriodValid = (value) => (!!PERIODS[value]);
 const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
 
+const textColor = computed(() =>
+  appConfig.theme.dark ? '#e2e8f0' : '#334155'
+);
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
 
@@ -48,6 +43,20 @@ const filters = computed(() => {
     kinds: parseStringArray(route.query.kinds),
   };
 });
+
+const selectedAccounts = ref([]);
+const selectedCategories = ref([]);
+const selectedKinds = ref([]);
+const selectedProjects = ref([]);
+const selectedProperties = ref([]);
+
+const isTopFiltersVisible = computed(() => (
+  selectedCategories.value.length
+    || selectedProjects.value.length
+    || selectedAccounts.value.length
+    || selectedProperties.value.length
+    || selectedKinds.value.length
+));
 
 const onAccountsChange = (accounts) => {
   selectedAccounts.value = accounts;
@@ -95,6 +104,39 @@ const setPeriod = (value) => {
   });
 };
 
+const toggleQueryFilter = (queryKey, id, parser, formatter = (arr) => arr.join(',')) => {
+  const current = parser(route.query[queryKey]);
+  const newValues = current.includes(id)
+    ? current.filter(item => item !== id)
+    : [...current, id];
+  
+  const nextQuery = { ...route.query };
+  if (newValues.length) nextQuery[queryKey] = formatter(newValues);
+  else delete nextQuery[queryKey];
+  
+  router.replace({ query: nextQuery });
+};
+
+const onCategoryClick = (id) => {
+  toggleQueryFilter('categories', id, parseNumberArray);
+};
+
+const onAccountClick = (id) => {
+  toggleQueryFilter('accounts', id, parseNumberArray);
+};
+
+const onProjectClick = (id) => {
+  toggleQueryFilter('projects', id, parseNumberArray);
+};
+
+const onPropertyClick = (id) => {
+  toggleQueryFilter('properties', id, parseNumberArray);
+};
+
+const onKindClick = (id) => {
+  toggleQueryFilter('kinds', id, parseStringArray);
+};
+
 watch(() => route.query.period, (newPeriod) => {
   if (isPeriodValid(newPeriod) && newPeriod !== period.value) {
     period.value = newPeriod;
@@ -138,7 +180,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 0,
       style: {
-        colors: textColor,
+        colors: textColor.value,
       }
     },
     tooltip: { enabled: false },
@@ -149,7 +191,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 4,
       style: {
-        colors: textColor,
+        colors: textColor.value,
       }
     },
   },
@@ -196,6 +238,49 @@ const chartOptions = computed(() => ({
                 {{ label }}
               </button>
             </nav>
+          </div>
+        </div>
+        <div v-if="isTopFiltersVisible" class="card-body border-top">
+          <div class="badges-list">
+            <BadgeCategory
+              v-for="kind in selectedKinds"
+              :key="kind.id"
+              :name="kind.name"
+              :is-x="true"              
+              @click="onKindClick(kind.id)"
+            />
+
+            <BadgeAccount
+              v-for="account in selectedAccounts"
+              :key="account.id"
+              :name="account.name"
+              :is-x="true"
+              @click="onAccountClick(account.id)"
+            />
+
+            <BadgeCategory
+              v-for="category in selectedCategories"
+              :key="category.id"
+              :name="category.name"
+              :is-x="true"
+              @click="onCategoryClick(category.id)"
+            />
+
+            <BadgeProject
+              v-for="project in selectedProjects"
+              :key="project.id"
+              :name="project.name"
+              :is-x="true"
+              @click="onProjectClick(project.id)"
+            />
+
+            <BadgeProperty
+              v-for="property in selectedProperties"
+              :key="property.id"
+              :name="property.name"
+              :is-x="true"
+              @click="onPropertyClick(property.id)"
+            />
           </div>
         </div>
       </div>
