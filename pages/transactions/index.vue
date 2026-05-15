@@ -53,6 +53,12 @@ const filters = computed(() => {
   };
 });
 
+const isEmpty = computed(() => {
+  if (isLoading.value) return false;
+  return transactions.value.length === 0;
+});
+
+
 const isTopFiltersVisible = computed(() => (
   selectedCategories.value.length
     || selectedProjects.value.length
@@ -115,10 +121,16 @@ const load = async (isQuite = false, append = false) => {
   }
 };
 
-const isEmpty = computed(() => {
-  if (isLoading.value) return false;
-  return transactions.value.length === 0;
-});
+const loadMore = async () => {
+  if (isLoadingMore.value) return;
+
+  isLoadingMore.value = true;
+  page.value += 1;
+
+  await load(true, true);
+
+  isLoadingMore.value = false;
+};
 
 const badgeClasses = (kind) => {
   if (appConfig.theme.dark) {
@@ -281,16 +293,6 @@ const onKindClick = (id) => {
   router.replace({ query: nextQuery });
 };
 
-const loadMore = async () => {
-  if (isLoadingMore.value) return;
-
-  isLoadingMore.value = true;
-  page.value += 1;
-
-  await load(true, true);
-
-  isLoadingMore.value = false;
-};
 // Тут watchEffect не использую, т.к. похоже
 // watch на route.query срабатывает.
 //
@@ -539,7 +541,7 @@ watch(
               </i>
               <button
                 v-else
-                class="btn btn-outline-primary"
+                class="btn btn-ghost-secondary"
                 :disabled="!hasMore || isLoadingMore"
                 @click="loadMore"
               >
@@ -552,32 +554,9 @@ watch(
                 </template>
 
                 <template v-else>
-                  Больше операций нет
+                  Операций больше нет
                 </template>
               </button>
-
-              <!--div class='dropdown'>
-                <a class='btn dropdown-toggle' data-bs-toggle='dropdown'>
-                  <span id='page-count' class='me-1'>20</span>
-                  <span>records</span>
-                </a>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" data-value="10">10 records</a>
-                  <a class="dropdown-item" data-value="20">20 records</a>
-                  <a class="dropdown-item" data-value="50">50 records</a>
-                  <a class="dropdown-item" data-value="100">100 records</a>
-                </div>
-              </div>
-              <ul class="pagination m-0 ms-auto">
-                <li class="page-item active">
-                  <a class="page-link cursor-pointer" data-i="1" data-page="20">1</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link cursor-pointer" data-i="2" data-page="20">2</a>
-                </li>
-                <li class="page-item disabled">
-                  <a class="page-link cursor-pointer">...</a></li><li class="page-item"><a class="page-link cursor-pointer" data-i="7" data-page="20">7</a></li></ul>
-              -->
             </div>
           </div>
         </div>
