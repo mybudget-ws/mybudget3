@@ -1,51 +1,19 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
+
 import api from '~/lib/api';
 import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 
 const { token } = useAuth();
+const route = useRoute();
+const router = useRouter();
+const appConfig = useAppConfig();
+
 const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
-
-const route = useRoute();
-const router = useRouter();
-
-// Filters:
-const selectedAccounts = ref([]);
-const selectedCategories = ref([]);
-const selectedKinds = ref([]);
-const selectedProjects = ref([]);
-const selectedProperties = ref([]);
-
-const isTopFiltersVisible = computed(() => (
-  selectedCategories.value.length
-    || selectedProjects.value.length
-    || selectedAccounts.value.length
-    || selectedProperties.value.length
-    || selectedKinds.value.length
-));
-
-const appConfig = useAppConfig();
-const textColor = computed(() =>
-  appConfig.theme.dark ? '#e2e8f0' : '#334155'
-);
-
-const badgeClasses = (kind) => {
-  const dark = appConfig.theme.dark;
-
-  if (dark) {
-    return kind === 'project'
-      ? 'bg-azure-lt text-azure-lt-fg'
-      : 'bg-teal-lt text-teal-lt-fg';
-  }
-
-  return kind === 'project'
-    ? 'bg-azure text-azure-fg'
-    : 'bg-teal text-teal-fg';
-};
 
 const CHART_HEIGTH = 500;
 const CHART_TYPE = 'line';
@@ -59,6 +27,9 @@ const PERIODS = {
 const isPeriodValid = (value) => (!!PERIODS[value]);
 const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
 
+const textColor = computed(() =>
+  appConfig.theme.dark ? '#e2e8f0' : '#334155'
+);
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
 
@@ -72,6 +43,20 @@ const filters = computed(() => {
     kinds: parseStringArray(route.query.kinds),
   };
 });
+
+const selectedAccounts = ref([]);
+const selectedCategories = ref([]);
+const selectedKinds = ref([]);
+const selectedProjects = ref([]);
+const selectedProperties = ref([]);
+
+const isTopFiltersVisible = computed(() => (
+  selectedCategories.value.length
+    || selectedProjects.value.length
+    || selectedAccounts.value.length
+    || selectedProperties.value.length
+    || selectedKinds.value.length
+));
 
 const onAccountsChange = (accounts) => {
   selectedAccounts.value = accounts;
@@ -286,7 +271,6 @@ const chartOptions = computed(() => ({
               :key="project.id"
               :name="project.name"
               :is-x="true"
-              :class="badgeClasses('project')"
               @click="onProjectClick(project.id)"
             />
 
@@ -295,7 +279,6 @@ const chartOptions = computed(() => ({
               :key="property.id"
               :name="property.name"
               :is-x="true"
-              :class="badgeClasses('property')"
               @click="onPropertyClick(property.id)"
             />
           </div>

@@ -19,7 +19,6 @@ import { useAuth } from '~/composables/use_auth';
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
-const appConfig = useAppConfig();
 
 const PER_PAGE = 50;
 const isLoading = ref(false);
@@ -112,18 +111,6 @@ const isEmpty = computed(() => {
   if (isLoading.value) return false;
   return transactions.value.length === 0;
 });
-
-const badgeClasses = (kind) => {
-  if (appConfig.theme.dark) {
-    return kind === 'project' ?
-      'bg-azure-lt text-azure-lt-fg' :
-      'bg-teal-lt text-teal-lt-fg';
-  } else {
-    return kind === 'project' ?
-      'bg-azure text-azure-fg' :
-      'bg-teal text-teal-fg';
-  }
-};
 
 const destroy = async ({ id }) => {
   if (confirm('Вы уверены, что хотите удалить операцию?')) {
@@ -392,7 +379,6 @@ watch(
                 :key='project.id'
                 :name='project.name'
                 :is-x='true'
-                :class='badgeClasses("project")'
                 @click='onProjectClick(project.id)'
               />
               <BadgeProperty
@@ -400,7 +386,6 @@ watch(
                 :key='property.id'
                 :name='property.name'
                 :is-x='true'
-                :class='badgeClasses("property")'
                 @click='onPropertyClick(property.id)'
               />
             </div>
@@ -465,13 +450,11 @@ watch(
                         <BadgeProject
                           v-if='item.project'
                           :name='item.project.name'
-                          :class='badgeClasses("project")'
                           @click='onProjectClick(item.project.id)'
                         />
                         <BadgeProperty
                           v-if='item.property'
                           :name='item.property.name'
-                          :class='badgeClasses("property")'
                           @click='onPropertyClick(item.property.id)'
                         />
                         <BadgeCategory
