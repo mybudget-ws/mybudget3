@@ -180,7 +180,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 0,
       style: {
-        colors: textColor,
+        colors: textColor.value,
       }
     },
     tooltip: { enabled: false },
@@ -191,7 +191,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 4,
       style: {
-        colors: textColor,
+        colors: textColor.value,
       }
     },
   },
