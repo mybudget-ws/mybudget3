@@ -119,89 +119,37 @@ const setPeriod = (value) => {
   });
 };
 
-const onCategoryClick = (id) => {
-  const current = route.query.categories
-    ? route.query.categories.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newCategories = current.includes(id)
-    ? current.filter(c => c !== id)
+const toggleQueryFilter = (queryKey, id, parser, formatter = (arr) => arr.join(',')) => {
+  const current = parser(route.query[queryKey]);
+  const newValues = current.includes(id)
+    ? current.filter(item => item !== id)
     : [...current, id];
-
+  
   const nextQuery = { ...route.query };
-
-  if (newCategories.length) nextQuery.categories = newCategories.join(',');
-  else delete nextQuery.categories;
-
+  if (newValues.length) nextQuery[queryKey] = formatter(newValues);
+  else delete nextQuery[queryKey];
+  
   router.replace({ query: nextQuery });
+};
+
+const onCategoryClick = (id) => {
+  toggleQueryFilter('categories', id, parseNumberArray);
 };
 
 const onAccountClick = (id) => {
-  const current = route.query.accounts
-    ? route.query.accounts.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newAccounts = current.includes(id)
-    ? current.filter(a => a !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newAccounts.length) nextQuery.accounts = newAccounts.join(',');
-  else delete nextQuery.accounts;
-
-  router.replace({ query: nextQuery });
+  toggleQueryFilter('accounts', id, parseNumberArray);
 };
 
 const onProjectClick = (id) => {
-  const current = route.query.projects
-    ? route.query.projects.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProjects = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProjects.length) nextQuery.projects = newProjects.join(',');
-  else delete nextQuery.projects;
-
-  router.replace({ query: nextQuery });
+  toggleQueryFilter('projects', id, parseNumberArray);
 };
 
 const onPropertyClick = (id) => {
-  const current = route.query.properties
-    ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProperties = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProperties.length) nextQuery.properties = newProperties.join(',');
-  else delete nextQuery.properties;
-
-  router.replace({ query: nextQuery });
+  toggleQueryFilter('properties', id, parseNumberArray);
 };
 
 const onKindClick = (id) => {
-  const current = route.query.kinds
-    ? route.query.kinds.toString().split(',').filter(Boolean)
-    : [];
-
-  const newKinds = current.includes(id)
-    ? current.filter(k => k !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newKinds.length) nextQuery.kinds = newKinds.join(',');
-  else delete nextQuery.kinds;
-
-  router.replace({ query: nextQuery });
+  toggleQueryFilter('kinds', id, parseStringArray);
 };
 
 watch(() => route.query.period, (newPeriod) => {
