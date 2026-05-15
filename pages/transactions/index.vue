@@ -375,14 +375,12 @@ watch(
                     </span>
                   </div>
                   <button
-                    v-if="route.query.description"
-                    type="button"
-                    class="btn btn-icon btn-ghost-secondary h-100"
-                    @click="clearDescriptionSearch"
+                    class='btn btn-outline-green'
+                    type='button'
+                    @click="openCreate(KIND_INCOME)"
                   >
-                    <IconX size="18" />
+                    <IconArrowUp stroke-width=2 />
                   </button>
-
                   <button
                     class='btn btn-outline-secondary'
                     type='button'
