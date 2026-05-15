@@ -22,7 +22,7 @@ const router = useRouter();
 const { token } = useAuth();
 const appConfig = useAppConfig();
 
-const PER_PAGE = 10;
+const PER_PAGE = 50;
 const hasMore = ref(true);
 const isLoadingMore = ref(false);
 const isLoading = ref(false);
@@ -57,7 +57,6 @@ const isEmpty = computed(() => {
   if (isLoading.value) return false;
   return transactions.value.length === 0;
 });
-
 
 const isTopFiltersVisible = computed(() => (
   selectedCategories.value.length
@@ -304,7 +303,7 @@ watch(
   () => {
     if (!token.value) return;
 
-    page.value = 1;          // важно
+    page.value = 1;
     load(false, false);
   },
   { immediate: true }
