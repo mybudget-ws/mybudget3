@@ -23,6 +23,8 @@ const { token } = useAuth();
 const appConfig = useAppConfig();
 
 const PER_PAGE = 50;
+const hasMore = ref(true);
+const isLoadingMore = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const isLoaded = ref(false);
@@ -49,6 +51,11 @@ const filters = computed(() => {
     propertyIds: parseNumberArray(route.query.properties),
     kinds: parseStringArray(route.query.kinds),
   };
+});
+
+const isEmpty = computed(() => {
+  if (isLoading.value) return false;
+  return transactions.value.length === 0;
 });
 
 const isTopFiltersVisible = computed(() => (
@@ -85,20 +92,24 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
-const load = async (isQuite = false) => {
+const load = async (isQuite = false, append = false) => {
   if (isQuite) {
-    isQuiteLoading.value = true
+    isQuiteLoading.value = true;
   } else {
-    isLoading.value = true
+    isLoading.value = true;
   }
 
   try {
     const items = await api.transactions(token.value, params.value);
+
     if (items) {
-      transactions.value = items;
+      if (append) {
+        transactions.value = [...transactions.value, ...items];
+      } else {
+        transactions.value = items;
+      }
+      hasMore.value = items.length === PER_PAGE;
       isLoaded.value = true;
-    } else {
-      console.log('TODO: error');
     }
   } catch (err) {
     console.error(err);
@@ -109,10 +120,16 @@ const load = async (isQuite = false) => {
   }
 };
 
-const isEmpty = computed(() => {
-  if (isLoading.value) return false;
-  return transactions.value.length === 0;
-});
+const loadMore = async () => {
+  if (isLoadingMore.value) return;
+
+  isLoadingMore.value = true;
+  page.value += 1;
+
+  await load(true, true);
+
+  isLoadingMore.value = false;
+};
 
 const badgeClasses = (kind) => {
   if (appConfig.theme.dark) {
@@ -284,7 +301,10 @@ const onKindClick = (id) => {
 watch(
   () => route.query,
   () => {
-    if (token.value) load();
+    if (!token.value) return;
+
+    page.value = 1;
+    load(false, false);
   },
   { immediate: true }
 );
@@ -514,32 +534,28 @@ watch(
                 </tbody>
               </table>
             </div>
-            <div class='card-footer d-flex align-items-center'>
-              <i v-if='isEmpty' class='text-secondary'>
+            <div class="card-footer d-flex justify-content-center align-items-center">
+              <i v-if="isEmpty" class="text-secondary">
                 Похоже таких операций ещё нет
               </i>
-              <!--div class='dropdown'>
-                <a class='btn dropdown-toggle' data-bs-toggle='dropdown'>
-                  <span id='page-count' class='me-1'>20</span>
-                  <span>records</span>
-                </a>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" data-value="10">10 records</a>
-                  <a class="dropdown-item" data-value="20">20 records</a>
-                  <a class="dropdown-item" data-value="50">50 records</a>
-                  <a class="dropdown-item" data-value="100">100 records</a>
-                </div>
-              </div>
-              <ul class="pagination m-0 ms-auto">
-                <li class="page-item active">
-                  <a class="page-link cursor-pointer" data-i="1" data-page="20">1</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link cursor-pointer" data-i="2" data-page="20">2</a>
-                </li>
-                <li class="page-item disabled">
-                  <a class="page-link cursor-pointer">...</a></li><li class="page-item"><a class="page-link cursor-pointer" data-i="7" data-page="20">7</a></li></ul>
-              -->
+              <button
+                v-else
+                class="btn btn-ghost-secondary"
+                :disabled="!hasMore || isLoadingMore"
+                @click="loadMore"
+              >
+                <template v-if="isLoadingMore">
+                  Загрузка...
+                </template>
+
+                <template v-else-if="hasMore">
+                  Загрузить ещё
+                </template>
+
+                <template v-else>
+                  Операций больше нет
+                </template>
+              </button>
             </div>
           </div>
         </div>
