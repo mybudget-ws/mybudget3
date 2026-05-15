@@ -1,10 +1,6 @@
 <script setup>
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
-import {
-  IconCheck,
-  IconAlertCircle,
-} from '@tabler/icons-vue';
 
 const { token } = useAuth();
 
@@ -19,12 +15,27 @@ const isSaving = ref(false);
 const saveError = ref('');
 const saveSuccess = ref(false);
 
+const showError = (message) => {
+  saveError.value = message;
+
+  setTimeout(() => {
+    saveError.value = '';
+  }, 3000);
+};
+const showSuccess = () => {
+  saveSuccess.value = true;
+
+  setTimeout(() => {
+    saveSuccess.value = false;
+  }, 3000);
+};
+
 const onSubmit = async () => {
   saveError.value = '';
   saveSuccess.value = false;
 
   if (newPassword.value.length < 6) {
-    saveError.value = 'Пароль должен содержать минимум 6 символов';
+    showError('Пароль должен содержать минимум 6 символов');
     return;
   }
 
@@ -37,16 +48,17 @@ const onSubmit = async () => {
   });
 
   if (!result) {
-    saveError.value = 'Неверный текущий пароль';
+    showError('Неверный текущий пароль');
     return;
   }
 
   password.value = '';
   newPassword.value = '';
 
-  saveSuccess.value = true;
+  showSuccess();
+
 } catch (error) {
-  saveError.value = error?.message || 'Не удалось обновить пароль';
+  showError(error?.message || 'Не удалось обновить пароль');
 } finally {
   isSaving.value = false;
 }
@@ -84,14 +96,14 @@ const onSubmit = async () => {
               </div>
             </div>
             <div class="col-12">
-              <div v-if="saveError" class="alert alert-danger">
-                <IconAlertCircle :size="20" class="text-danger" />
-                {{ saveError }}
-              </div>
-              <div v-if="saveSuccess" class="alert alert-success">
-                <IconCheck :size="20" class="text-success" />
-                <span>Пароль успешно обновлён</span>
-              </div>
+              <AlertDanger
+                v-if="saveError"
+                :description="saveError"
+              />
+              <AlertSuccess
+                v-if="saveSuccess"
+                description="Пароль успешно обновлён"
+              />
             </div>
             <div class="col-12">
               <button

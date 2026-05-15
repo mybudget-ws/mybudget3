@@ -104,15 +104,17 @@ onMounted(async () => {
                     {{ c.label }}
                   </option>
                 </select>
-                <div v-if="saveError" class="alert alert-danger mt-3 d-flex align-items-center gap-2">
-                  <IconAlertCircle :size="20" class="text-danger" />
-                  <span>{{ saveError }}</span>
-                </div>
 
-                <div v-if="saveSuccess" class="alert alert-success mt-3 d-flex align-items-center gap-2">
-                  <IconCheck :size="20" class="text-success" />
-                  <span>Валюта успешно сохранена</span>
-                </div>
+                <AlertDanger
+                  v-if="saveError"
+                  class="mt-2"
+                  :description="saveError"
+                />
+                <AlertSuccess
+                  v-if="saveSuccess"
+                  class="mt-2"
+                  description="Валюта успешно сохранена"
+                />
               </div>
             </div>
             <button

@@ -1,10 +1,6 @@
 <script setup>
 import api from '~/lib/api'
 import { useAuth } from '~/composables/use_auth'
-import {
-  IconCheck,
-  IconAlertCircle,
-} from '@tabler/icons-vue';
 
 definePageMeta({
   middleware: ['authenticated']
@@ -19,25 +15,41 @@ const saveError = ref('')
 const saveSuccess = ref(false)
 const isLoading = ref(false)
 
+const showError = (message) => {
+  saveError.value = message
+
+  setTimeout(() => {
+    saveError.value = ''
+  }, 3000)
+}
+
+const showSuccess = () => {
+  saveSuccess.value = true
+
+  setTimeout(() => {
+    saveSuccess.value = false
+  }, 3000)
+}
+
 const onSubmit = async () => {
   saveError.value = ''
   saveSuccess.value = false
   const normalizedNewEmail = newEmail.value.trim()
 
   if (!normalizedNewEmail) {
-    saveError.value = 'Введите новый E-mail'
+    showError('Введите новый E-mail')
     return
   }
   if (!password.value) {
-    saveError.value = 'Введите пароль'
+    showError('Введите пароль')
     return
   }
   if (normalizedNewEmail === currentEmail.value) {
-    saveError.value = 'Новый E-mail должен отличаться от текущего'
+    showError('Новый E-mail должен отличаться от текущего')
     return
   }
   if (!newEmail.value || !password.value) {
-    saveError.value = 'Заполните все поля'
+    showError('Заполните все поля')
     return
   }
 
@@ -50,7 +62,7 @@ const onSubmit = async () => {
     })
 
     if (!result) {
-      saveError.value = 'Не удалось изменить e-mail'
+      showError('Не удалось изменить e-mail')
       return
     }
 
@@ -66,9 +78,9 @@ const onSubmit = async () => {
     newEmail.value = ''
     password.value = ''
 
-    saveSuccess.value = true
+    showSuccess()
   } catch (error) {
-    saveError.value = error?.message || 'Не удалось обновить e-mail'
+    showError('Не удалось обновить e-mail')
   } finally {
     isSaving.value = false
   }
@@ -127,14 +139,14 @@ onMounted(async () => {
             </div>
             <div v-if="saveError || saveSuccess" class="row mb-3">
               <div class="col-md-6 col-lg-4">
-                <div v-if="saveError" class="alert alert-danger">
-                  <IconAlertCircle :size="20" class="text-danger" />
-                  {{ saveError }}
-                </div>
-                <div v-if="saveSuccess" class="alert alert-success flex items-center gap-2 text-green-lt-fg">
-                  <IconCheck :size="20" class="text-success" />
-                  <span>E-mail успешно обновлён</span>
-                </div>
+                <AlertDanger
+                  v-if="saveError"
+                  :description="saveError"
+                />
+                <AlertSuccess
+                  v-if="saveSuccess"
+                  description="E-mail успешно обновлён"
+                />
               </div>
             </div>
 
