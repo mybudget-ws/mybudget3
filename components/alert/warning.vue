@@ -11,30 +11,28 @@ const emit = defineEmits(['action'])
 </script>
 
 <template>
-  <div class="alert alert-warning">
+  <div class="alert alert-warning" role="alert">
     <div class="alert-icon">
       <IconAlertTriangle stroke-width="1.4" />
     </div>
 
-    <div>
-      <h4 class="alert-heading" v-if="title">
-        {{ title }}
-      </h4>
+    <h4 class="alert-heading" v-if="title">
+      {{ title }}
+    </h4>
 
-      <div class="alert-description" v-if="description || buttonText">
-        <span v-if="description">
-          {{ description }}
-        </span>
+    <div class="alert-description" v-if="description || buttonText">
+      <span v-if="description">
+        {{ description }}
+      </span>
 
-        <button
-          v-if="buttonText"
-          type="button"
-          class="btn btn-outline-warning btn-sm"
-          @click="emit('action')"
-        >
-          {{ buttonText }}
-        </button>
-      </div>
+      <button
+        v-if="buttonText"
+        type="button"
+        class="btn btn-outline-warning btn-sm"
+        @click="emit('action')"
+      >
+        {{ buttonText }}
+      </button>
     </div>
   </div>
 </template>

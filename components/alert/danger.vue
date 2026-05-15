@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="alert alert-danger">
+  <div class="alert alert-danger" role="alert">
     <div class="alert-icon">
       <IconAlertCircle stroke-width="1.4" />
     </div>

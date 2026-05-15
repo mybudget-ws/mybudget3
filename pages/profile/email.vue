@@ -140,13 +140,13 @@ onMounted(async () => {
             <div v-if="saveError || saveSuccess" class="row mb-3">
               <div class="col-md-6 col-lg-4">
                 <AlertDanger
-                v-if="saveError"
-                :description="saveError"
-              />
-              <AlertSuccess
-                v-if="saveSuccess"
-                description="E-mail успешно обновлён"
-              />
+                  v-if="saveError"
+                  :description="saveError"
+                />
+                <AlertSuccess
+                  v-if="saveSuccess"
+                  description="E-mail успешно обновлён"
+                />
               </div>
             </div>
 
