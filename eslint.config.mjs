@@ -5,6 +5,8 @@ export default withNuxt({
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/no-multiple-template-root': 'off',
-    'no-irregular-whitespace': 'off',
+    'no-irregular-whitespace': ['error', {
+      skipTemplates: true,
+    }]
   },
 });
