@@ -316,7 +316,11 @@ watch(token, (val) => {
 
     <div class='col-lg-6'>
       <DashboardBlock
+        :key="`assets-${isLoading}`"
         title='Все активы'
+        chart-type='donut'
+        :is-loading='isLoading'
+        :chart-data='dashboard.assetsChart'
       />
     </div>
   </div>
