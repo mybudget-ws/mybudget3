@@ -4,6 +4,8 @@ import {
   IconPencil,
   IconEyeOff,
   IconTrash,
+  IconStar,
+  IconStarFilled,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -48,6 +50,16 @@ const load = async (isQuite = false) => {
     isLoading.value = false;
     isQuiteLoading.value = false;
   }
+};
+
+const toggleFavourite = async (item) => {
+  await api.toggleIsFavourite(
+    token.value,
+    item.id,
+    'account'
+  );
+
+  await load(true);
 };
 
 const toggleHidden = async ({ id }) => {
@@ -139,8 +151,28 @@ watchEffect(() => {
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
                     <td>
-                      <span class='me-2'>{{ item.name }}</span>
-                      <span v-if='isShowKind(item)' class='badge'>{{ kindDisplayName(item) }}</span>
+                      <div class="d-flex align-items-center gap-2">
+                        <button
+                          type="button"
+                          class="btn btn-action p-0 shadow-none border-0"
+                          @click.stop="toggleFavourite(item)"
+                        >
+                          <IconStarFilled
+                            v-if="item.isFavourite"
+                            size="18"
+                            class="text-yellow"
+                          />
+                          <IconStar
+                            v-else
+                            size="18"
+                            class="text-secondary"
+                          />
+                        </button>
+                        <span class='me-2'>{{ item.name }}</span>
+                        <span v-if='isShowKind(item)' class='badge'>
+                          {{ kindDisplayName(item) }}
+                        </span>
+                      </div>
                     </td>
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td class='text-nowrap text-end'>
@@ -193,7 +225,27 @@ watchEffect(() => {
                 </thead>
                 <tbody class='opacity-30'>
                   <tr v-for="item in hiddenItems" :key="item.id">
-                    <td>{{ item.name }}</td>
+                    <td>
+                      <div class="d-flex align-items-center gap-2 opacity-75">
+                        <button
+                          type="button"
+                          class="btn btn-action p-0 shadow-none border-0"
+                          @click.stop="toggleFavourite(item)"
+                        >
+                          <IconStarFilled
+                            v-if="item.isFavourite"
+                            size="18"
+                            class="text-yellow"
+                          />
+                          <IconStar
+                            v-else
+                            size="18"
+                            class="text-secondary"
+                          />
+                        </button>
+                        <span>{{ item.name }}</span>
+                      </div>
+                    </td>
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions justify-content-end'>
