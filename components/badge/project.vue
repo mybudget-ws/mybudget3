@@ -25,17 +25,39 @@ const onClick = (event) => {
   if (!props.isClickable) return;
   emit('click', event);
 };
+
+const colorClass = computed(() => {
+  if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
+    return 'bg-azure-lt text-azure-lt-fg';
+  }
+
+  return 'bg-azure text-azure-fg';
+});
 </script>
 
 <template>
-  <!-- TODO: Для темной темы 'bg-azure-lt text-azure-lt-fg' -->
+  <!-- Светлая тема: bg-azure text-azure-fg -->
+  <!-- Тёмная тема: bg-azure-lt text-azure-lt-fg -->
   <span
-    class='badge bg-azure text-azure-fg'
-    :class="props.isClickable ? 'cursor-pointer' : ''"
-    @click='onClick'
+    class="badge"
+    :class="[
+      props.isClickable ? 'cursor-pointer' : '',
+      colorClass,
+    ]"
+    @click="onClick"
   >
-    <IconBulbFilled size=14 stroke-width=2 class='text-white opacity-80' />
+    <IconBulbFilled
+      size="14"
+      stroke-width="2"
+      class="text-white opacity-80"
+    />
+
     {{ props.name }}
-    <IconX v-if='props.isX' size='12' />
+
+    <IconX
+      v-if="props.isX"
+      size="12"
+      class="text-white"
+    />
   </span>
 </template>

@@ -25,17 +25,37 @@ const onClick = (event) => {
   if (!props.isClickable) return;
   emit('click', event);
 };
+
+const colorClass = computed(() => {
+  if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
+    return 'bg-teal-lt text-teal-lt-fg';
+  }
+
+  return 'bg-teal text-teal-fg';
+});
 </script>
 
 <template>
-  <!-- TODO: Для темной темы 'bg-teal-lt text-teal-lt-fg' -->
   <span
-    class='badge bg-teal text-teal-fg'
-    :class="props.isClickable ? 'cursor-pointer' : ''"
-    @click='onClick'
+    class="badge"
+    :class="[
+      props.isClickable ? 'cursor-pointer' : '',
+      colorClass,
+    ]"
+    @click="onClick"
   >
-    <IconKeyFilled size=14 stroke-width=2 class='text-white opacity-80' />
+    <IconKeyFilled
+      size="14"
+      stroke-width="2"
+      class="text-white"
+    />
+
     {{ props.name }}
-    <IconX v-if='props.isX' size='12' />
+
+    <IconX
+      v-if="props.isX"
+      size="12"
+      class="text-white"
+    />
   </span>
 </template>
