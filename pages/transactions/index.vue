@@ -60,6 +60,7 @@ const isTopFiltersVisible = computed(() => (
     || selectedAccounts.value.length
     || selectedProperties.value.length
     || selectedKinds.value.length
+    || route.query.description
 ));
 
 const params = computed(() => ({
@@ -405,6 +406,14 @@ watch(
             class='card-body border-bottom'
           >
             <div class='badges-list'>
+              <span
+                v-if="route.query.description"
+                class="badge cursor-pointer"
+                @click="clearDescriptionSearch"
+              >
+                {{ route.query.description }}
+                <IconX size="12" />
+              </span>
               <span
                 v-for='kind in selectedKinds'
                 :key='kind.id'
