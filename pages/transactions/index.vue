@@ -8,6 +8,7 @@ import {
   IconTrash,
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
+  IconSearch,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -40,6 +41,7 @@ const selectedCategories = ref([]);
 const selectedKinds = ref([]);
 const selectedProjects = ref([]);
 const selectedProperties = ref([]);
+const description = ref(route.query.description?.toString() || '');
 
 const filters = computed(() => {
   return {
@@ -48,6 +50,7 @@ const filters = computed(() => {
     projectIds: parseNumberArray(route.query.projects),
     propertyIds: parseNumberArray(route.query.properties),
     kinds: parseStringArray(route.query.kinds),
+    description: route.query.description?.toString().trim() || null,
   };
 });
 
@@ -62,6 +65,7 @@ const isTopFiltersVisible = computed(() => (
     || selectedAccounts.value.length
     || selectedProperties.value.length
     || selectedKinds.value.length
+    || route.query.description
 ));
 
 const params = computed(() => ({
@@ -278,6 +282,27 @@ const onKindClick = (id) => {
   router.replace({ query: nextQuery });
 };
 
+const onDescriptionSearch = () => {
+  const nextQuery = { ...route.query };
+
+  if (description.value.trim()) {
+    nextQuery.description = description.value.trim();
+  } else {
+    delete nextQuery.description;
+  }
+
+  router.replace({ query: nextQuery });
+};
+
+const clearDescriptionSearch = () => {
+  description.value = '';
+
+  const nextQuery = { ...route.query };
+  delete nextQuery.description;
+
+  router.replace({ query: nextQuery });
+};
+
 // Тут watchEffect не использую, т.к. похоже
 // watch на route.query срабатывает.
 //
@@ -293,6 +318,12 @@ watch(
     load(false, false);
   },
   { immediate: true }
+);
+watch(
+  () => route.query.description,
+  (value) => {
+    description.value = value?.toString() || '';
+  }
 );
 </script>
 
@@ -333,15 +364,23 @@ watch(
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex flex-wrap btn-list'>
-                  <!--div class="input-group input-group-flat w-auto">
+                  <div class="input-group input-group-flat w-auto">
                     <span class="input-group-text">
-                      <IconSearch size=20 stroke-width=1 />
+                      <IconSearch size="20" stroke-width="1" />
                     </span>
-                    <input id='advanced-table-search' type='text' class='form-control'>
+
+                    <input
+                      id="advanced-table-search"
+                      v-model="description"
+                      type="text"
+                      class="form-control ps-2"
+                      placeholder="Поиск по описанию"
+                      @keyup.enter="onDescriptionSearch"
+                    >
                     <span class="input-group-text">
                       <kbd>Enter</kbd>
                     </span>
-                  </div-->
+                  </div>
                   <button
                     class='btn btn-outline-green'
                     type='button'
@@ -373,6 +412,14 @@ watch(
             class='card-body border-bottom'
           >
             <div class='badges-list'>
+              <span
+                v-if="route.query.description"
+                class="badge cursor-pointer"
+                @click="clearDescriptionSearch"
+              >
+                {{ route.query.description }}
+                <IconX size="12" />
+              </span>
               <BadgeCategory
                 v-for='kind in selectedKinds'
                 :key='kind.id'
