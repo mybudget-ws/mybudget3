@@ -1,20 +1,21 @@
-<template>
-  <input
-    ref='inputRef'
-    v-bind='inputAttrs'
-    :class='inputClass'
-  >
-  <div v-if='isShowErrorMessage' class='text-danger mt-1'>
-    {{ errorText }}
-  </div>
-</template>
-
 <script setup>
 import { ref, computed } from 'vue';
+
+const emit = defineEmits(['update:modelValue']);
+
 const props = defineProps({
-  id: String,
-  name: String,
-  modelValue: [String, Number],
+  id: {
+    type: String,
+    default: undefined,
+  },
+  name: {
+    type: String,
+    default: undefined,
+  },
+  modelValue: {
+    type: [String, Number],
+    default: undefined,
+  },
   type: {
     type: String,
     default: 'text',
@@ -40,8 +41,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:modelValue'])
-const inputRef = ref(null)
+const inputRef = ref(null);
 
 const inputAttrs = computed(() => ({
   type: props.type,
@@ -53,7 +53,7 @@ const inputAttrs = computed(() => ({
   id: props.id,
   value: props.modelValue,
   onInput: (e) => emit('update:modelValue', e.target.value),
-}))
+}));
 
 const inputClass = computed(() => ([
   'form-control',
@@ -83,3 +83,14 @@ defineExpose({
   selectAll,
 });
 </script>
+
+<template>
+  <input
+    ref='inputRef'
+    v-bind='inputAttrs'
+    :class='inputClass'
+  >
+  <div v-if='isShowErrorMessage' class='text-danger mt-1'>
+    {{ errorText }}
+  </div>
+</template>

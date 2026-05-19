@@ -7,11 +7,9 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
+import { DEFAULT_LOCALE } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 
-const LOCALE = 'ru-RU';
-
-const route = useRoute();
 const { token } = useAuth();
 const isError = ref(false);
 const isLoading = ref(false);
@@ -27,6 +25,8 @@ const isEmpty = computed(() => {
   if (isError.value) return false;
   return items.value.length === 0;
 });
+
+const isShowFooter = computed(() => isEmpty.value || isError.value);
 
 const load = async (isQuite = false) => {
   isError.value = false;
@@ -138,13 +138,13 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th class='w-1'>Название</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                     <th>Счёт</th>
                     <th class='text-end'>Величина</th>
                     <th class='w-1 text-end'>В месяц</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                     <th class='w-1'>Дата</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
@@ -154,11 +154,11 @@ watchEffect(() => {
                     </td>
                     <td class='text-nowrap text-end font-monospace'>
                       <span
+                        v-tooltip:bottom="`Прогресс: ${ Math.round(item.balance) } ${ displayCurrency(item) }`"
                         :class="{
                           'text-success': isGoalFinish(item),
                           'text-secondary': !isGoalFinish(item),
                         }"
-                        v-tooltip:bottom="`Прогресс: ${ Math.round(item.balance) } ${ displayCurrency(item) }`"
                       >
                         {{ item.percentage }} %
                       </span>
@@ -175,9 +175,11 @@ watchEffect(() => {
                       </div>
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span :class="{
-                        'text-success': isGoalFinish(item),
-                      }">
+                      <span
+                        :class="{
+                          'text-success': isGoalFinish(item),
+                        }"
+                      >
                         <Amount
                           :value='item.amount'
                           :currency='displayCurrency(item)'
@@ -185,9 +187,11 @@ watchEffect(() => {
                       </span>
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span :class="{
-                        'text-success': isGoalFinish(item),
-                      }">
+                      <span
+                        :class="{
+                          'text-success': isGoalFinish(item),
+                        }"
+                      >
                         <Amount
                           v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ displayCurrency(item) }`"
                           :value='item.amountPerMonth'
@@ -208,10 +212,12 @@ watchEffect(() => {
                       </span>
                     </td>
                     <td>
-                      <span :class="{
-                        'text-danger': new Date(item.dueDateOn) < new Date(),
-                      }">
-                        {{ new Date(item.dueDateOn).toLocaleDateString(LOCALE) }}
+                      <span
+                        :class="{
+                          'text-danger': new Date(item.dueDateOn) < new Date(),
+                        }"
+                      >
+                        {{ new Date(item.dueDateOn).toLocaleDateString(DEFAULT_LOCALE) }}
                       </span>
                     </td>
                     <td>
@@ -223,10 +229,10 @@ watchEffect(() => {
                           <IconPencil size=20 stroke-width=1 />
                         </button>
                         <button
+                          v-tooltip:bottom="'Скрыть цель'"
                           type='button'
                           class='btn btn-action'
                           @click='toggleHidden(item)'
-                          v-tooltip:bottom="'Скрыть цель'"
                         >
                           <IconEyeOff size=20 stroke-width=1 />
                         </button>
@@ -242,7 +248,7 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
@@ -262,7 +268,10 @@ watchEffect(() => {
                 </tbody>
               </table>
             </div>
-            <div class='card-footer d-flex align-items-center'>
+            <div
+              v-if='isShowFooter'
+              class='card-footer d-flex align-items-center'
+            >
               <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких целей ещё нет
               </i>

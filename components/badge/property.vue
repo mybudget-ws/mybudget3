@@ -28,8 +28,9 @@ const onClick = (event) => {
 </script>
 
 <template>
+  <!-- TODO: Для темной темы 'bg-teal-lt text-teal-lt-fg' -->
   <span
-    class='badge'
+    class='badge bg-teal text-teal-fg'
     :class="props.isClickable ? 'cursor-pointer' : ''"
     @click='onClick'
   >
