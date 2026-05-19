@@ -159,12 +159,12 @@ watchEffect(() => {
                         >
                           <IconStarFilled
                             v-if="item.isFavourite"
-                            size="18"
+                            size=18 stroke-width=1
                             class="text-yellow"
                           />
                           <IconStar
                             v-else
-                            size="18"
+                            size=18 stroke-width=1
                             class="text-secondary"
                           />
                         </button>
@@ -226,25 +226,7 @@ watchEffect(() => {
                 <tbody class='opacity-30'>
                   <tr v-for="item in hiddenItems" :key="item.id">
                     <td>
-                      <div class="d-flex align-items-center gap-2 opacity-75">
-                        <button
-                          type="button"
-                          class="btn btn-action p-0 shadow-none border-0"
-                          @click.stop="toggleFavourite(item)"
-                        >
-                          <IconStarFilled
-                            v-if="item.isFavourite"
-                            size="18"
-                            class="text-yellow"
-                          />
-                          <IconStar
-                            v-else
-                            size="18"
-                            class="text-secondary"
-                          />
-                        </button>
-                        <span>{{ item.name }}</span>
-                      </div>
+                      {{ item.name }}
                     </td>
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td>
