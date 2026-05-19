@@ -367,7 +367,7 @@ watch(
                       id="advanced-table-search"
                       v-model="description"
                       type="text"
-                      class="form-control"
+                      class="form-control ps-2"
                       placeholder="Поиск по описанию"
                       @keyup.enter="onDescriptionSearch"
                     >
