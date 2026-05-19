@@ -4,6 +4,8 @@ import {
   IconKeyFilled,
 } from '@tabler/icons-vue';
 
+const appConfig = useAppConfig();
+
 const emit = defineEmits(['click']);
 
 const props = defineProps({
@@ -27,11 +29,9 @@ const onClick = (event) => {
 };
 
 const colorClass = computed(() => {
-  if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
-    return 'bg-teal-lt text-teal-lt-fg';
-  }
-
-  return 'bg-teal text-teal-fg';
+  return appConfig.theme.dark ?
+    'bg-teal-lt text-teal-lt-fg' :
+    'bg-teal text-teal-fg';
 });
 </script>
 
@@ -44,18 +44,10 @@ const colorClass = computed(() => {
     ]"
     @click="onClick"
   >
-    <IconKeyFilled
-      size="14"
-      stroke-width="2"
-      class="text-white"
-    />
+    <IconKeyFilled size=14 stroke-width=2 class='opacity-80' />
 
     {{ props.name }}
 
-    <IconX
-      v-if="props.isX"
-      size="12"
-      class="text-white"
-    />
+    <IconX v-if="props.isX" size="12" />
   </span>
 </template>

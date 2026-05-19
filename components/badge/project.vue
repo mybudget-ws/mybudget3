@@ -4,6 +4,8 @@ import {
   IconBulbFilled,
 } from '@tabler/icons-vue';
 
+const appConfig = useAppConfig();
+
 const emit = defineEmits(['click']);
 
 const props = defineProps({
@@ -27,17 +29,13 @@ const onClick = (event) => {
 };
 
 const colorClass = computed(() => {
-  if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
-    return 'bg-azure-lt text-azure-lt-fg';
-  }
-
-  return 'bg-azure text-azure-fg';
+  return appConfig.theme.dark ?
+    'bg-azure-lt text-azure-lt-fg' :
+    'bg-azure text-azure-fg';
 });
 </script>
 
 <template>
-  <!-- Светлая тема: bg-azure text-azure-fg -->
-  <!-- Тёмная тема: bg-azure-lt text-azure-lt-fg -->
   <span
     class="badge"
     :class="[
@@ -46,18 +44,10 @@ const colorClass = computed(() => {
     ]"
     @click="onClick"
   >
-    <IconBulbFilled
-      size="14"
-      stroke-width="2"
-      class="text-white opacity-80"
-    />
+    <IconBulbFilled size=14 stroke-width=2 class='text-white1 opacity-80' />
 
     {{ props.name }}
 
-    <IconX
-      v-if="props.isX"
-      size="12"
-      class="text-white"
-    />
+    <IconX v-if="props.isX" size=12 />
   </span>
 </template>
