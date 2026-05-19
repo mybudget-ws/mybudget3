@@ -161,7 +161,8 @@ watchEffect(() => {
                       <div class="d-flex align-items-center gap-2">
                         <button
                           type="button"
-                          class="btn btn-action p-0 shadow-none border-0"
+                          class="btn btn-action shadow-none border-0"
+                          v-tooltip:right="item.isFavourite ? 'Убрать из избранного' : 'Добавить в избранное'"
                           @click.stop="toggleFavourite(item)"
                         >
                           <IconStarFilled
