@@ -53,13 +53,20 @@ const load = async (isQuite = false) => {
 };
 
 const toggleFavourite = async (item) => {
-  await api.toggleIsFavourite(
-    token.value,
-    item.id,
-    'account'
-  );
-
-  await load(true);
+  isQuiteLoading.value = true;
+  try {
+    await api.toggleIsFavourite(
+      token.value,
+      item.id,
+      'account'
+    );
+    await load(true);
+  } catch (err) {
+    console.error(err);
+    isError.value = true;
+  } finally {
+    isQuiteLoading.value = false;
+  }
 };
 
 const toggleHidden = async ({ id }) => {
