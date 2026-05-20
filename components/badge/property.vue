@@ -4,6 +4,8 @@ import {
   IconKeyFilled,
 } from '@tabler/icons-vue';
 
+const appConfig = useAppConfig();
+
 const emit = defineEmits(['click']);
 
 const props = defineProps({
@@ -25,17 +27,27 @@ const onClick = (event) => {
   if (!props.isClickable) return;
   emit('click', event);
 };
+
+const colorClass = computed(() => {
+  return appConfig.theme.dark ?
+    'bg-teal-lt text-teal-lt-fg' :
+    'bg-teal text-teal-fg';
+});
 </script>
 
 <template>
-  <!-- TODO: Для темной темы 'bg-teal-lt text-teal-lt-fg' -->
   <span
-    class='badge bg-teal text-teal-fg'
-    :class="props.isClickable ? 'cursor-pointer' : ''"
-    @click='onClick'
+    class="badge"
+    :class="[
+      props.isClickable ? 'cursor-pointer' : '',
+      colorClass,
+    ]"
+    @click="onClick"
   >
-    <IconKeyFilled size=14 stroke-width=2 class='text-white opacity-80' />
+    <IconKeyFilled size=14 stroke-width=2 class='opacity-80' />
+
     {{ props.name }}
-    <IconX v-if='props.isX' size='12' />
+
+    <IconX v-if="props.isX" size="12" />
   </span>
 </template>
