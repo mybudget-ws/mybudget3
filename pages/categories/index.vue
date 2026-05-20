@@ -4,6 +4,8 @@ import {
   IconPencil,
   IconEyeOff,
   IconTrash,
+  IconStar,
+  IconStarFilled,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -46,6 +48,23 @@ const load = async (isQuite = false) => {
     isError.value = true;
   } finally {
     isLoading.value = false;
+    isQuiteLoading.value = false;
+  }
+};
+
+const toggleFavourite = async (item) => {
+  isQuiteLoading.value = true;
+  try {
+    await api.toggleIsFavourite(
+      token.value,
+      item.id,
+      'category'
+    );
+    await load(true);
+  } catch (err) {
+    console.error(err);
+    isError.value = true;
+  } finally {
     isQuiteLoading.value = false;
   }
 };
@@ -129,7 +148,28 @@ watchEffect(() => {
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
-                    <td>{{ item.name }}</td>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <button
+                          type="button"
+                          class="btn btn-action shadow-none border-0"
+                          v-tooltip:right="item.isFavourite ? 'Убрать из избранного' : 'Добавить в избранное'"
+                          @click.stop="toggleFavourite(item)"
+                        >
+                          <IconStarFilled
+                            v-if="item.isFavourite"
+                            size=18 stroke-width=1
+                            class="text-yellow"
+                          />
+                          <IconStar
+                            v-else
+                            size=18 stroke-width=1
+                            class="text-secondary"
+                          />
+                        </button>
+                        <span>{{ item.name }}</span>
+                      </div>
+                    </td>
                     <td>
                       <div class='btn-actions'>
                         <button

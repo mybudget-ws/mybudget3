@@ -4,6 +4,8 @@ import {
   IconPencil,
   IconEyeOff,
   IconTrash,
+  IconStar,
+  IconStarFilled,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -46,6 +48,23 @@ const load = async (isQuite = false) => {
     isError.value = true;
   } finally {
     isLoading.value = false;
+    isQuiteLoading.value = false;
+  }
+};
+
+const toggleFavourite = async (item) => {
+  isQuiteLoading.value = true;
+  try {
+    await api.toggleIsFavourite(
+      token.value,
+      item.id,
+      'account'
+    );
+    await load(true);
+  } catch (err) {
+    console.error(err);
+    isError.value = true;
+  } finally {
     isQuiteLoading.value = false;
   }
 };
@@ -139,8 +158,29 @@ watchEffect(() => {
                 <tbody class='table-tbody'>
                   <tr v-for="item in visibleItems" :key="item.id">
                     <td>
-                      <span class='me-2'>{{ item.name }}</span>
-                      <span v-if='isShowKind(item)' class='badge'>{{ kindDisplayName(item) }}</span>
+                      <div class="d-flex align-items-center gap-2">
+                        <button
+                          type="button"
+                          class="btn btn-action shadow-none border-0"
+                          v-tooltip:right="item.isFavourite ? 'Убрать из избранного' : 'Добавить в избранное'"
+                          @click.stop="toggleFavourite(item)"
+                        >
+                          <IconStarFilled
+                            v-if="item.isFavourite"
+                            size=18 stroke-width=1
+                            class="text-yellow"
+                          />
+                          <IconStar
+                            v-else
+                            size=18 stroke-width=1
+                            class="text-secondary"
+                          />
+                        </button>
+                        <span class='me-2'>{{ item.name }}</span>
+                        <span v-if='isShowKind(item)' class='badge'>
+                          {{ kindDisplayName(item) }}
+                        </span>
+                      </div>
                     </td>
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td class='text-nowrap text-end'>
@@ -193,7 +233,9 @@ watchEffect(() => {
                 </thead>
                 <tbody class='opacity-30'>
                   <tr v-for="item in hiddenItems" :key="item.id">
-                    <td>{{ item.name }}</td>
+                    <td>
+                      {{ item.name }}
+                    </td>
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td>
                       <div class='btn-actions justify-content-end'>
