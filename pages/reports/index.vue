@@ -195,7 +195,13 @@ const chartOptions = computed(() => ({
       padding: 4,
       style: {
         colors: textColor.value,
-      }
+      },
+      formatter: (val) => {
+        return new Intl.NumberFormat('ru-RU', {
+          maximumFractionDigits: 0,
+          useGrouping: true,
+        }).format(val);
+      },
     },
   },
   legend: {
