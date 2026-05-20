@@ -15,20 +15,42 @@ const isSaving = ref(false);
 const saveError = ref('');
 const saveSuccess = ref(false);
 
+let errorTimeoutId;
+let successTimeoutId;
+
 const showError = (message) => {
   saveError.value = message;
 
-  setTimeout(() => {
+  if (errorTimeoutId) {
+    clearTimeout(errorTimeoutId);
+  }
+
+  errorTimeoutId = setTimeout(() => {
     saveError.value = '';
   }, 3000);
 };
+
 const showSuccess = () => {
   saveSuccess.value = true;
 
-  setTimeout(() => {
+  if (successTimeoutId) {
+    clearTimeout(successTimeoutId);
+  }
+
+  successTimeoutId = setTimeout(() => {
     saveSuccess.value = false;
   }, 3000);
 };
+
+onBeforeUnmount(() => {
+  if (errorTimeoutId) {
+    clearTimeout(errorTimeoutId);
+  }
+
+  if (successTimeoutId) {
+    clearTimeout(successTimeoutId);
+  }
+});
 
 const onSubmit = async () => {
   saveError.value = '';
@@ -42,26 +64,26 @@ const onSubmit = async () => {
   isSaving.value = true;
 
   try {
-  const result = await api.updatePassword(token.value, {
-    password: password.value,
-    newPassword: newPassword.value,
-  });
+    const result = await api.updatePassword(token.value, {
+      password: password.value,
+      newPassword: newPassword.value,
+    });
 
-  if (!result) {
-    showError('Неверный текущий пароль');
-    return;
+    if (!result) {
+      showError('Неверный текущий пароль');
+      return;
+    }
+
+    password.value = '';
+    newPassword.value = '';
+
+    showSuccess();
+
+  } catch (error) {
+    showError(error?.message || 'Не удалось обновить пароль');
+  } finally {
+    isSaving.value = false;
   }
-
-  password.value = '';
-  newPassword.value = '';
-
-  showSuccess();
-
-} catch (error) {
-  showError(error?.message || 'Не удалось обновить пароль');
-} finally {
-  isSaving.value = false;
-}
 };
 </script>
 
