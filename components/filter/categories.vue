@@ -46,9 +46,42 @@ const toggleSelection = (id) => {
   });
 };
 
-const visibleItems = computed(() => (
-  items.value.filter(v => v.isHidden === false)
+
+const isShowAll = ref(false);
+
+const favouriteItems = computed(() => (
+  items.value.filter(v =>
+    v.isHidden === false && v.isFavourite
+  )
 ));
+
+const hasFavourites = computed(() => (
+  favouriteItems.value.length > 0
+));
+
+const visibleItems = computed(() => {
+
+  const notHidden = items.value.filter(v => v.isHidden === false);
+
+  if (!hasFavourites.value) {
+    return notHidden;
+  }
+
+  if (isShowAll.value) {
+    return notHidden;
+  }
+
+  return notHidden.filter(v =>
+    v.isFavourite || selectedIds.value.has(v.id)
+  );
+});
+
+const canToggleShowAll = computed(() => {
+  const notHiddenCount = items.value.filter(v => !v.isHidden).length;
+
+  return hasFavourites.value
+    && favouriteItems.value.length < notHiddenCount;
+});
 
 const initSelectedItemsByQuery = (items = '') => {
   const queryIds = items?.toString().split(',') || [];
@@ -120,6 +153,15 @@ const onSaved = async () => {
             {{ item.name }}
           </span>
         </label>
+      </div>
+      <div v-if="canToggleShowAll" class="pb-2">
+        <button
+          class="btn btn-action btn-sm text-secondary w-100"
+          style="margin-left: -0.25rem;"
+          @click="isShowAll = !isShowAll"
+        >
+          {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
+        </button>
       </div>
     </div>
   </div>

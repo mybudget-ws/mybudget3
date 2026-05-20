@@ -58,10 +58,6 @@ const toggleSelection = (id) => {
   emitSelected();
 };
 
-const visibleItems = computed(() => (
-  items.value.filter(v => v.isHidden === false)
-));
-
 const initSelectedItemsByQuery = (itemsQuery = '') => {
   const queryIds = itemsQuery?.toString().split(',') || [];
   selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
@@ -73,6 +69,43 @@ const onSaved = async () => {
   isShowModal.value = false;
   await load(); 
 };
+
+const isShowAll = ref(false);
+
+const favouriteItems = computed(() => (
+  items.value.filter(v =>
+    v.isHidden === false && v.isFavourite
+  )
+));
+
+const hasFavourites = computed(() => (
+  favouriteItems.value.length > 0
+));
+
+const visibleItems = computed(() => {
+
+  const notHidden = items.value.filter(v => v.isHidden === false);
+
+  if (!hasFavourites.value) {
+    return notHidden;
+  }
+
+  if (isShowAll.value) {
+    return notHidden;
+  }
+
+  return notHidden.filter(v =>
+    v.isFavourite || selectedIds.value.has(v.id)
+  );
+});
+
+const canToggleShowAll = computed(() => {
+  const notHiddenCount = items.value.filter(v => !v.isHidden).length;
+
+  return hasFavourites.value
+    && favouriteItems.value.length < notHiddenCount;
+});
+
 
 watch(
   () => route.query.accounts,
@@ -103,7 +136,7 @@ watchEffect(() => {
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
+    <div v-else class='card-body pt-3 pe-2 pb-0 ps-3'>
       <div class='d-flex align-items-center justify-content-between mb-2'>
         <div class='subheader'>Счета</div>
         <button
@@ -131,6 +164,15 @@ watchEffect(() => {
             />
           </span>
         </label>
+      </div>
+      <div v-if="canToggleShowAll" class="pb-2">
+        <button
+          class="btn btn-action btn-sm text-secondary w-100"
+          style="margin-left: -0.25rem;"
+          @click="isShowAll = !isShowAll"
+        >
+          {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
+        </button>
       </div>
     </div>
   </div>
