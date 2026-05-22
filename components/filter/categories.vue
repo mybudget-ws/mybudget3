@@ -10,8 +10,27 @@ const { token } = useAuth();
 const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref(new Set());
+const isShowAll = ref(false);
 
 const emit = defineEmits(['update:items']);
+
+const notHiddenItems = computed(() => items.value.filter(v => !v.isHidden));
+const favouriteItems = computed(() => notHiddenItems.value.filter(v => v.isFavourite));
+const hasFavourites = computed(() => favouriteItems.value.length > 0);
+
+const visibleItems = computed(() => {
+  if (!hasFavourites.value) return notHiddenItems.value;
+  if (isShowAll.value) return notHiddenItems.value;
+
+  return notHiddenItems.value.filter(v =>
+    v.isFavourite || selectedIds.value.has(v.id)
+  );
+});
+
+const canToggleShowAll = computed(() => (
+  hasFavourites.value
+    && favouriteItems.value.length < notHiddenItems.value.length
+));
 
 const load = async () => {
   isLoading.value = true
@@ -45,43 +64,6 @@ const toggleSelection = (id) => {
     },
   });
 };
-
-
-const isShowAll = ref(false);
-
-const favouriteItems = computed(() => (
-  items.value.filter(v =>
-    v.isHidden === false && v.isFavourite
-  )
-));
-
-const hasFavourites = computed(() => (
-  favouriteItems.value.length > 0
-));
-
-const visibleItems = computed(() => {
-
-  const notHidden = items.value.filter(v => v.isHidden === false);
-
-  if (!hasFavourites.value) {
-    return notHidden;
-  }
-
-  if (isShowAll.value) {
-    return notHidden;
-  }
-
-  return notHidden.filter(v =>
-    v.isFavourite || selectedIds.value.has(v.id)
-  );
-});
-
-const canToggleShowAll = computed(() => {
-  const notHiddenCount = items.value.filter(v => !v.isHidden).length;
-
-  return hasFavourites.value
-    && favouriteItems.value.length < notHiddenCount;
-});
 
 const initSelectedItemsByQuery = (items = '') => {
   const queryIds = items?.toString().split(',') || [];
