@@ -140,7 +140,11 @@ watchEffect(() => {
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for='item in visibleItems' :key='item.id'>
-                    <td>{{ item.name }}</td>
+                    <td>
+                      <NuxtLink :to="{ path: `/properties/${item.id}` }">
+                        {{ item.name }}
+                      </NuxtLink>
+                    </td>
                     <td>{{ kindDisplayName(item) }}</td>
                     <td>
                       <Amount
