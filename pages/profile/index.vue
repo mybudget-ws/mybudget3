@@ -1,10 +1,7 @@
 <script setup>
 import { useAuth } from '~/composables/use_auth';
 import api from '~/lib/api';
-import {
-  IconCheck,
-  IconAlertCircle,
-} from '@tabler/icons-vue';
+
 definePageMeta({
   middleware: ['authenticated']
 });
@@ -23,16 +20,54 @@ const onSignOut = () => {
   navigateTo('/');
 };
 
+let errorTimeoutId;
+let successTimeoutId;
+
 const currenciesOptions = computed(() => (
   currencies.value.map(c => ({
     value: c.name,
     label: `${c.displayName} — ${c.description}`
-  })) 
+  }))
 ));
+
+const showError = (message) => {
+  saveError.value = message;
+
+  if (errorTimeoutId) {
+    clearTimeout(errorTimeoutId);
+  }
+
+  errorTimeoutId = setTimeout(() => {
+    saveError.value = '';
+  }, 3000);
+};
+
+const showSuccess = () => {
+  saveSuccess.value = true;
+
+  if (successTimeoutId) {
+    clearTimeout(successTimeoutId);
+  }
+
+  successTimeoutId = setTimeout(() => {
+    saveSuccess.value = false;
+  }, 3000);
+};
+
+onBeforeUnmount(() => {
+  if (errorTimeoutId) {
+    clearTimeout(errorTimeoutId);
+  }
+
+  if (successTimeoutId) {
+    clearTimeout(successTimeoutId);
+  }
+});
 
 const onSubmit = async () => {
   saveError.value = '';
   saveSuccess.value = false;
+
   isSaving.value = true;
 
   try {
@@ -40,15 +75,11 @@ const onSubmit = async () => {
       currency: selectedCurrency.value
     });
 
-    saveSuccess.value = true;
-
-    setTimeout(() => {
-      saveSuccess.value = false;
-    }, 3000);
+    showSuccess();
 
   } catch (e) {
     console.error(e);
-    saveError.value = 'Не удалось сохранить изменения';
+    showError('Не удалось сохранить изменения');
   } finally {
     isSaving.value = false;
   }
@@ -56,16 +87,17 @@ const onSubmit = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
+
   try {
-    // const profile = await api.fetchProfile(token.value);
-    // const currencyList = await api.currencies();
     const [profile, currencyList] = await Promise.all([
       api.fetchProfile(token.value),
       api.currencies()
     ]);
+
     currencies.value = currencyList;
     selectedCurrency.value = profile.defaultCurrency?.name;
     email.value = profile.email;
+
   } catch (e) {
     console.error(e);
   } finally {
