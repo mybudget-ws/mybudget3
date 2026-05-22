@@ -20,8 +20,8 @@ const {
   isLoading,
   selectedIds,
   visibleItems,
-  canToggleShowAll,
   isShowAll,
+  canToggleShowAll,
   toggleSelection,
   load,
 } = useSelectableFilter({
@@ -29,6 +29,7 @@ const {
   emit,
   route,
   router,
+  withFavourites: true,
   loadFn: () => api.accounts(token.value),
 });
 

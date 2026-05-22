@@ -4,18 +4,22 @@ export const useSelectableFilter = ({
   emit,
   route,
   router,
+  filterVisible = (item) => !item.isHidden,
+  withFavourites = false,
 }) => {
   const isLoading = ref(true);
+
   const items = ref([]);
   const selectedIds = ref(new Set());
+
   const isShowAll = ref(false);
 
-  const notHiddenItems = computed(() =>
-    items.value.filter(v => !v.isHidden)
+  const visibleBaseItems = computed(() =>
+    items.value.filter(filterVisible)
   );
 
   const favouriteItems = computed(() =>
-    notHiddenItems.value.filter(v => v.isFavourite)
+    visibleBaseItems.value.filter(v => v.isFavourite)
   );
 
   const hasFavourites = computed(() =>
@@ -23,17 +27,27 @@ export const useSelectableFilter = ({
   );
 
   const visibleItems = computed(() => {
-    if (!hasFavourites.value) return notHiddenItems.value;
-    if (isShowAll.value) return notHiddenItems.value;
+    if (!withFavourites) {
+      return visibleBaseItems.value;
+    }
 
-    return notHiddenItems.value.filter(v =>
+    if (!hasFavourites.value) {
+      return visibleBaseItems.value;
+    }
+
+    if (isShowAll.value) {
+      return visibleBaseItems.value;
+    }
+
+    return visibleBaseItems.value.filter(v =>
       v.isFavourite || selectedIds.value.has(v.id)
     );
   });
 
   const canToggleShowAll = computed(() => (
-    hasFavourites.value
-      && favouriteItems.value.length < notHiddenItems.value.length
+    withFavourites
+    && hasFavourites.value
+    && favouriteItems.value.length < visibleBaseItems.value.length
   ));
 
   const emitSelected = () => {
@@ -45,17 +59,19 @@ export const useSelectableFilter = ({
   };
 
   const initSelectedItemsByQuery = (query = '') => {
-    const queryIds = query?.toString().split(',') || [];
+    const queryIds = query
+      ?.toString()
+      .split(',')
+      .map(Number)
+      .filter(Boolean) || [];
 
-    selectedIds.value = new Set(
-      queryIds.map(Number).filter(id => id > 0)
-    );
+    selectedIds.value = new Set(queryIds);
 
     emitSelected();
   };
 
   const toggleSelection = (id) => {
-    if (id === 0 || id === '0') return;
+    if (!id) return;
 
     if (selectedIds.value.has(id)) {
       selectedIds.value.delete(id);
@@ -63,11 +79,18 @@ export const useSelectableFilter = ({
       selectedIds.value.add(id);
     }
 
+    const nextQuery = { ...route.query };
+
+    const ids = Array.from(selectedIds.value);
+
+    if (ids.length > 0) {
+      nextQuery[queryKey] = ids.join(',');
+    } else {
+      delete nextQuery[queryKey];
+    }
+
     router.replace({
-      query: {
-        ...route.query,
-        [queryKey]: Array.from(selectedIds.value).join(','),
-      },
+      query: nextQuery,
     });
 
     emitSelected();
@@ -106,9 +129,10 @@ export const useSelectableFilter = ({
   return {
     isLoading,
     items,
-    selectedIds,
-    isShowAll,
 
+    selectedIds,
+
+    isShowAll,
     visibleItems,
     canToggleShowAll,
 
