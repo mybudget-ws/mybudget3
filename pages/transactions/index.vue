@@ -412,14 +412,12 @@ watch(
             class='card-body border-bottom'
           >
             <div class='badges-list'>
-              <span
+              <BadgeCategory
                 v-if="route.query.description"
-                class="badge cursor-pointer"
+                :name=route.query.description
+                :is-x='true'
                 @click="clearDescriptionSearch"
-              >
-                {{ route.query.description }}
-                <IconX size="12" />
-              </span>
+              />
               <BadgeCategory
                 v-for='kind in selectedKinds'
                 :key='kind.id'

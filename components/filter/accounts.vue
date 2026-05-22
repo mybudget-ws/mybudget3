@@ -1,17 +1,7 @@
 <script setup>
 import api from '~/lib/api';
-import {
-  IconPlus,
-} from '@tabler/icons-vue';
-const route = useRoute();
-const router = useRouter();
-const { token } = useAuth();
+import { IconPlus } from '@tabler/icons-vue';
 
-const isLoading = ref(true);
-const items = ref([]);
-const selectedIds = ref(new Set());
-const isShowModal = ref(false);
-const emit = defineEmits(['update:items']);
 const props = defineProps({
   reload: {
     type: Number,
@@ -19,79 +9,53 @@ const props = defineProps({
   },
 });
 
-const load = async (isQuite = false) => {
-  if (!isQuite) isLoading.value = true
-  try {
-    const result = await api.accounts(token.value);
-    if (result) {
-      items.value = result;
-      initSelectedItemsByQuery(route.query.accounts);
-    } else {
-      console.log('TODO: error');
-    }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    isLoading.value = false
-  }
-};
+const route = useRoute();
+const router = useRouter();
+
+const { token } = useAuth();
+
+const emit = defineEmits(['update:items']);
+
+const {
+  isLoading,
+  selectedIds,
+  visibleItems,
+  isShowAll,
+  canToggleShowAll,
+  toggleSelection,
+  load,
+} = useSelectableFilter({
+  queryKey: 'accounts',
+  emit,
+  route,
+  router,
+  withFavourites: true,
+  loadFn: () => api.accounts(token.value),
+});
+
 defineExpose({ load });
-
-const emitSelected = () => {
-  const selected = items.value.filter(i => selectedIds.value.has(i.id));
-  emit('update:items', selected);
-};
-
-const toggleSelection = (id) => {
-  if (id === 0 || id === '0') return;
-  if (selectedIds.value.has(id)) {
-    selectedIds.value.delete(id);
-  } else {
-    selectedIds.value.add(id);
-  }
-  router.replace({
-    query: {
-      ...route.query,
-      accounts: Array.from(selectedIds.value).join(','),
-    },
-  });
-  emitSelected();
-};
-
-const visibleItems = computed(() => (
-  items.value.filter(v => v.isHidden === false)
-));
-
-const initSelectedItemsByQuery = (itemsQuery = '') => {
-  const queryIds = itemsQuery?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
-
-  emitSelected();
-};
-
-const onSaved = async () => {
-  isShowModal.value = false;
-  await load(); 
-};
-
-watch(
-  () => route.query.accounts,
-  (value) => {
-    initSelectedItemsByQuery(value);
-  },
-  { immediate: true }
-);
 
 watch(
   () => props.reload,
   () => {
-    if (props.reload > 1) load(true);
+    if (props.reload > 1) {
+      load(true);
+    }
   }
 );
 
 watchEffect(() => {
-  if (token.value) load();
+  if (token.value) {
+    load();
+  }
 });
+
+const isShowModal = ref(false);
+
+const onSaved = async () => {
+  isShowModal.value = false;
+  await load();
+};
 </script>
 
 <template>
@@ -131,6 +95,15 @@ watchEffect(() => {
             />
           </span>
         </label>
+      </div>
+      <div v-if="canToggleShowAll" class="pb-2">
+        <button
+          class="btn btn-action btn-sm text-secondary w-100"
+          style="margin-left: -0.25rem;"
+          @click="isShowAll = !isShowAll"
+        >
+          {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
+        </button>
       </div>
     </div>
   </div>

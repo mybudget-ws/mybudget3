@@ -1,83 +1,35 @@
 <script setup>
 import api from '~/lib/api';
-import {
-  IconPlus,
-} from '@tabler/icons-vue';
+import { IconPlus } from '@tabler/icons-vue';
+
 const route = useRoute();
 const router = useRouter();
-const { token } = useAuth();
 
-const isLoading = ref(true);
-const items = ref([]);
-const selectedIds = ref(new Set());
+const { token } = useAuth();
 
 const emit = defineEmits(['update:items']);
 
-const load = async () => {
-  isLoading.value = true
-  try {
-    const result = await api.categories(token.value);
-    if (result) {
-      items.value = result;
-      initSelectedItemsByQuery(route.query.categories);
-    } else {
-      console.log('TODO: error');
-    }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    isLoading.value = false
-  }
-};
-
-const toggleSelection = (id) => {
-  if (id === 0 || id === '0') return;
-  if (selectedIds.value.has(id)) {
-    selectedIds.value.delete(id);
-  } else {
-    selectedIds.value.add(id);
-  }
-
-  router.replace({
-    query: {
-      ...route.query,
-      categories: Array.from(selectedIds.value).join(','),
-    },
-  });
-};
-
-const visibleItems = computed(() => (
-  items.value.filter(v => v.isHidden === false)
-));
-
-const initSelectedItemsByQuery = (items = '') => {
-  const queryIds = items?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
-}
-
-watch(
-  () => route.query.categories,
-  (value) => {
-    initSelectedItemsByQuery(value);
-  },
-  { immediate: true }
-);
-
-watch(selectedIds, () => {
-  if (items.value.length === 0) return;
-  
-  const result = items.value
-    .filter(item => selectedIds.value.has(item.id))
-    .map(item => ({
-      id: item.id,
-      name: item.name,
-    }));
-
-  emit('update:items', result);
-}, { deep: true });
+const {
+  isLoading,
+  selectedIds,
+  visibleItems,
+  isShowAll,
+  canToggleShowAll,
+  toggleSelection,
+  load,
+} = useSelectableFilter({
+  queryKey: 'categories',
+  emit,
+  route,
+  router,
+  withFavourites: true,
+  loadFn: () => api.categories(token.value),
+});
 
 watchEffect(() => {
-  if (token.value) load();
+  if (token.value) {
+    load();
+  }
 });
 
 const isShowModal = ref(false);
@@ -120,6 +72,15 @@ const onSaved = async () => {
             {{ item.name }}
           </span>
         </label>
+      </div>
+      <div v-if="canToggleShowAll" class="pb-2">
+        <button
+          class="btn btn-action btn-sm text-secondary w-100"
+          style="margin-left: -0.25rem;"
+          @click="isShowAll = !isShowAll"
+        >
+          {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
+        </button>
       </div>
     </div>
   </div>
