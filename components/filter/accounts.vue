@@ -136,7 +136,7 @@ watchEffect(() => {
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body pt-3 pe-2 pb-0 ps-3'>
+    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
       <div class='d-flex align-items-center justify-content-between mb-2'>
         <div class='subheader'>Счета</div>
         <button
