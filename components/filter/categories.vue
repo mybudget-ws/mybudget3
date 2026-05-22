@@ -1,98 +1,34 @@
 <script setup>
 import api from '~/lib/api';
-import {
-  IconPlus,
-} from '@tabler/icons-vue';
+import { IconPlus } from '@tabler/icons-vue';
+
 const route = useRoute();
 const router = useRouter();
-const { token } = useAuth();
 
-const isLoading = ref(true);
-const items = ref([]);
-const selectedIds = ref(new Set());
-const isShowAll = ref(false);
+const { token } = useAuth();
 
 const emit = defineEmits(['update:items']);
 
-const notHiddenItems = computed(() => items.value.filter(v => !v.isHidden));
-const favouriteItems = computed(() => notHiddenItems.value.filter(v => v.isFavourite));
-const hasFavourites = computed(() => favouriteItems.value.length > 0);
-
-const visibleItems = computed(() => {
-  if (!hasFavourites.value) return notHiddenItems.value;
-  if (isShowAll.value) return notHiddenItems.value;
-
-  return notHiddenItems.value.filter(v =>
-    v.isFavourite || selectedIds.value.has(v.id)
-  );
+const {
+  isLoading,
+  selectedIds,
+  visibleItems,
+  canToggleShowAll,
+  isShowAll,
+  toggleSelection,
+  load,
+} = useSelectableFilter({
+  queryKey: 'categories',
+  emit,
+  route,
+  router,
+  loadFn: () => api.categories(token.value),
 });
 
-const canToggleShowAll = computed(() => (
-  hasFavourites.value
-    && favouriteItems.value.length < notHiddenItems.value.length
-));
-
-const load = async () => {
-  isLoading.value = true
-  try {
-    const result = await api.categories(token.value);
-    if (result) {
-      items.value = result;
-      initSelectedItemsByQuery(route.query.categories);
-    } else {
-      console.log('TODO: error');
-    }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    isLoading.value = false
-  }
-};
-
-const toggleSelection = (id) => {
-  if (id === 0 || id === '0') return;
-  if (selectedIds.value.has(id)) {
-    selectedIds.value.delete(id);
-  } else {
-    selectedIds.value.add(id);
-  }
-
-  router.replace({
-    query: {
-      ...route.query,
-      categories: Array.from(selectedIds.value).join(','),
-    },
-  });
-};
-
-const initSelectedItemsByQuery = (items = '') => {
-  const queryIds = items?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.map(Number).filter(id => id > 0));
-}
-
-watch(
-  () => route.query.categories,
-  (value) => {
-    initSelectedItemsByQuery(value);
-  },
-  { immediate: true }
-);
-
-watch(selectedIds, () => {
-  if (items.value.length === 0) return;
-  
-  const result = items.value
-    .filter(item => selectedIds.value.has(item.id))
-    .map(item => ({
-      id: item.id,
-      name: item.name,
-    }));
-
-  emit('update:items', result);
-}, { deep: true });
-
 watchEffect(() => {
-  if (token.value) load();
+  if (token.value) {
+    load();
+  }
 });
 
 const isShowModal = ref(false);
