@@ -53,19 +53,18 @@ const load = async (isQuite = false) => {
 };
 
 const toggleFavourite = async (item) => {
-  isQuiteLoading.value = true;
+  const previousValue = item.isFavourite;
+  item.isFavourite = !item.isFavourite;
   try {
     await api.toggleIsFavourite(
       token.value,
       item.id,
       'account'
     );
-    await load(true);
   } catch (err) {
     console.error(err);
+    item.isFavourite = previousValue;
     isError.value = true;
-  } finally {
-    isQuiteLoading.value = false;
   }
 };
 
