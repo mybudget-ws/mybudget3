@@ -559,10 +559,7 @@ watch(
                 </tbody>
               </table>
             </div>
-            <div
-              class="card-footer bg-transparent pt-0 pb-2"
-              :class="{ 'border-0': !hasMore && !isLoadingMore }"
-            >
+            <div class="card-footer bg-transparent pt-0 pb-2">
               <i v-if="isEmpty" class="text-secondary">
                 Похоже таких операций ещё нет
               </i>
