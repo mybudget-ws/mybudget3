@@ -559,13 +559,14 @@ watch(
                 </tbody>
               </table>
             </div>
-            <div class="card-footer d-flex justify-content-center align-items-center">
+            <div class="card-footer bg-transparent pt-0 pb-2">
               <i v-if="isEmpty" class="text-secondary">
                 Похоже таких операций ещё нет
               </i>
+
               <button
                 v-else
-                class="btn btn-ghost-secondary"
+                class="btn btn-action btn-sm text-secondary w-100 mt-2 border-0"
                 :disabled="!hasMore || isLoadingMore"
                 @click="loadMore"
               >
