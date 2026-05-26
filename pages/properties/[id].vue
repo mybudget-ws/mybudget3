@@ -13,9 +13,12 @@ definePageMeta({
 });
 
 const route = useRoute();
+
 const { token } = useAuth();
-const prices = computed(() => property.value?.prices || []);
+
 const property = ref(null);
+
+const prices = computed(() => property.value?.prices || []);
 
 const isLoading = ref(false);
 const isError = ref(false);
@@ -74,37 +77,31 @@ const onSaved = async () => {
   await loadProperty();
 };
 
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+  });
+};
+
+const formatAmount = (amount) => {
+  return new Intl.NumberFormat('ru-RU').format(amount);
+};
+
 onMounted(async () => {
   await loadProperty();
 });
 </script>
 
 <template>
+  <ModalNewPrice
+    v-if="isShowModal"
+    :property="property"
+    :item="editingPrice"
+    @saved="onSaved"
+    @close="isShowModal = false"
+  />
   <div>
-    <div class="d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h1 class="h3 mb-1">
-          {{ property?.name || 'Имущество' }}
-        </h1>
-
-        <div class="text-secondary">
-          История цен
-        </div>
-      </div>
-
-      <button
-        class="btn btn-primary"
-        @click="onCreatePrice"
-      >
-        <IconPlus
-          class="me-1"
-          :size="18"
-        />
-
-        Добавить цену
-      </button>
-    </div>
-
     <div
       v-if="isLoading"
       class="card"
@@ -125,79 +122,107 @@ onMounted(async () => {
       v-else
       class="card"
     >
-      <div class="table-responsive">
-        <table class="table table-vcenter card-table">
-          <thead>
-            <tr>
-              <th>Дата</th>
-              <th>Цена</th>
-              <th>Описание</th>
-              <th>Валюта</th>
-              <th class="w-1"></th>
-            </tr>
-          </thead>
+      <div class="card-body">
+        <div class="d-flex justify-content: space-between mb-4">
+          <div>
+            <h1 class="h3 mb-1">
+              {{ property?.name || 'Имущество' }}
+            </h1>
 
-          <tbody>
-            <tr
-              v-for="price in prices"
-              :key="price.id"
-            >
-              <td>
-                {{ price.date }}
-              </td>
+            <div class="text-secondary">
+              История изменения цены
+            </div>
+          </div>
 
-              <td>
-                {{ price.amount }}
-              </td>
+          <button
+            class="btn btn-primary ms-3"
+            @click="onCreatePrice"
+          >
+            <IconPlus :size="20" />
+          </button>
+        </div>
 
-              <td>
-                {{ price.description || '—' }}
-              </td>
+        <div class="border-top">
+          <div
+            class="
+              d-flex
+              align-items-center
+              justify-content-between
+              py-3
+              text-secondary
+              fw-bold
+              small
+              border-bottom
+            "
+          >
+            <div>
+              Дата
+            </div>
 
-              <td>
-                {{ price.currency?.name }}
-              </td>
+            <div>
+              Величина
+            </div>
+          </div>
 
-              <td>
-                <div class="d-flex gap-2">
-                  <button
-                    class="btn btn-icon btn-outline-primary"
-                    @click="onEditPrice(price)"
-                  >
-                    <IconPencil :size="18" />
-                  </button>
+          <div
+            v-for="price in prices"
+            :key="price.id"
+            class="
+              d-flex
+              align-items-center
+              justify-content-between
+              py-4
+              border-bottom
+            "
+          >
+            <div class="fs-3">
+              {{ formatDate(price.date) }}
+            </div>
 
-                  <button
-                    class="btn btn-icon btn-outline-danger"
-                    @click="onDeletePrice(price)"
-                  >
-                    <IconTrash :size="18" />
-                  </button>
-                </div>
-              </td>
-            </tr>
+            <div class="d-flex align-items-center">
+              <div>
+                {{ formatAmount(price.amount) }}
 
-            <tr v-if="!prices.length">
-              <td
-                colspan="5"
-                class="text-center text-secondary py-4"
-              >
-                История цен пустая
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <span>
+                  {{ price.currency?.name }}
+                </span>
+
+              </div>
+
+              <div class="btn-actions">
+                <button
+                  type="button"
+                  class="btn btn-action"
+                  @click="onEditPrice(price)"
+                >
+                  <IconPencil
+                    size="20"
+                    stroke-width="1.5"
+                  />
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-action"
+                  @click="onDeletePrice(price)"
+                >
+                  <IconTrash
+                    size="20"
+                    stroke-width="1.5"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="!prices.length"
+            class="text-center text-secondary py-5"
+          >
+            История цен пустая
+          </div>
+        </div>
       </div>
     </div>
-
-    <!--
-    <ModalPropertyPrice
-      v-if="isShowModal"
-      :property="property"
-      :item="editingPrice"
-      @saved="onSaved"
-      @close="isShowModal = false"
-    />
-    -->
   </div>
 </template>
