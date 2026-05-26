@@ -13,6 +13,7 @@ import { useAuth } from '~/composables/use_auth';
 const { token } = useAuth();
 const isLoading = ref(true);
 const isError = ref(false);
+const isInitialLoading = ref(true);
 const dashboard = ref({});
 
 const KIND_EXPENSE = 'expense';
@@ -55,6 +56,7 @@ const load = async () => {
 
   try {
     const result = await api.dashboard(token.value);
+
     if (result) {
       dashboard.value = result;
     } else {
@@ -65,11 +67,12 @@ const load = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
+    isInitialLoading.value = false;
   }
 };
 
 const accountsOrdered = computed(() => {
-  if (isLoading.value) return [];
+  if (isInitialLoading.value) return [];
   if (!dashboard.value.accounts) return [];
 
   return dashboard.value.accounts;
@@ -104,13 +107,20 @@ watch(token, (val) => {
   />
   <div class='row align-items-center mb-4'>
     <div class='col'>
-      <div v-if='isLoading' class='text-start placeholder-glow'>
+      <div v-if='isInitialLoading' class='text-start placeholder-glow'>
         <div class='d-block placeholder col-1 mb-2' />
         <div class='d-block placeholder placeholder-lg col-2' />
       </div>
       <template v-else>
         <div class='page-pretitle'>Обзор</div>
-        <h2 class='page-title'>{{ dashboard?.currentMonth }}</h2>
+        <h2 class='page-title d-flex align-items-center gap-2'>
+          {{ dashboard?.currentMonth }}
+          <span
+            v-if='isLoading'
+            class='spinner-border spinner-border-sm text-primary'
+            role='status'
+          />
+        </h2>
       </template>
     </div>
     <div class='col-md-auto col-sm-12'>
@@ -145,9 +155,8 @@ watch(token, (val) => {
   <div class='row row-deck row-cards'>
     <div class='col-lg-6'>
       <DashboardBlock
-        :key="`income-${isLoading}`"
         title='Доходы'
-        :is-loading='isLoading'
+        :is-loading='isInitialLoading'
         :colors="['#0ca678']"
         :chart-data='dashboard.incomesChart'
       >
@@ -206,9 +215,8 @@ watch(token, (val) => {
 
     <div class='col-lg-6'>
       <DashboardBlock
-        :key="`expenses-${isLoading}`"
         title='Расходы'
-        :is-loading='isLoading'
+        :is-loading='isInitialLoading'
         :chart-data='dashboard.expensesChart'
       >
         <div class='card-table table-responsive'>
@@ -266,10 +274,9 @@ watch(token, (val) => {
 
     <div class='col-lg-6'>
       <DashboardBlock
-        :key="`accounts-${isLoading}`"
         title='Счета'
         chart-type='donut'
-        :is-loading='isLoading'
+        :is-loading='isInitialLoading'
         :chart-data='dashboard.accountsChart'
       >
         <div class='card-table table-responsive'>
@@ -316,10 +323,9 @@ watch(token, (val) => {
 
     <div class='col-lg-6'>
       <DashboardBlock
-        :key="`assets-${isLoading}`"
         title='Все активы'
         chart-type='donut'
-        :is-loading='isLoading'
+        :is-loading='isInitialLoading'
         :chart-data='dashboard.assetsChart'
       />
     </div>
