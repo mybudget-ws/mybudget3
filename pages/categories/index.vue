@@ -16,6 +16,7 @@ const isError = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const categories = ref([]);
+const favouriteToggleInFlight = ref(new Set());
 const isShowModal = ref(false);
 const currentItem = ref(null);
 const visibleItems = computed(() => categories.value.filter(v => !v.isHidden));
@@ -53,6 +54,10 @@ const load = async (isQuite = false) => {
 };
 
 const toggleFavourite = async (item) => {
+  if (favouriteToggleInFlight.value.has(item.id)) return;
+  favouriteToggleInFlight.value.add(item.id);
+  isQuiteLoading.value = true;
+
   const previousValue = item.isFavourite;
   item.isFavourite = !item.isFavourite;
   try {
@@ -61,10 +66,14 @@ const toggleFavourite = async (item) => {
       item.id,
       'category'
     );
+    isError.value = false;
   } catch (err) {
     console.error(err);
     item.isFavourite = previousValue;
     isError.value = true;
+  } finally {
+    isQuiteLoading.value = false;
+    favouriteToggleInFlight.value.delete(item.id);
   }
 };
 
