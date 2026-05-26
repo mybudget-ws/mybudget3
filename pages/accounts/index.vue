@@ -16,6 +16,7 @@ const { token } = useAuth();
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const accounts = ref([]);
+const favouriteToggleInFlight = ref(new Set());
 const isShowModal = ref(false);
 const isError = ref(false);
 const currentItem = ref(null);
@@ -53,19 +54,26 @@ const load = async (isQuite = false) => {
 };
 
 const toggleFavourite = async (item) => {
+  if (favouriteToggleInFlight.value.has(item.id)) return;
+  favouriteToggleInFlight.value.add(item.id);
   isQuiteLoading.value = true;
+
+  const previousValue = item.isFavourite;
+  item.isFavourite = !item.isFavourite;
   try {
     await api.toggleIsFavourite(
       token.value,
       item.id,
       'account'
     );
-    await load(true);
+    isError.value = false;
   } catch (err) {
     console.error(err);
+    item.isFavourite = previousValue;
     isError.value = true;
   } finally {
     isQuiteLoading.value = false;
+    favouriteToggleInFlight.value.delete(item.id);
   }
 };
 

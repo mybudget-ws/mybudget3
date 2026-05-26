@@ -16,6 +16,7 @@
     "@tabler/icons": "^3.34.0",
     "@tabler/icons-vue": "^3.34.0",
     "apexcharts": "^5.10.6",
+    "delay": "^7.0.0",
     "eslint": "^9.0.0",
     "graphql": "^16.11.0",
     "graphql-request": "^7.2.0",
