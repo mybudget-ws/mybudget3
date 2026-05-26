@@ -72,7 +72,7 @@ const load = async () => {
 };
 
 const accountsOrdered = computed(() => {
-  if (isLoading.value) return [];
+  if (isInitialLoading.value) return [];
   if (!dashboard.value.accounts) return [];
 
   return dashboard.value.accounts;
@@ -107,10 +107,7 @@ watch(token, (val) => {
   />
   <div class='row align-items-center mb-4'>
     <div class='col'>
-      <div
-        v-if='isLoading && !dashboard?.currentMonth'
-        class='text-start placeholder-glow'
-      >
+      <div v-if='isInitialLoading' class='text-start placeholder-glow'>
         <div class='d-block placeholder col-1 mb-2' />
         <div class='d-block placeholder placeholder-lg col-2' />
       </div>
@@ -159,7 +156,7 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Доходы'
-        :is-loading='isInitialLoading && isLoading'
+        :is-loading='isInitialLoading'
         :colors="['#0ca678']"
         :chart-data='dashboard.incomesChart'
       >
@@ -175,7 +172,7 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for='item in dashboard.incomes'>
+              <tr v-for='item in dashboard.incomes' :key='item.id'>
                 <td :title='formatDateFull(item.dateAt)'>
                   {{ formatDate(item.dateAt) }}
                 </td>
@@ -186,6 +183,7 @@ watch(token, (val) => {
                   <div class='badges-list'>
                     <BadgeCategory
                       v-for='cat in item.categories'
+                      :key='cat.id'
                       :name='cat.name'
                       :is-clickable='false'
                       @click="onCategoryClick(cat.id)"
@@ -218,7 +216,7 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
-        :is-loading='isInitialLoading && isLoading'
+        :is-loading='isInitialLoading'
         :chart-data='dashboard.expensesChart'
       >
         <div class='card-table table-responsive'>
@@ -233,7 +231,7 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for='item in dashboard.expenses'>
+              <tr v-for='item in dashboard.expenses' :key='item.id'>
                 <td :title='formatDateFull(item.dateAt)'>
                   {{ formatDate(item.dateAt) }}
                 </td>
@@ -244,6 +242,7 @@ watch(token, (val) => {
                   <div class='badges-list'>
                     <BadgeCategory
                       v-for='cat in item.categories'
+                      :key='cat.id'
                       :name='cat.name'
                       :is-clickable='false'
                       @click="onCategoryClick(cat.id)"
@@ -277,7 +276,7 @@ watch(token, (val) => {
       <DashboardBlock
         title='Счета'
         chart-type='donut'
-        :is-loading='isInitialLoading && isLoading'
+        :is-loading='isInitialLoading'
         :chart-data='dashboard.accountsChart'
       >
         <div class='card-table table-responsive'>
@@ -290,7 +289,7 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for='item in accountsOrdered'>
+              <tr v-for='item in accountsOrdered' :key='item.id'>
                 <td class='text-nowrap'>{{ item.name }}</td>
                 <td class='text-nowrap text-end'>
                   <span
@@ -326,7 +325,7 @@ watch(token, (val) => {
       <DashboardBlock
         title='Все активы'
         chart-type='donut'
-        :is-loading='isInitialLoading && isLoading'
+        :is-loading='isInitialLoading'
         :chart-data='dashboard.assetsChart'
       />
     </div>
