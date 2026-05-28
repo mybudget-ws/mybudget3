@@ -5,7 +5,7 @@ const TYPE_RADIO = 'radio';
 
 const route = useRoute();
 const { token } = useAuth();
-
+const isShowAll = ref(false);
 const isLoading = ref(true);
 const items = ref([]);
 const selectedIds = ref([]);
@@ -86,9 +86,37 @@ const toggleSelection = (id) => {
   }
 };
 
-const visibleItems = computed(() => (
-  items.value.filter(v => v.isHidden === false)
-));
+const visibleItems = computed(() => {
+  const visible = items.value.filter(v => v.isHidden === false);
+
+  if (isShowAll.value) {
+    return visible;
+  }
+
+  const favourites = visible.filter(v => v.isFavourite);
+
+  if (favourites.length === 0) {
+    return visible;
+  }
+
+  const selected = visible.filter(v =>
+    selectedIds.value.includes(v.id)
+  );
+
+  return Array.from(
+    new Map(
+      [...favourites, ...selected]
+        .map(v => [v.id, v])
+    ).values()
+  );
+});
+
+const canToggleShowAll = computed(() => {
+  const visible = items.value.filter(v => v.isHidden === false);
+  const favourites = visible.filter(v => v.isFavourite);
+
+  return favourites.length > 0 && favourites.length < visible.length;
+});
 
 const findItem = (id) => items.value.find(v => v.id === id);
 const isSelected = (id) => (
@@ -141,6 +169,16 @@ watch(() => route, (newRoute) => {
             </div>
           </div>
         </label>
+        <div v-if="canToggleShowAll" class="pb-2">
+          <button
+            class="btn btn-action btn-sm text-secondary w-100"
+            type="button"
+            style="margin-left: -0.25rem;"
+            @click="isShowAll = !isShowAll"
+          >
+            {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -149,6 +187,7 @@ watch(() => route, (newRoute) => {
 <style scoped>
 .content-scroll {
   max-height: 50vh;
-  overflow: scroll;
+  overflow-y: auto;
+  padding: 0.25rem;
 }
 </style>

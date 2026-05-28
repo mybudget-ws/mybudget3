@@ -17,6 +17,7 @@ const props = defineProps({
     default: [],
   },
 });
+const isShowAll = ref(false);
 
 const load = async () => {
   isLoading.value = true
@@ -54,9 +55,37 @@ const toggleSelection = (id) => {
   emit('toggleCategory', selectedIds.value);
 };
 
-const visibleItems = computed(() => (
-  items.value.filter(v => v.isHidden === false)
-));
+const visibleItems = computed(() => {
+  const visible = items.value.filter(v => v.isHidden === false);
+
+  if (isShowAll.value) {
+    return visible;
+  }
+
+  const favourites = visible.filter(v => v.isFavourite);
+
+  if (favourites.length === 0) {
+    return visible;
+  }
+
+  const selected = visible.filter(v =>
+    selectedIds.value.has(v.id)
+  );
+
+  return Array.from(
+    new Map(
+      [...favourites, ...selected]
+        .map(v => [v.id, v])
+    ).values()
+  );
+});
+
+const canToggleShowAll = computed(() => {
+  const visible = items.value.filter(v => v.isHidden === false);
+  const favourites = visible.filter(v => v.isFavourite);
+
+  return favourites.length > 0 && favourites.length < visible.length;
+});
 
 watch(
   () => token.value,
@@ -99,6 +128,16 @@ watch(() => route, (newRoute) => {
             {{ item.name }}
           </span>
         </label>
+      </div>
+      <div v-if="canToggleShowAll" class="pb-2">
+        <button
+          class="btn btn-action btn-sm text-secondary w-100"
+          type="button"
+          style="margin-left: -0.25rem;"
+          @click="isShowAll = !isShowAll"
+        >
+          {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
+        </button>
       </div>
     </div>
   </div>
