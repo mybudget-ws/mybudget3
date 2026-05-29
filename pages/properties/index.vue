@@ -9,6 +9,8 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
+const appConfig = useAppConfig();
+
 const { token } = useAuth();
 const isError = ref(false)
 const isLoading = ref(false);
@@ -51,13 +53,18 @@ const load = async (isQuite = false) => {
   }
 };
 
-
 const kindDisplayName = ({ kind }) => {
   if (kind === 'realty') return 'Недвижимость';
   if (kind === 'transport') return 'Транспорт';
 
   return 'Другое';
 }
+
+const linkColorClass = computed(() => {
+  return appConfig.theme.dark ?
+    'link-light' :
+    'link-dark';
+});
 
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
@@ -101,7 +108,6 @@ watchEffect(() => {
     @saved='onSaved'
     @close="isShowModal = false"
   />
-
   <div class='row'>
     <div class='col-12'>
       <div class='card'>
@@ -141,11 +147,15 @@ watchEffect(() => {
                 <tbody class='table-tbody'>
                   <tr v-for='item in visibleItems' :key='item.id'>
                     <td>
-                      <NuxtLink :to="{ path: `/properties/${item.id}` }">
+                      <NuxtLink
+                        :to="`/properties/${item.id}`"
+                        class="fw-medium"
+                        :class="linkColorClass"
+                      >
                         {{ item.name }}
                       </NuxtLink>
                     </td>
-                    <td>{{ kindDisplayName(item) }}</td>
+                    <td class="text-secondary">{{ kindDisplayName(item) }}</td>
                     <td>
                       <Amount
                         :value='item.amount'
