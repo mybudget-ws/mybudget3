@@ -133,7 +133,6 @@ watch(() => route, (newRoute) => {
         <button
           class="btn btn-action btn-sm text-secondary w-100"
           type="button"
-          style="margin-left: -0.25rem;"
           @click="isShowAll = !isShowAll"
         >
           {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
