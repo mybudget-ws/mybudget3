@@ -566,7 +566,7 @@ watch(
 
               <button
                 v-else
-                class="btn btn-action btn-sm text-secondary w-100 border-0"
+                class="btn btn-action btn-sm text-secondary w-100 border-0 p-2"
                 :disabled="!hasMore || isLoadingMore"
                 @click="loadMore"
               >
