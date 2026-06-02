@@ -1,6 +1,6 @@
 <script setup>
 import api from '~/lib/api';
-
+import { useAuth } from '~/composables/use_auth';
 const DEFAULT_COLOR = 'teal';
 const DEFAULT_CURRENCY = 'RUB';
 const DEFAULT_POSITION = 1;
@@ -17,7 +17,7 @@ const accountPosition = ref(DEFAULT_POSITION);
 const accountDescription = ref('');
 const currencies = ref([]);
 const isSubmitting = ref(false);
-
+const profileCurrency = ref(null);
 const props = defineProps({
   item: {
     type: Object,
@@ -26,17 +26,24 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['saved', 'close']);
-
 const isEdit = computed(() => !!props.item);
+
 const currenciesOptions = computed(() => (
   currencies.value.map(c => ({
     value: c.name,
     label: `${c.displayName} — ${c.description}`
   }))
 ));
+
 onMounted(async () => {
-  const items = await api.currencies();
+  const [items, profile] = await Promise.all([
+    api.currencies(),
+    api.fetchProfile(token.value).catch(() => null)
+  ]);
+
   currencies.value = items;
+
+  profileCurrency.value = profile?.defaultCurrency?.name ?? null;
 });
 
 const onSubmit = async () => {
@@ -77,11 +84,22 @@ watch(
     accountName.value = val?.name ?? '';
     accountDescription.value = val?.description ?? '';
     accountKind.value = val?.kind ?? KINDS[0].value;
-    accountCurrency.value = val?.currency?.name ?? DEFAULT_CURRENCY;
     accountPosition.value = val?.position ?? DEFAULT_POSITION;
+
+    if (val) {
+      accountCurrency.value = val?.currency?.name ?? DEFAULT_CURRENCY;
+    } else {
+      accountCurrency.value = profileCurrency.value ?? DEFAULT_CURRENCY;
+    }
   },
   { immediate: true }
 );
+
+watch(profileCurrency, (val) => {
+  if (!isEdit.value && val) {
+    accountCurrency.value = val;
+  }
+});
 </script>
 
 <template>
