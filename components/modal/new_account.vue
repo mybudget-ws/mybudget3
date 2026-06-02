@@ -82,14 +82,14 @@ const onSubmit = async () => {
 
 watch(
   () => props.item,
-  (val) => {
-    accountName.value = val?.name ?? '';
-    accountDescription.value = val?.description ?? '';
-    accountKind.value = val?.kind ?? KINDS[0].value;
-    accountPosition.value = val?.position ?? DEFAULT_POSITION;
+  (account) => {
+    accountName.value = account?.name ?? '';
+    accountDescription.value = account?.description ?? '';
+    accountKind.value = account?.kind ?? KINDS[0].value;
+    accountPosition.value = account?.position ?? DEFAULT_POSITION;
 
-    if (val) {
-      accountCurrency.value = val?.currency?.name ?? DEFAULT_CURRENCY;
+    if (account) {
+      accountCurrency.value = account?.currency?.name ?? DEFAULT_CURRENCY;
     } else {
       accountCurrency.value = profileCurrency.value ?? DEFAULT_CURRENCY;
     }
@@ -97,9 +97,9 @@ watch(
   { immediate: true }
 );
 
-watch(profileCurrency, (val) => {
-  if (!isEdit.value && val) {
-    accountCurrency.value = val;
+watch(profileCurrency, (currency) => {
+  if (!isEdit.value && currency) {
+    accountCurrency.value = currency;
   }
 });
 </script>
