@@ -127,11 +127,11 @@ onMounted(async () => {
                 <select v-model='selectedCurrency' class='form-select'>
                   <option disabled value="">Выберите валюту</option>
                   <option
-                    v-for='c in currenciesOptions'
-                    :key='c.value'
-                    :value='c.value'
+                    v-for='currency in currenciesOptions'
+                    :key='currency.value'
+                    :value='currency.value'
                   >
-                    {{ c.label }}
+                    {{ currency.name }}
                   </option>
                 </select>
 

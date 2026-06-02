@@ -153,7 +153,7 @@ watch(profileCurrency, (currency) => {
                 :key='currency.value'
                 :value='currency.value'
               >
-                {{ currency.label }}
+                {{ currency.name }}
               </option>
             </select>
           </div>
