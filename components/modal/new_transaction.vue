@@ -31,6 +31,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  propertyId: {
+    type: Number,
+    default: undefined,
+  },
 });
 
 const emit = defineEmits(['saved', 'close', 'accountNew']);
@@ -120,6 +124,18 @@ watch(
           amountInputRef.value.selectAll();
         }
       });
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => [props.propertyId, props.item],
+  ([id, item]) => {
+    if (item?.property?.id) {
+      currentPropertyId.value = item.property.id;
+    } else if (id) {
+      currentPropertyId.value = id;
     }
   },
   { immediate: true }
