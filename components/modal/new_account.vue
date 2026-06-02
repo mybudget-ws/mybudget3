@@ -149,11 +149,11 @@ watch(profileCurrency, (currency) => {
               required
             >
               <option
-                v-for='c in currenciesOptions'
-                :key='c.value'
-                :value='c.value'
+                v-for='currency in currenciesOptions'
+                :key='currency.value'
+                :value='currency.value'
               >
-                {{ c.label }}
+                {{ currency.label }}
               </option>
             </select>
           </div>
