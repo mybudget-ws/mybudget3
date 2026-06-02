@@ -1,5 +1,6 @@
 <script setup>
 import { useAuth } from '~/composables/use_auth';
+import { currenciesDisplayItems } from '~/lib/helper_ui';
 import api from '~/lib/api';
 
 definePageMeta({
@@ -23,12 +24,9 @@ const onSignOut = () => {
 let errorTimeoutId;
 let successTimeoutId;
 
-const currenciesOptions = computed(() => (
-  currencies.value.map(c => ({
-    value: c.name,
-    label: `${c.displayName} — ${c.description}`
-  }))
-));
+const currenciesOptions = computed(
+  () => currenciesDisplayItems(currencies.value)
+);
 
 const showError = (message) => {
   saveError.value = message;

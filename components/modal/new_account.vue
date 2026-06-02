@@ -1,15 +1,19 @@
 <script setup>
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
-const DEFAULT_COLOR = 'teal';
-const DEFAULT_CURRENCY = 'RUB';
+import { currenciesDisplayItems } from '~/lib/helper_ui';
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_COLOR,
+} from '~/lib/consts';
+
+const { token } = useAuth();
+
 const DEFAULT_POSITION = 1;
 const KINDS = [
   { value: 'debit', name: 'Дебетовый, наличные' },
   { value: 'credit', name: 'Кредитный' },
 ];
-
-const { token } = useAuth();
 const accountName = ref('');
 const accountKind = ref(KINDS[0].value);
 const accountCurrency = ref(DEFAULT_CURRENCY);
@@ -18,6 +22,7 @@ const accountDescription = ref('');
 const currencies = ref([]);
 const isSubmitting = ref(false);
 const profileCurrency = ref(null);
+
 const props = defineProps({
   item: {
     type: Object,
@@ -26,14 +31,12 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['saved', 'close']);
+
 const isEdit = computed(() => !!props.item);
 
-const currenciesOptions = computed(() => (
-  currencies.value.map(c => ({
-    value: c.name,
-    label: `${c.displayName} — ${c.description}`
-  }))
-));
+const currenciesOptions = computed(
+  () => currenciesDisplayItems(currencies.value)
+);
 
 onMounted(async () => {
   const [items, profile] = await Promise.all([
@@ -42,7 +45,6 @@ onMounted(async () => {
   ]);
 
   currencies.value = items;
-
   profileCurrency.value = profile?.defaultCurrency?.name ?? null;
 });
 

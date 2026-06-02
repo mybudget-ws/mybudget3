@@ -1,8 +1,10 @@
 <script setup>
 import api from '~/lib/api';
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_COLOR,
+} from '~/lib/consts';
 
-const DEFAULT_COLOR = 'teal';
-const DEFAULT_CURRENCY = 'RUB';
 const DEFAULT_POSITION = 1;
 const KINDS = [
   { value: 'realty', name: 'Недвижимость' },
