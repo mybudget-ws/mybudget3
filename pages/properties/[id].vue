@@ -1,4 +1,5 @@
 <script setup>
+import VueApexCharts from 'vue3-apexcharts';
 import {
   IconArrowDown,
   IconArrowUp,
@@ -10,25 +11,33 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
+import { CHART_COLORS } from '~/lib/consts';
 
 definePageMeta({
   middleware: ['authenticated'],
 });
 
 const route = useRoute();
+const appConfig = useAppConfig();
 const { token } = useAuth();
 
 const property = ref(null);
-
 const isLoading = ref(false);
 const isError = ref(false);
-
 const isShowPriceModal = ref(false);
 const editingPrice = ref(null);
-
 const isShowTransactionModal = ref(false);
 const editingTransaction = ref(null);
 const currentKind = ref(KIND_EXPENSE);
+
+const CHART_HEIGTH = 300;
+// Убрать в будущем дублирование с report/index.vue
+const CHART_TYPE = 'line';
+const textColor = computed(() =>
+  appConfig.theme.dark ? '#e2e8f0' : '#334155'
+);
+const series = computed(() => property.value?.pricesChart?.series || []);
+const categories = computed(() => property.value?.pricesChart?.categories || []);
 
 const reloadPropertySilent = async () => {
   const data = await api.property(token.value, {
@@ -121,6 +130,75 @@ const formatDate = (date) => {
 };
 
 onMounted(loadProperty);
+
+const chartOptions = computed(() => ({
+  chart: {
+    type: CHART_TYPE,
+    fontFamily: 'inherit',
+    height: CHART_HEIGTH,
+    parentHeightOffset: 0,
+    toolbar: { show: false, },
+    animations: { enabled: false },
+  },
+  colors: CHART_COLORS,
+  tooltip: { theme: 'dark' },
+  stroke: {
+    width: 3,
+    lineCap: 'round',
+    curve: 'straight',
+  },
+  grid: {
+    padding: {
+      top: -20,
+      right: 0,
+      left: -4,
+      bottom: -4
+    },
+    strokeDashArray: 4,
+  },
+  xaxis: {
+    labels: {
+      padding: 0,
+      style: {
+        colors: textColor.value,
+      }
+    },
+    tooltip: { enabled: false },
+    type: 'datetime',
+    categories: [...categories.value],
+  },
+  yaxis: {
+    labels: {
+      padding: 4,
+      style: {
+        colors: textColor.value,
+      },
+      formatter: (val) => {
+        return new Intl.NumberFormat('ru-RU', {
+          maximumFractionDigits: 0,
+          useGrouping: true,
+        }).format(val);
+      },
+    },
+  },
+  legend: {
+    show: true,
+    position: 'bottom',
+    offsetY: 12,
+    markers: {
+      width: 10,
+      height: 10,
+      radius: 100,
+    },
+    itemMargin: {
+      horizontal: 8,
+      vertical: 8
+    },
+    labels: {
+      colors: textColor.value,
+    },
+  },
+}));
 </script>
 
 <template>
@@ -164,6 +242,18 @@ onMounted(loadProperty);
             <Amount
               :value="prices[0].amount"
               :currency="prices[0].currency?.name"
+            />
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class='w-full'>
+            <VueApexCharts
+              v-if="!isLoading && series.length"
+              :type=CHART_TYPE
+              :height=CHART_HEIGTH
+              :options='chartOptions'
+              :series='series'
             />
           </div>
         </div>

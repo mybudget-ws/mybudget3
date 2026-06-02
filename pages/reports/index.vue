@@ -218,7 +218,7 @@ const chartOptions = computed(() => ({
       vertical: 8
     },
     labels: {
-      colors: textColor,
+      colors: textColor.value,
     },
   },
   // labels: [
