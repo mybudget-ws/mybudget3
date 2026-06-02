@@ -108,7 +108,7 @@ onMounted(async () => {
       <div class="col-sm-12 col-lg-9 col-xl-10">
         <div class="card-body">
           <h1>Изменить E-mail</h1>
-          <div v-if="isLoading" class="spinner-border" />
+          <PlaceholderLoading v-if='isLoading' />
           <form v-else @submit.prevent="onSubmit">
             <div class="row mb-3">
               <div class="col-md-6 col-lg-4">
@@ -150,17 +150,13 @@ onMounted(async () => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="isSaving"
+            <Button
+              type='submit'
+              class='btn-primary'
+              :loading='isSaving'
             >
-              <span
-                v-if="isSaving"
-                class="spinner-border spinner-border-sm me-2"
-              />
               Сохранить
-            </button>
+            </Button>
           </form>
         </div>
       </div>
