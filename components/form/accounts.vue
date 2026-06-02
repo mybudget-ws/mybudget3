@@ -169,15 +169,16 @@ watch(() => route, (newRoute) => {
             </div>
           </div>
         </label>
-        <div v-if="canToggleShowAll" class="pb-2">
-          <button
-            class="btn btn-action btn-sm text-secondary w-100"
-            type="button"
-            @click="isShowAll = !isShowAll"
-          >
-            {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
-          </button>
-        </div>
+      </div>
+
+      <div v-if="canToggleShowAll" class="pb-2 mt-2">
+        <button
+          class="btn btn-action btn-sm text-secondary w-100"
+          type="button"
+          @click="isShowAll = !isShowAll"
+        >
+          {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
+        </button>
       </div>
     </div>
   </div>
