@@ -28,15 +28,15 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item);
-
+const currenciesOptions = computed(() => (
+  currencies.value.map(c => ({
+    value: c.name,
+    label: `${c.displayName} — ${c.description}`
+  }))
+));
 onMounted(async () => {
   const items = await api.currencies();
-  currencies.value = items.map(v => (
-    {
-      value: v.name,
-      name: `${v.name} — ${v.description}`,
-    }
-  ));
+  currencies.value = items;
 });
 
 const onSubmit = async () => {
@@ -129,11 +129,11 @@ watch(
               required
             >
               <option
-                v-for='currency in currencies'
-                :key='currency.value'
-                :value='currency.value'
+                v-for='c in currenciesOptions'
+                :key='c.value'
+                :value='c.value'
               >
-                {{ currency.name }}
+                {{ c.label }}
               </option>
             </select>
           </div>
