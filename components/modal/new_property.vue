@@ -1,8 +1,11 @@
 <script setup>
 import api from '~/lib/api';
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_COLOR,
+} from '~/lib/consts';
+import { currenciesDisplayItems } from '~/lib/helper_ui';
 
-const DEFAULT_COLOR = 'teal';
-const DEFAULT_CURRENCY = 'RUB';
 const DEFAULT_POSITION = 1;
 const KINDS = [
   { value: 'realty', name: 'Недвижимость' },
@@ -32,12 +35,7 @@ const isEdit = computed(() => !!props.item);
 
 onMounted(async () => {
   const items = await api.currencies();
-  currencies.value = items.map(v => (
-    {
-      value: v.name,
-      name: `${v.name} — ${v.description}`,
-    }
-  ));
+  currencies.value = currenciesDisplayItems(items);
 });
 
 const onSubmit = async () => {
@@ -131,11 +129,11 @@ watch(
               required
             >
               <option
-                v-for='item in currencies'
-                :key='item.value'
-                :value='item.value'
+                v-for='currency in currencies'
+                :key='currency.value'
+                :value='currency.value'
               >
-                {{ item.name }}
+                {{ currency.name }}
               </option>
             </select>
           </div>

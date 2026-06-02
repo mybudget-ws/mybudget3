@@ -1,5 +1,6 @@
 <script setup>
 import { useAuth } from '~/composables/use_auth';
+import { currenciesDisplayItems } from '~/lib/helper_ui';
 import api from '~/lib/api';
 
 definePageMeta({
@@ -23,12 +24,9 @@ const onSignOut = () => {
 let errorTimeoutId;
 let successTimeoutId;
 
-const currenciesOptions = computed(() => (
-  currencies.value.map(c => ({
-    value: c.name,
-    label: `${c.displayName} — ${c.description}`
-  }))
-));
+const currenciesOptions = computed(
+  () => currenciesDisplayItems(currencies.value)
+);
 
 const showError = (message) => {
   saveError.value = message;
@@ -113,7 +111,7 @@ onMounted(async () => {
       <div class='col-sm-12 col-lg-9 col-xl-10'>
         <div class='card-body'>
           <h1>Ваш профиль</h1>
-          <div v-if='isLoading' class='spinner-border' />
+          <PlaceholderLoading v-if='isLoading' />
           <div v-else>
             <div class='row mb-3'>
               <div class='col-md-6 col-lg-4'>
@@ -129,11 +127,11 @@ onMounted(async () => {
                 <select v-model='selectedCurrency' class='form-select'>
                   <option disabled value="">Выберите валюту</option>
                   <option
-                    v-for='c in currenciesOptions'
-                    :key='c.value'
-                    :value='c.value'
+                    v-for='currency in currenciesOptions'
+                    :key='currency.value'
+                    :value='currency.value'
                   >
-                    {{ c.label }}
+                    {{ currency.name }}
                   </option>
                 </select>
 
@@ -149,13 +147,14 @@ onMounted(async () => {
                 />
               </div>
             </div>
-            <button
-              class='btn btn-primary'
-              :disabled='isSaving'
+            
+            <Button
+              class='btn-primary'
+              :loading='isSaving'
               @click='onSubmit'
             >
-              {{ isSaving ? 'Сохранение...' : 'Сохранить' }}
-            </button>
+              Сохранить
+            </Button>
           </div>
         </div>
       </div>

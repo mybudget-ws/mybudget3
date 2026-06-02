@@ -1,15 +1,19 @@
 <script setup>
 import api from '~/lib/api';
+import { useAuth } from '~/composables/use_auth';
+import { currenciesDisplayItems } from '~/lib/helper_ui';
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_COLOR,
+} from '~/lib/consts';
 
-const DEFAULT_COLOR = 'teal';
-const DEFAULT_CURRENCY = 'RUB';
+const { token } = useAuth();
+
 const DEFAULT_POSITION = 1;
 const KINDS = [
   { value: 'debit', name: 'Дебетовый, наличные' },
   { value: 'credit', name: 'Кредитный' },
 ];
-
-const { token } = useAuth();
 const accountName = ref('');
 const accountKind = ref(KINDS[0].value);
 const accountCurrency = ref(DEFAULT_CURRENCY);
@@ -17,6 +21,7 @@ const accountPosition = ref(DEFAULT_POSITION);
 const accountDescription = ref('');
 const currencies = ref([]);
 const isSubmitting = ref(false);
+const profileCurrency = ref(null);
 
 const props = defineProps({
   item: {
@@ -29,14 +34,18 @@ const emit = defineEmits(['saved', 'close']);
 
 const isEdit = computed(() => !!props.item);
 
+const currenciesOptions = computed(
+  () => currenciesDisplayItems(currencies.value)
+);
+
 onMounted(async () => {
-  const items = await api.currencies();
-  currencies.value = items.map(v => (
-    {
-      value: v.name,
-      name: `${v.name} — ${v.description}`,
-    }
-  ));
+  const [items, profile] = await Promise.all([
+    api.currencies(),
+    api.fetchProfile(token.value).catch(() => null)
+  ]);
+
+  currencies.value = items;
+  profileCurrency.value = profile?.defaultCurrency?.name ?? null;
 });
 
 const onSubmit = async () => {
@@ -73,15 +82,26 @@ const onSubmit = async () => {
 
 watch(
   () => props.item,
-  (val) => {
-    accountName.value = val?.name ?? '';
-    accountDescription.value = val?.description ?? '';
-    accountKind.value = val?.kind ?? KINDS[0].value;
-    accountCurrency.value = val?.currency?.name ?? DEFAULT_CURRENCY;
-    accountPosition.value = val?.position ?? DEFAULT_POSITION;
+  (account) => {
+    accountName.value = account?.name ?? '';
+    accountDescription.value = account?.description ?? '';
+    accountKind.value = account?.kind ?? KINDS[0].value;
+    accountPosition.value = account?.position ?? DEFAULT_POSITION;
+
+    if (account) {
+      accountCurrency.value = account?.currency?.name ?? DEFAULT_CURRENCY;
+    } else {
+      accountCurrency.value = profileCurrency.value ?? DEFAULT_CURRENCY;
+    }
   },
   { immediate: true }
 );
+
+watch(profileCurrency, (currency) => {
+  if (!isEdit.value && currency) {
+    accountCurrency.value = currency;
+  }
+});
 </script>
 
 <template>
@@ -129,7 +149,7 @@ watch(
               required
             >
               <option
-                v-for='currency in currencies'
+                v-for='currency in currenciesOptions'
                 :key='currency.value'
                 :value='currency.value'
               >
