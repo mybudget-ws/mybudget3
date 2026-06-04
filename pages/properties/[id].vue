@@ -40,11 +40,15 @@ const series = computed(() => property.value?.pricesChart?.series || []);
 const categories = computed(() => property.value?.pricesChart?.categories || []);
 
 const reloadPropertySilent = async () => {
-  const data = await api.property(token.value, {
-    id: route.params.id,
-  });
+  try {
+    const data = await api.property(token.value, {
+      id: route.params.id,
+    });
 
-  property.value = data;
+    property.value = data;
+  } catch (error) {
+    console.error('Failed to reload property:', error);
+  }
 };
 
 const prices = computed(() => {
@@ -86,7 +90,10 @@ const onDeletePrice = async (price) => {
     id: price.id,
   });
 
-  await loadProperty();
+  property.value = {
+    ...property.value,
+    prices: property.value.prices.filter((p) => p.id !== price.id),
+  };
 };
 
 const onPriceSaved = async () => {
@@ -111,10 +118,18 @@ const onEditTransaction = (transaction) => {
 
 const onDeleteTransaction = async (transaction) => {
   if (!confirm('Удалить операцию?')) return;
-
-  await api.destroyTransaction(token.value, transaction.id);
-
-  await loadProperty();
+  try {
+    await api.destroyTransaction(token.value, transaction.id);
+    property.value = {
+      ...property.value,
+      transactions: property.value.transactions.filter(
+        (t) => t.id !== transaction.id
+      ),
+    };
+  } catch (error) {
+    console.error('Failed to delete transaction:', error);
+    alert('Не удалось удалить операцию. Попробуйте еще раз.');
+  }
 };
 
 const onTransactionSaved = async () => {
@@ -123,9 +138,29 @@ const onTransactionSaved = async () => {
 };
 
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
+  const target = new Date(date);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const targetDay = new Date(target);
+  targetDay.setHours(0, 0, 0, 0);
+
+  if (targetDay.getTime() === today.getTime()) {
+    return 'Сегодня';
+  }
+
+  if (targetDay.getTime() === yesterday.getTime()) {
+    return 'Вчера';
+  }
+
+  return target.toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
   });
 };
 
@@ -260,44 +295,80 @@ const chartOptions = computed(() => ({
       </div>
 
       <div class="card mb-4">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-4">
-            <h2 class="h4 mb-0">История цены</h2>
-            <button class="btn btn-primary ms-3" @click="onCreatePrice">
-              <IconPlus :size="20" />
-            </button>
-          </div>
-          <div class="border-top">
-            <div class="d-flex justify-content-between py-3 text-secondary fw-bold small border-bottom">
-              <div>Дата</div>
-              <div>Величина</div>
-            </div>
-            <div
-              v-for="price in prices"
-              :key="price.id"
-              class="d-flex justify-content-between py-4 border-bottom"
-            >
-              <div>{{ formatDate(price.date) }}</div>
-              <div class="d-flex align-items-center">
-                <Amount
-                  :value="price.amount"
-                  :currency="price.currency?.name"
-                />
-                <div class="btn-actions ms-3">
+        <div class="card-table">
+          <div class="card-header pe-0">
+            <div class="row w-full align-items-center">
+              <div class="col">
+                <h2 class="mb-0">История цены</h2>
+              </div>
 
-                  <button class="btn btn-action" @click="onEditPrice(price)">
-                    <IconPencil size="20" stroke-width="1.5" />
-                  </button>
-
-                  <button class="btn btn-action" @click="onDeletePrice(price)">
-                    <IconTrash size="20" stroke-width="1.5" />
-                  </button>
-
-                </div>
+              <div class="col-auto">
+                <button
+                  class="btn btn-primary"
+                  @click="onCreatePrice"
+                >
+                  <IconPlus :size="20" />
+                </button>
               </div>
             </div>
-            <div v-if="!prices.length" class="text-center text-secondary py-5">
-              История цен пустая
+          </div>
+
+          <div class="advanced-table">
+            <div class="table-responsive">
+              <table class="table table-vcenter table-selectable">
+                <thead>
+                  <tr>
+                    <th>Дата</th>
+                    <th class="w-1 text-nowrap text-end">Величина</th>
+                    <th class="w-1"></th>
+                  </tr>
+                </thead>
+
+                <tbody class="table-tbody">
+                  <tr
+                    v-for="price in prices"
+                    :key="price.id"
+                  >
+                    <td class="text-nowrap">
+                      {{ formatDate(price.date) }}
+                    </td>
+
+                    <td class="text-nowrap text-end">
+                      <Amount
+                        :value="price.amount"
+                        :currency="price.currency?.name"
+                      />
+                    </td>
+
+                    <td>
+                      <div class="btn-actions">
+                        <button
+                          class="btn btn-action"
+                          @click="onEditPrice(price)"
+                        >
+                          <IconPencil size="20" stroke-width="1.5" />
+                        </button>
+
+                        <button
+                          class="btn btn-action"
+                          @click="onDeletePrice(price)"
+                        >
+                          <IconTrash size="20" stroke-width="1.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr v-if="!prices.length">
+                    <td
+                      colspan="3"
+                      class="text-center text-secondary py-5"
+                    >
+                      История цен пустая
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -356,8 +427,8 @@ const chartOptions = computed(() => ({
                     <td class="text-nowrap text-end">
                       <div
                         :class="{
-                          'text-success': transaction.isIncome,
-                          'text-danger': !transaction.isIncome,
+                          'text-success': transaction.amount > 0,
+                          'text-danger': transaction.amount < 0,
                         }"
                       >
                         <Amount
