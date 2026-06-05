@@ -9,6 +9,7 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
+import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { CHART_COLORS } from '~/lib/consts';
@@ -120,33 +121,6 @@ const onDeleteTransaction = async (transaction) => {
 const onTransactionSaved = async () => {
   isShowTransactionModal.value = false;
   await load(true);
-};
-
-const formatDate = (date) => {
-  const target = new Date(date);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const targetDay = new Date(target);
-  targetDay.setHours(0, 0, 0, 0);
-
-  if (targetDay.getTime() === today.getTime()) {
-    return 'Сегодня';
-  }
-
-  if (targetDay.getTime() === yesterday.getTime()) {
-    return 'Вчера';
-  }
-
-  return target.toLocaleDateString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: '2-digit',
-  });
 };
 
 onMounted(load);
@@ -317,9 +291,7 @@ const chartOptions = computed(() => ({
                     v-for="price in prices"
                     :key="price.id"
                   >
-                    <td class="text-nowrap">
-                      {{ formatDate(price.date) }}
-                    </td>
+                    <td>{{ formatDate(price.date) }}</td>
 
                     <td class="text-nowrap text-end">
                       <Amount
@@ -409,7 +381,7 @@ const chartOptions = computed(() => ({
                     v-for="transaction in property?.transactions || []"
                     :key="transaction.id"
                   >
-                    <td class="text-nowrap">
+                    <td :title='formatDateFull(transaction.dateAt)'>
                       {{ formatDate(transaction.dateAt) }}
                     </td>
                     <td class="text-nowrap text-end">
