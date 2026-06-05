@@ -9,6 +9,7 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
+import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { CHART_COLORS } from '~/lib/consts';
@@ -23,6 +24,7 @@ const { token } = useAuth();
 
 const property = ref(null);
 const isLoading = ref(false);
+const isQuiteLoading = ref(false);
 const isError = ref(false);
 const isShowPriceModal = ref(false);
 const editingPrice = ref(null);
@@ -39,24 +41,20 @@ const textColor = computed(() =>
 const series = computed(() => property.value?.pricesChart?.series || []);
 const categories = computed(() => property.value?.pricesChart?.categories || []);
 
-const reloadPropertySilent = async () => {
-  const data = await api.property(token.value, {
-    id: route.params.id,
-  });
-
-  property.value = data;
-};
-
 const prices = computed(() => {
   return [...(property.value?.prices || [])]
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 });
 
-const loadProperty = async () => {
-  try {
+const load = async (isQuite = false) => {
+  isError.value = false;
+  if (isQuite) {
+    isQuiteLoading.value = true;
+  } else {
     isLoading.value = true;
-    isError.value = false;
+  }
 
+  try {
     property.value = await api.property(token.value, {
       id: route.params.id,
     });
@@ -65,6 +63,7 @@ const loadProperty = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
+    isQuiteLoading.value = false;
   }
 };
 
@@ -86,13 +85,12 @@ const onDeletePrice = async (price) => {
     id: price.id,
   });
 
-  await loadProperty();
+  await load(true);
 };
 
 const onPriceSaved = async () => {
   isShowPriceModal.value = false;
-
-  await reloadPropertySilent();
+  await load(true);
 };
 
 const openCreateTransaction = (kind) => {
@@ -111,25 +109,21 @@ const onEditTransaction = (transaction) => {
 
 const onDeleteTransaction = async (transaction) => {
   if (!confirm('Удалить операцию?')) return;
-
-  await api.destroyTransaction(token.value, transaction.id);
-
-  await loadProperty();
+  try {
+    await api.destroyTransaction(token.value, transaction.id);
+    await load(true);
+  } catch (error) {
+    console.error('Failed to delete transaction:', error);
+    alert('Не удалось удалить операцию. Попробуйте еще раз.');
+  }
 };
 
 const onTransactionSaved = async () => {
   isShowTransactionModal.value = false;
-  await reloadPropertySilent();
+  await load(true);
 };
 
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-  });
-};
-
-onMounted(loadProperty);
+onMounted(load);
 
 const chartOptions = computed(() => ({
   chart: {
@@ -231,14 +225,17 @@ const chartOptions = computed(() => ({
     <template v-else>
       <div class="card mb-4">
         <div class="card-body d-flex justify-content-between align-items-start">
-          <div>
-            <h1 class="h3 mb-1">
-              {{ property?.name || 'Имущество' }}
-            </h1>
-            <div class="text-secondary">Имущество</div>
+          <div class='d-flex align-items-center'>
+            <div>
+              <h2 class="mb-1">
+                {{ property?.name || 'Имущество' }}
+              </h2>
+              <div class="text-secondary">Имущество</div>
+            </div>
+            <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
           </div>
 
-          <div v-if="prices.length" class="fs-2 text-end">
+          <div v-if="prices.length" class="fs-2 mt-1 text-end">
             <Amount
               :value="prices[0].amount"
               :currency="prices[0].currency?.name"
@@ -260,44 +257,78 @@ const chartOptions = computed(() => ({
       </div>
 
       <div class="card mb-4">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-4">
-            <h2 class="h4 mb-0">История цены</h2>
-            <button class="btn btn-primary ms-3" @click="onCreatePrice">
-              <IconPlus :size="20" />
-            </button>
-          </div>
-          <div class="border-top">
-            <div class="d-flex justify-content-between py-3 text-secondary fw-bold small border-bottom">
-              <div>Дата</div>
-              <div>Величина</div>
-            </div>
-            <div
-              v-for="price in prices"
-              :key="price.id"
-              class="d-flex justify-content-between py-4 border-bottom"
-            >
-              <div>{{ formatDate(price.date) }}</div>
-              <div class="d-flex align-items-center">
-                <Amount
-                  :value="price.amount"
-                  :currency="price.currency?.name"
-                />
-                <div class="btn-actions ms-3">
+        <div class="card-table">
+          <div class="card-header pe-0">
+            <div class="row w-full align-items-center">
+              <div class="col">
+                <h2 class="mb-0">История цены</h2>
+              </div>
 
-                  <button class="btn btn-action" @click="onEditPrice(price)">
-                    <IconPencil size="20" stroke-width="1.5" />
-                  </button>
-
-                  <button class="btn btn-action" @click="onDeletePrice(price)">
-                    <IconTrash size="20" stroke-width="1.5" />
-                  </button>
-
-                </div>
+              <div class="col-auto">
+                <button
+                  class="btn btn-primary"
+                  @click="onCreatePrice"
+                >
+                  <IconPlus :size="20" />
+                </button>
               </div>
             </div>
-            <div v-if="!prices.length" class="text-center text-secondary py-5">
-              История цен пустая
+          </div>
+
+          <div class="advanced-table">
+            <div class="table-responsive">
+              <table class="table table-vcenter table-selectable">
+                <thead>
+                  <tr>
+                    <th>Дата</th>
+                    <th class="w-1 text-nowrap text-end">Величина</th>
+                    <th class="w-1"></th>
+                  </tr>
+                </thead>
+
+                <tbody class="table-tbody">
+                  <tr
+                    v-for="price in prices"
+                    :key="price.id"
+                  >
+                    <td>{{ formatDate(price.date) }}</td>
+
+                    <td class="text-nowrap text-end">
+                      <Amount
+                        :value="price.amount"
+                        :currency="price.currency?.name"
+                      />
+                    </td>
+
+                    <td>
+                      <div class="btn-actions">
+                        <button
+                          class="btn btn-action"
+                          @click="onEditPrice(price)"
+                        >
+                          <IconPencil size="20" stroke-width="1.5" />
+                        </button>
+
+                        <button
+                          class="btn btn-action"
+                          @click="onDeletePrice(price)"
+                        >
+                          <IconTrash size="20" stroke-width="1.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr v-if="!prices.length">
+                    <td
+                      colspan="3"
+                      class="text-center text-secondary py-5"
+                    >
+                      История цен пустая
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -350,14 +381,14 @@ const chartOptions = computed(() => ({
                     v-for="transaction in property?.transactions || []"
                     :key="transaction.id"
                   >
-                    <td class="text-nowrap">
+                    <td :title='formatDateFull(transaction.dateAt)'>
                       {{ formatDate(transaction.dateAt) }}
                     </td>
                     <td class="text-nowrap text-end">
                       <div
                         :class="{
-                          'text-success': transaction.isIncome,
-                          'text-danger': !transaction.isIncome,
+                          'text-success': transaction.amount > 0,
+                          'text-danger': transaction.amount < 0,
                         }"
                       >
                         <Amount

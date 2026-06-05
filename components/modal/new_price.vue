@@ -62,12 +62,12 @@ watch(
   () => props.item,
   (val) => {
     amount.value = val?.amount ?? '';
-
-    date.value = val?.date
-      ? new Date(val.date).toISOString().split('T')[0]
-      : new Date().toISOString().split('T')[0];
-
     comment.value = val?.description ?? '';
+
+    date.value =
+      (typeof val?.date === 'string' && val.date.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(val.date))
+        ? val.date.slice(0, 10)
+        : new Date().toISOString().slice(0, 10);
   },
   { immediate: true },
 );
