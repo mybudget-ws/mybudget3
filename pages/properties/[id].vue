@@ -23,6 +23,7 @@ const { token } = useAuth();
 
 const property = ref(null);
 const isLoading = ref(false);
+const isQuiteLoading = ref(false);
 const isError = ref(false);
 const isShowPriceModal = ref(false);
 const editingPrice = ref(null);
@@ -39,28 +40,20 @@ const textColor = computed(() =>
 const series = computed(() => property.value?.pricesChart?.series || []);
 const categories = computed(() => property.value?.pricesChart?.categories || []);
 
-const reloadPropertySilent = async () => {
-  try {
-    const data = await api.property(token.value, {
-      id: route.params.id,
-    });
-
-    property.value = data;
-  } catch (error) {
-    console.error('Failed to reload property:', error);
-  }
-};
-
 const prices = computed(() => {
   return [...(property.value?.prices || [])]
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 });
 
-const loadProperty = async () => {
-  try {
+const load = async (isQuite = false) => {
+  isError.value = false;
+  if (isQuite) {
+    isQuiteLoading.value = true;
+  } else {
     isLoading.value = true;
-    isError.value = false;
+  }
 
+  try {
     property.value = await api.property(token.value, {
       id: route.params.id,
     });
@@ -69,6 +62,7 @@ const loadProperty = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
+    isQuiteLoading.value = false;
   }
 };
 
@@ -90,16 +84,12 @@ const onDeletePrice = async (price) => {
     id: price.id,
   });
 
-  property.value = {
-    ...property.value,
-    prices: property.value.prices.filter((p) => p.id !== price.id),
-  };
+  await load(true);
 };
 
 const onPriceSaved = async () => {
   isShowPriceModal.value = false;
-
-  await reloadPropertySilent();
+  await load(true);
 };
 
 const openCreateTransaction = (kind) => {
@@ -120,12 +110,7 @@ const onDeleteTransaction = async (transaction) => {
   if (!confirm('Удалить операцию?')) return;
   try {
     await api.destroyTransaction(token.value, transaction.id);
-    property.value = {
-      ...property.value,
-      transactions: property.value.transactions.filter(
-        (t) => t.id !== transaction.id
-      ),
-    };
+    await load(true);
   } catch (error) {
     console.error('Failed to delete transaction:', error);
     alert('Не удалось удалить операцию. Попробуйте еще раз.');
@@ -134,7 +119,7 @@ const onDeleteTransaction = async (transaction) => {
 
 const onTransactionSaved = async () => {
   isShowTransactionModal.value = false;
-  await reloadPropertySilent();
+  await load(true);
 };
 
 const formatDate = (date) => {
@@ -164,7 +149,7 @@ const formatDate = (date) => {
   });
 };
 
-onMounted(loadProperty);
+onMounted(load);
 
 const chartOptions = computed(() => ({
   chart: {
@@ -266,11 +251,14 @@ const chartOptions = computed(() => ({
     <template v-else>
       <div class="card mb-4">
         <div class="card-body d-flex justify-content-between align-items-start">
-          <div>
-            <h1 class="h3 mb-1">
-              {{ property?.name || 'Имущество' }}
-            </h1>
-            <div class="text-secondary">Имущество</div>
+          <div class='d-flex align-items-center'>
+            <div>
+              <h2 class="mb-1">
+                {{ property?.name || 'Имущество' }}
+              </h2>
+              <div class="text-secondary">Имущество</div>
+            </div>
+            <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
           </div>
 
           <div v-if="prices.length" class="fs-2 mt-1 text-end">
