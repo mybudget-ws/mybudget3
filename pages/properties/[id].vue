@@ -273,7 +273,7 @@ const chartOptions = computed(() => ({
             <div class="text-secondary">Имущество</div>
           </div>
 
-          <div v-if="prices.length" class="fs-2 text-end">
+          <div v-if="prices.length" class="fs-2 mt-1 text-end">
             <Amount
               :value="prices[0].amount"
               :currency="prices[0].currency?.name"
