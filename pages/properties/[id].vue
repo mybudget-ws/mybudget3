@@ -31,6 +31,7 @@ const editingPrice = ref(null);
 const isShowTransactionModal = ref(false);
 const editingTransaction = ref(null);
 const currentKind = ref(KIND_EXPENSE);
+const isShowAllPrices = ref(false);
 
 const CHART_HEIGTH = 300;
 // Убрать в будущем дублирование с report/index.vue
@@ -41,11 +42,20 @@ const textColor = computed(() =>
 const series = computed(() => property.value?.pricesChart?.series || []);
 const categories = computed(() => property.value?.pricesChart?.categories || []);
 
-const prices = computed(() => {
+const allPrices = computed(() => {
   return [...(property.value?.prices || [])]
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 });
 
+const prices = computed(() => {
+  if (isShowAllPrices.value) {
+    return allPrices.value;
+  }
+
+  return allPrices.value.slice(0, 3);
+});
+
+const hasMorePrices = computed(() => allPrices.value.length > 3);
 const load = async (isQuite = false) => {
   isError.value = false;
   if (isQuite) {
@@ -329,6 +339,18 @@ const chartOptions = computed(() => ({
                   </tr>
                 </tbody>
               </table>
+              <div class="card-footer bg-transparent border-0">
+                <div
+                  v-if="hasMorePrices"
+                >
+                  <button
+                    class="btn btn-action btn-sm text-secondary w-100 p-2"
+                    @click="isShowAllPrices = !isShowAllPrices"
+                  >
+                    {{ isShowAllPrices ? 'Скрыть' : 'Показать все' }}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
