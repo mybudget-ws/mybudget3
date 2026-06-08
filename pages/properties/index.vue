@@ -140,7 +140,7 @@ watchEffect(() => {
                   <tr>
                     <th>Название</th>
                     <th>Тип</th>
-                    <th class='w-1'>Стоимость</th>
+                    <th class="w-1">Стоимость</th>
                     <th class='w-1'/>
                   </tr>
                 </thead>
@@ -156,10 +156,10 @@ watchEffect(() => {
                       </NuxtLink>
                     </td>
                     <td class="text-secondary">{{ kindDisplayName(item) }}</td>
-                    <td>
+                    <td class="text-nowrap text-end">
                       <Amount
-                        :value='item.amount'
-                        :currency='item.currency.name'
+                        :value="item.amount"
+                        :currency="item.currency.name"
                       />
                     </td>
                     <td>
