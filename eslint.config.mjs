@@ -7,6 +7,8 @@ export default withNuxt({
     'vue/no-multiple-template-root': 'off',
     'no-irregular-whitespace': ['error', {
       skipTemplates: true,
-    }]
+    }],
+    'quotes': ['error', 'single'],
+    'vue/html-quotes': ['error', 'single'],
   },
 });
