@@ -30,10 +30,10 @@ const onClick = (event) => {
 <template>
   <span
     class='badge'
-    :class="props.isClickable ? 'cursor-pointer' : ''"
+    :class='props.isClickable ? "cursor-pointer" : ""'
     @click='onClick'
   >
-    <IconWallet size=14 stroke-width=2 class='text-cyan opacity-80' />
+    <IconWallet size='14' stroke-width='2' class='text-cyan opacity-80' />
     {{ props.name }}
     <IconX v-if='props.isX' size='12' />
   </span>

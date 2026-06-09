@@ -334,19 +334,19 @@ watch(
     :item='currentItem'
     :is-copy='isCopyItem'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
     @account-new='onAccountNew'
   />
   <ModalNewTransfer
     v-if='isShowModalTransfer'
     @saved='onSaved'
-    @close="isShowModalTransfer = false"
+    @close='isShowModalTransfer = false'
     @account-new='onAccountNew'
   />
   <ModalNewAccount
     v-if='isShowModalAccount'
     @saved='onSaved'
-    @close="isShowModalAccount = false"
+    @close='isShowModalAccount = false'
   />
 
   <div class='row'>
@@ -364,43 +364,43 @@ watch(
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex flex-wrap btn-list'>
-                  <div class="input-group input-group-flat w-auto">
-                    <span class="input-group-text">
-                      <IconSearch size="20" stroke-width="1" />
+                  <div class='input-group input-group-flat w-auto'>
+                    <span class='input-group-text'>
+                      <IconSearch size='20' stroke-width='1' />
                     </span>
 
                     <input
-                      id="advanced-table-search"
-                      v-model="description"
-                      type="text"
-                      class="form-control ps-2"
-                      placeholder="Поиск по описанию"
-                      @keyup.enter="onDescriptionSearch"
+                      id='advanced-table-search'
+                      v-model='description'
+                      type='text'
+                      class='form-control ps-2'
+                      placeholder='Поиск по описанию'
+                      @keyup.enter='onDescriptionSearch'
                     >
-                    <span class="input-group-text">
+                    <span class='input-group-text'>
                       <kbd>Enter</kbd>
                     </span>
                   </div>
                   <button
                     class='btn btn-outline-green'
                     type='button'
-                    @click="openCreate(KIND_INCOME)"
+                    @click='openCreate(KIND_INCOME)'
                   >
-                    <IconArrowUp stroke-width=2 />
+                    <IconArrowUp stroke-width='2' />
                   </button>
                   <button
                     class='btn btn-outline-secondary'
                     type='button'
-                    @click="openCreateTransfer()"
+                    @click='openCreateTransfer()'
                   >
-                    <IconArrowsRightLeft stroke-width=2 />
+                    <IconArrowsRightLeft stroke-width='2' />
                   </button>
                   <button
                     class='btn btn-primary'
                     type='button'
-                    @click="openCreate(KIND_EXPENSE)"
+                    @click='openCreate(KIND_EXPENSE)'
                   >
-                    <IconArrowDown stroke-width=2 />
+                    <IconArrowDown stroke-width='2' />
                   </button>
                 </div>
               </div>
@@ -413,10 +413,10 @@ watch(
           >
             <div class='badges-list'>
               <BadgeCategory
-                v-if="route.query.description"
-                :name=route.query.description
+                v-if='route.query.description'
+                :name='route.query.description'
                 :is-x='true'
-                @click="clearDescriptionSearch"
+                @click='clearDescriptionSearch'
               />
               <BadgeCategory
                 v-for='kind in selectedKinds'
@@ -473,16 +473,16 @@ watch(
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="item in transactions" :key="item.id">
+                  <tr v-for='item in transactions' :key='item.id'>
                     <td :title='formatDateFull(item.dateAt)'>
                       {{ formatDate(item.dateAt) }}
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
-                        :class="{
-                          'text-success': !item.isTransfer && item.amount > 0,
-                          'text-danger': !item.isTransfer && item.amount < 0
-                        }"
+                        :class='{
+                          "text-success": !item.isTransfer && item.amount > 0,
+                          "text-danger": !item.isTransfer && item.amount < 0
+                        }'
                       >
                         <Amount
                           :value='item.amount'
@@ -493,7 +493,7 @@ watch(
                     <td class='text-secondary'>
                       <BadgeAccount
                         :name='item.account.name'
-                        @click="onAccountClick(item.account.id)"
+                        @click='onAccountClick(item.account.id)'
                       />
                     </td>
                     <td>
@@ -503,13 +503,13 @@ watch(
                             v-if='item.amount > 0'
                             class='badge bg-green-lt text-green-lt-fg'
                           >
-                            <IconArrowNarrowLeft size=16 />
+                            <IconArrowNarrowLeft size='16' />
                           </span>
                           <span
                             v-if='item.amount < 0'
                             class='badge bg-red-lt text-red-lt-fg'
                           >
-                            <IconArrowNarrowRight size=16 />
+                            <IconArrowNarrowRight size='16' />
                           </span>
                         </template>
                         <BadgeProject
@@ -526,7 +526,7 @@ watch(
                           v-for='cat in item.categories'
                           :key='cat.id'
                           :name='cat.name'
-                          @click="onCategoryClick(cat.id)"
+                          @click='onCategoryClick(cat.id)'
                         />
                       </div>
                     </td>
@@ -538,20 +538,20 @@ watch(
                           class='btn btn-action'
                           @click='openEdit(item)'
                         >
-                          <IconPencil size=20 stroke-width=1 />
+                          <IconPencil size='20' stroke-width='1' />
                         </button>
                         <button
-                          v-tooltip:bottom="'Повторить операцию'"
+                          v-tooltip:bottom='"Повторить операцию"'
                           type='button'
                           class='btn btn-action'
                           @click='openCopy(item)'
                         >
-                          <IconCopy size=20 stroke-width=1 />
+                          <IconCopy size='20' stroke-width='1' />
                         </button>
                         <button
                           type='button'
                           class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>
@@ -559,22 +559,22 @@ watch(
                 </tbody>
               </table>
             </div>
-            <div class="card-footer bg-transparent">
-              <i v-if="isEmpty" class="text-secondary">
+            <div class='card-footer bg-transparent'>
+              <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких операций ещё нет
               </i>
 
               <button
                 v-else
-                class="btn btn-action btn-sm text-secondary w-100 border-0 p-2"
-                :disabled="!hasMore || isLoadingMore"
-                @click="loadMore"
+                class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
+                :disabled='!hasMore || isLoadingMore'
+                @click='loadMore'
               >
-                <template v-if="isLoadingMore">
+                <template v-if='isLoadingMore'>
                   Загрузка...
                 </template>
 
-                <template v-else-if="hasMore">
+                <template v-else-if='hasMore'>
                   Загрузить ещё
                 </template>
 
@@ -588,7 +588,7 @@ watch(
       </div>
     </div>
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterKinds :is-loading="!isLoaded" @update:items="onKindsChange" />
+      <FilterKinds :is-loading='!isLoaded' @update:items='onKindsChange' />
       <FilterAccounts :reload='transactionEventTicks' @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />

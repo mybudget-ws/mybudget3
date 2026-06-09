@@ -50,31 +50,31 @@ watch(
 </script>
 
 <template>
-  <ModalBase id='modal-category' is-focus @close="emit('close')">
-    <form @submit.prevent='onSubmit' autocomplete='off'>
+  <ModalBase id='modal-category' is-focus @close='emit("close")'>
+    <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
-        <h5 class="modal-title">
+        <h5 class='modal-title'>
           {{ isEdit ? 'Редактирование категории' : 'Новая категория' }}
         </h5>
-        <button class="btn-close" type="button" @click="emit('close')" />
+        <button class='btn-close' type='button' @click='emit("close")' />
       </div>
 
       <div class='modal-body'>
         <div class='mb-3'>
           <Label required>Название</Label>
           <Input
+            v-model='categoryName'
             required
             type='text'
             class='form-control'
             placeholder='Новая категория'
             :disabled='isSubmitting'
-            v-model='categoryName'
           />
         </div>
       </div>
 
       <div class='modal-footer'>
-        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
+        <button class='btn-link link-secondary me-auto' type='button' @click='emit("close")'>
           Отмена
         </button>
         <Button

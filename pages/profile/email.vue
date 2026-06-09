@@ -79,7 +79,7 @@ const onSubmit = async () => {
     password.value = ''
 
     showSuccess()
-  } catch (error) {
+  } catch {
     showError('Не удалось обновить e-mail')
   } finally {
     isSaving.value = false
@@ -102,50 +102,50 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="card">
-    <div class="row g-0">
+  <div class='card'>
+    <div class='row g-0'>
       <ProfileMenu />
-      <div class="col-sm-12 col-lg-9 col-xl-10">
-        <div class="card-body">
+      <div class='col-sm-12 col-lg-9 col-xl-10'>
+        <div class='card-body'>
           <h1>Изменить E-mail</h1>
           <PlaceholderLoading v-if='isLoading' />
-          <form v-else @submit.prevent="onSubmit">
-            <div class="row mb-3">
-              <div class="col-md-6 col-lg-4">
+          <form v-else @submit.prevent='onSubmit'>
+            <div class='row mb-3'>
+              <div class='col-md-6 col-lg-4'>
                 <Input
-                  type="email"
-                  v-model="currentEmail"
+                  v-model='currentEmail'
+                  type='email'
                   disabled
                 />
               </div>
             </div>
-            <div class="row mb-3">
-              <div class="col-md-6 col-lg-4">
+            <div class='row mb-3'>
+              <div class='col-md-6 col-lg-4'>
                 <Input
-                  type="email"
-                  v-model="newEmail"
-                  placeholder="Новый E-mail"
+                  v-model='newEmail'
+                  type='email'
+                  placeholder='Новый E-mail'
                 />
               </div>
             </div>
-            <div class="row mb-3">
-              <div class="col-md-6 col-lg-4">
+            <div class='row mb-3'>
+              <div class='col-md-6 col-lg-4'>
                 <Input
-                  type="password"
-                  v-model="password"
-                  placeholder="Пароль"
+                  v-model='password'
+                  type='password'
+                  placeholder='Пароль'
                 />
               </div>
             </div>
-            <div v-if="saveError || saveSuccess" class="row mb-3">
-              <div class="col-md-6 col-lg-4">
+            <div v-if='saveError || saveSuccess' class='row mb-3'>
+              <div class='col-md-6 col-lg-4'>
                 <AlertDanger
-                  v-if="saveError"
-                  :description="saveError"
+                  v-if='saveError'
+                  :description='saveError'
                 />
                 <AlertSuccess
-                  v-if="saveSuccess"
-                  description="E-mail успешно обновлён"
+                  v-if='saveSuccess'
+                  description='E-mail успешно обновлён'
                 />
               </div>
             </div>

@@ -37,17 +37,17 @@ const colorClass = computed(() => {
 
 <template>
   <span
-    class="badge"
-    :class="[
-      props.isClickable ? 'cursor-pointer' : '',
+    class='badge'
+    :class='[
+      props.isClickable ? "cursor-pointer" : "",
       colorClass,
-    ]"
-    @click="onClick"
+    ]'
+    @click='onClick'
   >
-    <IconKeyFilled size=14 stroke-width=2 class='opacity-80' />
+    <IconKeyFilled size='14' stroke-width='2' class='opacity-80' />
 
     {{ props.name }}
 
-    <IconX v-if="props.isX" size="12" />
+    <IconX v-if='props.isX' size='12' />
   </span>
 </template>

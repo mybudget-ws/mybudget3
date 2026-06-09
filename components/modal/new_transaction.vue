@@ -190,11 +190,11 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <ModalBase id='modal-transaction' is-focus @close="emit('close')">
-    <form @submit.prevent='onSubmit' autocomplete='off'>
+  <ModalBase id='modal-transaction' is-focus @close='emit("close")'>
+    <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
         <h5 class='modal-title'>{{ modalTitle }}</h5>
-        <button class='btn-close' type='button' @click="emit('close')" />
+        <button class='btn-close' type='button' @click='emit("close")' />
       </div>
 
       <div class='modal-body'>
@@ -204,11 +204,11 @@ const onSubmit = async () => {
             <div class='input-group input-group-flat'>
               <Input
                 ref='amountInputRef'
+                v-model='amount'
                 type='text'
                 placeholder='10.2 + 3 * 6'
                 required
                 :disabled='isSubmitting'
-                v-model='amount'
               />
               <span class='input-group-text'>{{ currentCurrencyName }}</span>
             </div>
@@ -221,52 +221,52 @@ const onSubmit = async () => {
         <div class='mb-3'>
           <Label>Комментарий</Label>
           <Input
+            v-model='description'
             type='text'
             class='form-control'
             :disabled='isSubmitting'
-            v-model='description'
           />
         </div>
 
         <div class='row'>
           <div class='col'>
             <FormAccounts
+              :ids='currentAccountIds'
               @toggle-account='toggleAccountCallback'
               @loaded='isLoaded = true'
-              :ids='currentAccountIds'
             />
             <AlertWarning
-              v-if="isAccountEmpty"
-              title="Невозможно создать операцию без&nbsp;счета"
-              button-text="Создайте счет"
-              @action="emit('accountNew')"
+              v-if='isAccountEmpty'
+              title='Невозможно создать операцию без&nbsp;счета'
+              button-text='Создайте счет'
+              @action='emit("accountNew")'
             />
           </div>
           <div class='col'>
             <FormCategories
-              @toggle-category='toggleCategoryCallback'
               :ids='currentCategoryIds'
+              @toggle-category='toggleCategoryCallback'
             />
           </div>
         </div>
         <div class='row'>
           <div class='col'>
             <FormProjects
-              @toggle-project='toggleProjectCallback'
               :id='currentProjectId'
+              @toggle-project='toggleProjectCallback'
             />
           </div>
           <div class='col'>
             <FormProperties
-              @toggle-property='togglePropertyCallback'
               :id='currentPropertyId'
+              @toggle-property='togglePropertyCallback'
             />
           </div>
         </div>
       </div>
 
       <div class='modal-footer'>
-        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
+        <button class='btn-link link-secondary me-auto' type='button' @click='emit("close")'>
           Отмена
         </button>
         <Button

@@ -41,7 +41,7 @@ const onSaved = async () => {
   <ModalNewProperty
     v-if='isShowModal'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
   />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
@@ -52,9 +52,9 @@ const onSaved = async () => {
         <button
           class='btn btn-action'
           title='Создать имущество'
-          @click="isShowModal = true"
+          @click='isShowModal = true'
         >
-          <IconPlus size=20 stroke-width=1 />
+          <IconPlus size='20' stroke-width='1' />
         </button>
       </div>
       <div v-for='item in visibleItems' :key='item.id'>

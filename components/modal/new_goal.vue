@@ -72,13 +72,13 @@ watch(
 </script>
 
 <template>
-  <ModalBase id='modal-goal' is-focus @close="emit('close')">
-    <form @submit.prevent='onSubmit' autocomplete='off'>
+  <ModalBase id='modal-goal' is-focus @close='emit("close")'>
+    <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
-        <h5 class="modal-title">
+        <h5 class='modal-title'>
           {{ isEdit ? 'Редактирование цели' : 'Новая цель' }}
         </h5>
-        <button class="btn-close" type="button" @click="emit('close')" />
+        <button class='btn-close' type='button' @click='emit("close")' />
       </div>
 
       <div class='modal-body'>
@@ -86,19 +86,19 @@ watch(
           <div class='col-md-12 col-lg-6 mb-3'>
             <Label required>Название</Label>
             <Input
+              v-model='goalName'
               required
               type='text'
               class='form-control'
               placeholder='Новая цель'
               :disabled='isSubmitting'
-              v-model='goalName'
             />
           </div>
           <div class='col-md-12 col-lg-6 mb-3'>
             <Label required>Дата</Label>
             <InputDate
-              :disabled='isSubmitting'
               v-model='goalDate'
+              :disabled='isSubmitting'
             />
           </div>
         </div>
@@ -107,23 +107,23 @@ watch(
           <div class='col-md-12 col-lg-6 mb-3'>
             <Label required>Величина</Label>
             <Input
+              v-model='goalAmount'
               required
               type='number'
               class='form-control'
               placeholder='Нужно накопить'
               :disabled='isSubmitting'
-              v-model='goalAmount'
             />
           </div>
           <div class='col-md-12 col-lg-6 mb-3'>
             <Label required>Позиция в списке</Label>
             <Input
+              v-model='goalPosition'
               required
               type='number'
               class='form-control'
               placeholder='1'
               :disabled='isSubmitting'
-              v-model='goalPosition'
             />
           </div>
         </div>
@@ -140,7 +140,7 @@ watch(
       </div>
 
       <div class='modal-footer'>
-        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
+        <button class='btn-link link-secondary me-auto' type='button' @click='emit("close")'>
           Отмена
         </button>
         <Button

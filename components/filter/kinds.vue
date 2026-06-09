@@ -56,22 +56,22 @@ watch(selectedItems, (val) => {
 </script>
 
 <template>
-  <div class="card mb-3">
+  <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='props.isLoading' />
     
-    <div v-else class="card-body pt-3 pe-2 pb-0 ps-3 pb-1">
-      <div class="subheader mb-3">
+    <div v-else class='card-body pt-3 pe-2 pb-0 ps-3 pb-1'>
+      <div class='subheader mb-3'>
         Тип операций
       </div>
-      <div v-for="item in items" :key="item.id">
-        <label class="form-check">
+      <div v-for='item in items' :key='item.id'>
+        <label class='form-check'>
           <input
-            class="form-check-input"
-            type="checkbox"
-            :checked="selectedIds.has(item.id)"
-            @change="toggleSelection(item.id)"
+            class='form-check-input'
+            type='checkbox'
+            :checked='selectedIds.has(item.id)'
+            @change='toggleSelection(item.id)'
           >
-          <span class="form-check-label">
+          <span class='form-check-label'>
             {{ item.name }}
           </span>
         </label>

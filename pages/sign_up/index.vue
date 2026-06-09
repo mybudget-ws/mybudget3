@@ -26,25 +26,25 @@
       <div class='card card-md'>
         <div class='card-body'>
           <h2 class='h2 text-center mb-4'>Регистрация</h2>
-          <form @submit='onSubmit' autocomplete='off'>
+          <form autocomplete='off' @submit='onSubmit'>
             <div class='mb-3'>
               <Label required>Email</Label>
               <Input
+                v-model='email'
                 type='email'
                 placeholder='мой@email.ru'
                 required
                 :disabled='isSubmitting'
-                v-model='email'
               />
             </div>
             <div class='mb-2'>
               <Label required>Пароль</Label>
               <Input
+                v-model='password'
                 type='password'
                 placeholder='мой пароль'
                 required
                 :disabled='isSubmitting'
-                v-model='password'
               />
             </div>
             <div class='form-footer'>

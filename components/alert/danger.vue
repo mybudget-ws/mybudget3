@@ -2,23 +2,29 @@
 import { IconAlertCircle } from '@tabler/icons-vue';
 
 defineProps({
-  title: String,
-  description: String,
+  title: {
+    type: String,
+    default: undefined,
+  },
+  description: {
+    type: String,
+    default: undefined,
+  }
 });
 </script>
 
 <template>
-  <div class="alert alert-danger" role="alert">
-    <div class="alert-icon">
-      <IconAlertCircle stroke-width="1.4" />
+  <div class='alert alert-danger' role='alert'>
+    <div class='alert-icon'>
+      <IconAlertCircle stroke-width='1.4' />
     </div>
 
     <div>
-      <h4 v-if="title" class="alert-heading">
+      <h4 v-if='title' class='alert-heading'>
         {{ title }}
       </h4>
 
-      <div v-if="description" class="alert-description">
+      <div v-if='description' class='alert-description'>
         {{ description }}
       </div>
     </div>

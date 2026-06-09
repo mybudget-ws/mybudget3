@@ -44,7 +44,7 @@ const onSaved = async () => {
   <ModalNewCategory
     v-if='isShowModal'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
   />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
@@ -55,13 +55,13 @@ const onSaved = async () => {
         <button
           class='btn btn-action'
           title='Создать категорию'
-          @click="isShowModal = true"
+          @click='isShowModal = true'
         >
-          <IconPlus size=20 stroke-width=1 />
+          <IconPlus size='20' stroke-width='1' />
         </button>
       </div>
       <div v-for='item in visibleItems' :key='item.id'>
-        <label class="form-check" :title='item.name'>
+        <label class='form-check' :title='item.name'>
           <input
             class='form-check-input'
             type='checkbox'
@@ -73,11 +73,11 @@ const onSaved = async () => {
           </span>
         </label>
       </div>
-      <div v-if="canToggleShowAll" class="pb-2">
+      <div v-if='canToggleShowAll' class='pb-2'>
         <button
-          class="btn btn-action btn-sm text-secondary w-100"
-          style="margin-left: -0.25rem;"
-          @click="isShowAll = !isShowAll"
+          class='btn btn-action btn-sm text-secondary w-100'
+          style='margin-left: -0.25rem;'
+          @click='isShowAll = !isShowAll'
         >
           {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
         </button>

@@ -14,7 +14,7 @@ const props = defineProps({
   // reload: Number,
   ids: {
     type: Array,
-    default: [],
+    default: () => [],
   },
 });
 const isShowAll = ref(false);
@@ -131,11 +131,11 @@ watch(() => route, (newRoute) => {
       </div>
     </div>
     
-    <div v-if="canToggleShowAll" class="pb-2">
+    <div v-if='canToggleShowAll' class='pb-2'>
       <button
-        class="btn btn-action btn-sm text-secondary w-100"
-        type="button"
-        @click="isShowAll = !isShowAll"
+        class='btn btn-action btn-sm text-secondary w-100'
+        type='button'
+        @click='isShowAll = !isShowAll'
       >
         {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
       </button>

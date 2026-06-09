@@ -105,13 +105,13 @@ watch(profileCurrency, (currency) => {
 </script>
 
 <template>
-  <ModalBase id='modal-account' is-focus @close="emit('close')">
+  <ModalBase id='modal-account' is-focus @close='emit("close")'>
     <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
-        <h5 class="modal-title">
+        <h5 class='modal-title'>
           {{ isEdit ? 'Редактирование счёта' : 'Новый счёт' }}
         </h5>
-        <button class="btn-close" type="button" @click="emit('close')" />
+        <button class='btn-close' type='button' @click='emit("close")' />
       </div>
 
       <div class='modal-body'>
@@ -198,7 +198,7 @@ watch(profileCurrency, (currency) => {
       </div>
 
       <div class='modal-footer'>
-        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
+        <button class='btn-link link-secondary me-auto' type='button' @click='emit("close")'>
           Отмена
         </button>
         <Button

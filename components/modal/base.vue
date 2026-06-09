@@ -38,12 +38,12 @@ onUnmounted(() => {
 <template>
   <div
     class='modal show d-block'
-    @click="emit('close')"
+    @click='emit("close")'
   >
     <div class='modal-dialog modal-lg' tabindex='-1'>
       <div
-        class='modal-content'
         ref='modalRef'
+        class='modal-content'
         @click.stop
       >
         <slot />

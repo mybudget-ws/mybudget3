@@ -83,13 +83,13 @@ watch(
 </script>
 
 <template>
-  <ModalBase id='modal-property' is-focus @close="emit('close')">
+  <ModalBase id='modal-property' is-focus @close='emit("close")'>
     <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
-        <h5 class="modal-title">
+        <h5 class='modal-title'>
           {{ isEdit ? 'Редактирование имущества' : 'Новое имущество' }}
         </h5>
-        <button class='btn-close' type='button' @click="emit('close')" />
+        <button class='btn-close' type='button' @click='emit("close")' />
       </div>
 
       <div class='modal-body'>
@@ -106,7 +106,7 @@ watch(
         </div>
 
         <div class='row mb-3'>
-          <div :class="isEdit ? 'col-lg-4' : 'col-lg-6'" class='col-md-12'>
+          <div :class='isEdit ? "col-lg-4" : "col-lg-6"' class='col-md-12'>
             <Label required>Текущая стоимость</Label>
             <div class='input-group input-group-flat'>
               <Input
@@ -120,7 +120,7 @@ watch(
               <span class='input-group-text'>{{ propertyCurrency }}</span>
             </div>
           </div>
-          <div :class="isEdit ? 'col-lg-4' : 'col-lg-6'" class='col-md-12'>
+          <div :class='isEdit ? "col-lg-4" : "col-lg-6"' class='col-md-12'>
             <Label required>Валюта</Label>
             <select
               v-model='propertyCurrency'
@@ -179,7 +179,7 @@ watch(
       </div>
 
       <div class='modal-footer'>
-        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
+        <button class='btn-link link-secondary me-auto' type='button' @click='emit("close")'>
           Отмена
         </button>
         <Button

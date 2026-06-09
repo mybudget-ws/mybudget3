@@ -53,13 +53,13 @@ watch(
 </script>
 
 <template>
-  <ModalBase id='modal-category' is-focus @close="emit('close')">
-    <form @submit.prevent='onSubmit' autocomplete='off'>
+  <ModalBase id='modal-category' is-focus @close='emit("close")'>
+    <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
-        <h5 class="modal-title">
+        <h5 class='modal-title'>
           {{ isEdit ? 'Редактирование проекта' : 'Новый проект' }}
         </h5>
-        <button class="btn-close" type="button" @click="emit('close')" />
+        <button class='btn-close' type='button' @click='emit("close")' />
       </div>
 
       <div class='modal-body'>
@@ -67,30 +67,30 @@ watch(
           <div class='col-md-12 col-lg-6 mb-3'>
             <Label required>Название</Label>
             <Input
+              v-model='projectName'
               required
               type='text'
               class='form-control'
               placeholder='Новый проект'
               :disabled='isSubmitting'
-              v-model='projectName'
             />
           </div>
           <div class='col-md-12 col-lg-6 mb-3'>
             <Label required>Позиция в списке</Label>
             <Input
+              v-model='projectPosition'
               required
               type='number'
               class='form-control'
               placeholder='1'
               :disabled='isSubmitting'
-              v-model='projectPosition'
             />
           </div>
         </div>
       </div>
 
       <div class='modal-footer'>
-        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
+        <button class='btn-link link-secondary me-auto' type='button' @click='emit("close")'>
           Отмена
         </button>
         <Button

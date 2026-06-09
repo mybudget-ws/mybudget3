@@ -26,14 +26,15 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: TYPE_RADIO,
+    default: 'radio',
   },
   ids: {
     type: Array,
-    default: [],
+    default: () => [],
   },
   initialSelectedId: {
     type: Number,
+    default: undefined,
   },
 });
 
@@ -143,7 +144,7 @@ watch(() => route, (newRoute) => {
     <Label>{{props.label}}</Label>
     <div class='content-scroll pe-1'>
       <div class='form-selectgroup form-selectgroup-boxes d-flex flex-column'>
-        <label v-for='item in visibleItems' :key='item.id' class="form-selectgroup-item flex-fill">
+        <label v-for='item in visibleItems' :key='item.id' class='form-selectgroup-item flex-fill'>
           <input
             :type='type'
             :name='radioGroupName'
@@ -151,7 +152,7 @@ watch(() => route, (newRoute) => {
             class='form-selectgroup-input'
             :checked='isSelected(item.id)'
             @change='toggleSelection(item.id)'
-          />
+          >
           <div class='form-selectgroup-label d-flex align-items-center ps-3 p-2'>
             <div class='me-3'>
               <span class='form-selectgroup-check' />
@@ -171,11 +172,11 @@ watch(() => route, (newRoute) => {
         </label>
       </div>
 
-      <div v-if="canToggleShowAll" class="pb-2 mt-2">
+      <div v-if='canToggleShowAll' class='pb-2 mt-2'>
         <button
-          class="btn btn-action btn-sm text-secondary w-100"
-          type="button"
-          @click="isShowAll = !isShowAll"
+          class='btn btn-action btn-sm text-secondary w-100'
+          type='button'
+          @click='isShowAll = !isShowAll'
         >
           {{ isShowAll ? 'Скрыть' : 'Показать всё' }}
         </button>

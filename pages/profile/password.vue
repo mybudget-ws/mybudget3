@@ -88,54 +88,54 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="card">
-    <div class="row g-0">
+  <div class='card'>
+    <div class='row g-0'>
       <ProfileMenu />
-      <div class="col-sm-12 col-lg-9 col-xl-10">
-        <div class="card-body">
+      <div class='col-sm-12 col-lg-9 col-xl-10'>
+        <div class='card-body'>
           <h1>Изменить пароль</h1>
-          <form class="row g-3 col-12 col-md-8 col-lg-6" @submit.prevent="onSubmit">
-            <div class="col-12">
+          <form class='row g-3 col-12 col-md-8 col-lg-6' @submit.prevent='onSubmit'>
+            <div class='col-12'>
               <input
-                v-model="password"
-                type="password"
-                class="form-control"
-                placeholder="Текущий пароль"
+                v-model='password'
+                type='password'
+                class='form-control'
+                placeholder='Текущий пароль'
                 required
               >
             </div>
-            <div class="col-12">
+            <div class='col-12'>
               <input
-                v-model="newPassword"
-                type="password"
-                class="form-control"
-                placeholder="Новый пароль"
-                minlength="6"
+                v-model='newPassword'
+                type='password'
+                class='form-control'
+                placeholder='Новый пароль'
+                minlength='6'
                 required
               >
-              <div class="form-hint fs-5 mt-1">
+              <div class='form-hint fs-5 mt-1'>
                 Минимум 6 символов
               </div>
             </div>
-            <div class="col-12">
+            <div class='col-12'>
               <AlertDanger
-                v-if="saveError"
-                :description="saveError"
+                v-if='saveError'
+                :description='saveError'
               />
               <AlertSuccess
-                v-if="saveSuccess"
-                description="Пароль успешно обновлён"
+                v-if='saveSuccess'
+                description='Пароль успешно обновлён'
               />
             </div>
-            <div class="col-12">
+            <div class='col-12'>
               <button
-                type="submit"
-                class="btn btn-primary"
-                :disabled="isSaving"
+                type='submit'
+                class='btn btn-primary'
+                :disabled='isSaving'
               >
                 <span
-                  v-if="isSaving"
-                  class="spinner-border spinner-border-sm me-2"
+                  v-if='isSaving'
+                  class='spinner-border spinner-border-sm me-2'
                 />
                 Сохранить
               </button>

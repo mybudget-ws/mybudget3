@@ -104,7 +104,7 @@ watchEffect(() => {
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
   />
 
   <div class='row'>
@@ -123,7 +123,7 @@ watchEffect(() => {
                     class='btn btn-primary'
                     @click='openCreate'
                   >
-                    <IconPlus stroke-width=2 />
+                    <IconPlus stroke-width='2' />
                   </button>
                 </div>
               </div>
@@ -148,17 +148,17 @@ watchEffect(() => {
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="item in visibleItems" :key="item.id">
+                  <tr v-for='item in visibleItems' :key='item.id'>
                     <td class='text-nowrap'>
                       <span class='me-2'>{{ item.name }}</span>
                     </td>
                     <td class='text-nowrap text-end font-monospace'>
                       <span
-                        v-tooltip:bottom="`Прогресс: ${ Math.round(item.balance) } ${ displayCurrency(item) }`"
-                        :class="{
-                          'text-success': isGoalFinish(item),
-                          'text-secondary': !isGoalFinish(item),
-                        }"
+                        v-tooltip:bottom='`Прогресс: ${ Math.round(item.balance) }\u00A0${ displayCurrency(item) }`'
+                        :class='{
+                          "text-success": isGoalFinish(item),
+                          "text-secondary": !isGoalFinish(item),
+                        }'
                       >
                         {{ item.percentage }} %
                       </span>
@@ -176,9 +176,9 @@ watchEffect(() => {
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
-                        :class="{
-                          'text-success': isGoalFinish(item),
-                        }"
+                        :class='{
+                          "text-success": isGoalFinish(item),
+                        }'
                       >
                         <Amount
                           :value='item.amount'
@@ -188,12 +188,12 @@ watchEffect(() => {
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
-                        :class="{
-                          'text-success': isGoalFinish(item),
-                        }"
+                        :class='{
+                          "text-success": isGoalFinish(item),
+                        }'
                       >
                         <Amount
-                          v-tooltip:bottom="`Осталось накопить: ${ rest(item) } ${ displayCurrency(item) }`"
+                          v-tooltip:bottom='`Осталось накопить: ${ rest(item) }\u00A0${ displayCurrency(item) }`'
                           :value='item.amountPerMonth'
                           :currency='displayCurrency(item)'
                         />
@@ -202,20 +202,20 @@ watchEffect(() => {
                     <td class='text-nowrap text-end'>
                       <span
                         v-if='!isGoalFinish(item)'
-                        v-tooltip:bottom="'Месяцев в запасе'"
-                        :class="{
-                          'text-danger': new Date(item.dueDateOn) <= new Date(),
-                          'text-secondary': new Date(item.dueDateOn) > new Date(),
-                        }"
+                        v-tooltip:bottom='"Месяцев в запасе"'
+                        :class='{
+                          "text-danger": new Date(item.dueDateOn) <= new Date(),
+                          "text-secondary": new Date(item.dueDateOn) > new Date(),
+                        }'
                       >
                         {{ item.dueMonths }} м
                       </span>
                     </td>
                     <td>
                       <span
-                        :class="{
-                          'text-danger': new Date(item.dueDateOn) < new Date(),
-                        }"
+                        :class='{
+                          "text-danger": new Date(item.dueDateOn) < new Date(),
+                        }'
                       >
                         {{ new Date(item.dueDateOn).toLocaleDateString(DEFAULT_LOCALE) }}
                       </span>
@@ -226,18 +226,18 @@ watchEffect(() => {
                           type='button' class='btn btn-action'
                           @click='openEdit(item)'
                         >
-                          <IconPencil size=20 stroke-width=1 />
+                          <IconPencil size='20' stroke-width='1' />
                         </button>
                         <button
-                          v-tooltip:bottom="'Скрыть цель'"
+                          v-tooltip:bottom='"Скрыть цель"'
                           type='button'
                           class='btn btn-action'
                           @click='toggleHidden(item)'
                         >
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button type='button' class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>
@@ -252,15 +252,15 @@ watchEffect(() => {
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
-                  <tr v-for="item in hiddenItems" :key="item.id">
+                  <tr v-for='item in hiddenItems' :key='item.id'>
                     <td>{{ item.name }}</td>
                     <td>
                       <div class='btn-actions justify-content-end'>
                         <button type='button' class='btn btn-action' @click='toggleHidden(item)'>
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button type='button' class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>
