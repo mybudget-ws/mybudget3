@@ -3,6 +3,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import {
   IconArrowDown,
   IconArrowUp,
+  IconCoins,
   IconPencil,
   IconTrash,
   IconPlus,
@@ -224,22 +225,79 @@ const chartOptions = computed(() => ({
 
     <template v-else>
       <div class="card mb-4">
-        <div class="card-body d-flex justify-content-between align-items-start">
-          <div class='d-flex align-items-center'>
-            <div>
-              <h2 class="mb-1">
-                {{ property?.name || 'Имущество' }}
-              </h2>
-              <div class="text-secondary">Имущество</div>
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="mb-1">
+              {{ property?.name || 'Имущество' }}
+              <PlaceholderLoading
+                v-if="isQuiteLoading"
+                class="spinner-border-sm ms-2"
+              />
+            </h2>
+
+            <div class="text-secondary">
+              Имущество
             </div>
-            <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
           </div>
 
-          <div v-if="prices.length" class="fs-2 mt-1 text-end">
-            <Amount
-              :value="prices[0].amount"
-              :currency="prices[0].currency?.name"
-            />
+          <div v-if="property" class="d-flex gap-4">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <div class="bg-green-lt avatar shadow-none">
+                  <IconArrowUp size=24 />
+                </div>
+              </div>
+              <div class="col">
+                <Amount
+                  class="fw-medium"
+                  :value="property.totalIncome"
+                  :currency="property.currency.name"
+                />
+
+                <div class="text-secondary small">
+                  Доходы
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <span class="bg-red-lt avatar shadow-none">
+                  <IconArrowDown size=24 />
+                </span>
+              </div>
+
+              <div class="col">
+                <Amount
+                  class="fw-medium"
+                  :value="Math.abs(property.totalExpense)"
+                  :currency="property.currency.name"
+                />
+
+                <div class="text-secondary small">
+                  Расходы
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <span class="bg-primary-lt avatar shadow-none">
+                  <IconCoins size=24 />
+                </span>
+              </div>  
+              <div class="col">
+                <Amount
+                  class="fw-medium"
+                  :value="property.amount"
+                  :currency="property.currency.name"
+                />
+
+                <div class="text-secondary small">
+                  Стоимость
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
