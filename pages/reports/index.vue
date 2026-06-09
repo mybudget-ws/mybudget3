@@ -16,14 +16,18 @@ const chartData = ref({});
 
 const CHART_HEIGTH = 500;
 const CHART_TYPE = 'line';
-const PERIODS = {
-  CURRENT_MONTH: 'Текущий месяц',
+const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {
+  month: 'long',
+}).format(new Date());
+
+const PERIODS = computed(() => ({
+  CURRENT_MONTH: currentMonthLabel.charAt(0).toUpperCase() + currentMonthLabel.slice(1),
   YEARS_1: 'Год',
   YEARS_2: 'Два года',
   YEARS_5: 'Пять лет',
   ALL: 'Всё время',
-};
-const isPeriodValid = (value) => (!!PERIODS[value]);
+}));
+const isPeriodValid = (value) => Boolean(PERIODS.value[value]);
 const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
 
 const textColor = computed(() =>
