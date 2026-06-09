@@ -11,7 +11,8 @@ import {
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
-import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS  } from '~/lib/consts';
+import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
+import { CHART_COLORS } from '~/lib/consts';
 
 definePageMeta({
   middleware: ['authenticated'],
@@ -208,58 +209,58 @@ const chartOptions = computed(() => ({
 
 <template>
   <ModalNewPrice
-    v-if='isShowPriceModal'
-    :property='property'
-    :item='editingPrice'
-    @saved='onPriceSaved'
-    @close='isShowPriceModal = false'
+    v-if="isShowPriceModal"
+    :property="property"
+    :item="editingPrice"
+    @saved="onPriceSaved"
+    @close="isShowPriceModal = false"
   />
 
   <ModalNewTransaction
-    v-if='isShowTransactionModal'
-    :kind='currentKind'
-    :item='editingTransaction'
-    :property-id='property?.id'
-    @saved='onTransactionSaved'
-    @close='isShowTransactionModal = false'
+    v-if="isShowTransactionModal"
+    :kind="currentKind"
+    :item="editingTransaction"
+    :property-id="property?.id"
+    @saved="onTransactionSaved"
+    @close="isShowTransactionModal = false"
   />
 
   <div>
-    <div v-if='isLoading' class='card'>
-      <div class='card-body'>Загрузка...</div>
+    <div v-if="isLoading" class="card">
+      <div class="card-body">Загрузка...</div>
     </div>
 
-    <div v-else-if='isError' class='alert alert-danger'>
+    <div v-else-if="isError" class="alert alert-danger">
       Ошибка загрузки имущества
     </div>
 
     <template v-else>
-      <div class='card mb-4'>
-        <div class='card-body d-flex justify-content-between align-items-start'>
+      <div class="card mb-4">
+        <div class="card-body d-flex justify-content-between align-items-start">
           <div class='d-flex align-items-center'>
             <div>
-              <h2 class='mb-1'>
+              <h2 class="mb-1">
                 {{ property?.name || 'Имущество' }}
               </h2>
-              <div class='text-secondary'>Имущество</div>
+              <div class="text-secondary">Имущество</div>
             </div>
             <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
           </div>
 
-          <div v-if='prices.length' class='fs-2 mt-1 text-end'>
+          <div v-if="prices.length" class="fs-2 mt-1 text-end">
             <Amount
-              :value='prices[0].amount'
-              :currency='prices[0].currency?.name'
+              :value="prices[0].amount"
+              :currency="prices[0].currency?.name"
             />
           </div>
         </div>
 
-        <div class='card-body'>
+        <div class="card-body">
           <div class='w-full'>
             <VueApexCharts
-              v-if='!isLoading && series.length'
-              :type='CHART_TYPE'
-              :height='CHART_HEIGTH'
+              v-if="!isLoading && series.length"
+              :type=CHART_TYPE
+              :height=CHART_HEIGTH
               :options='chartOptions'
               :series='series'
             />
@@ -267,84 +268,84 @@ const chartOptions = computed(() => ({
         </div>
       </div>
 
-      <div class='card mb-4'>
-        <div class='card-table'>
-          <div class='card-header pe-0'>
-            <div class='row w-full align-items-center'>
-              <div class='col'>
-                <h2 class='mb-0'>История цены</h2>
+      <div class="card mb-4">
+        <div class="card-table">
+          <div class="card-header pe-0">
+            <div class="row w-full align-items-center">
+              <div class="col">
+                <h2 class="mb-0">История цены</h2>
               </div>
 
-              <div class='col-auto'>
+              <div class="col-auto">
                 <button
-                  class='btn btn-primary'
-                  @click='onCreatePrice'
+                  class="btn btn-primary"
+                  @click="onCreatePrice"
                 >
-                  <IconPlus :size='20' />
+                  <IconPlus :size="20" />
                 </button>
               </div>
             </div>
           </div>
 
-          <div class='advanced-table'>
-            <div class='table-responsive'>
-              <table class='table table-vcenter table-selectable'>
+          <div class="advanced-table">
+            <div class="table-responsive">
+              <table class="table table-vcenter table-selectable">
                 <thead>
                   <tr>
                     <th>Дата</th>
-                    <th class='w-1 text-nowrap text-end'>Величина</th>
-                    <th class='w-1'/>
+                    <th class="w-1 text-nowrap text-end">Величина</th>
+                    <th class="w-1"></th>
                   </tr>
                 </thead>
 
-                <tbody class='table-tbody'>
+                <tbody class="table-tbody">
                   <tr
-                    v-for='price in prices'
-                    :key='price.id'
+                    v-for="price in prices"
+                    :key="price.id"
                   >
                     <td>{{ formatDate(price.date) }}</td>
 
-                    <td class='text-nowrap text-end'>
+                    <td class="text-nowrap text-end">
                       <Amount
-                        :value='price.amount'
-                        :currency='price.currency?.name'
+                        :value="price.amount"
+                        :currency="price.currency?.name"
                       />
                     </td>
 
                     <td>
-                      <div class='btn-actions'>
+                      <div class="btn-actions">
                         <button
-                          class='btn btn-action'
-                          @click='onEditPrice(price)'
+                          class="btn btn-action"
+                          @click="onEditPrice(price)"
                         >
-                          <IconPencil size='20' stroke-width='1.5' />
+                          <IconPencil size="20" stroke-width="1.5" />
                         </button>
 
                         <button
-                          class='btn btn-action'
-                          @click='onDeletePrice(price)'
+                          class="btn btn-action"
+                          @click="onDeletePrice(price)"
                         >
-                          <IconTrash size='20' stroke-width='1.5' />
+                          <IconTrash size="20" stroke-width="1.5" />
                         </button>
                       </div>
                     </td>
                   </tr>
 
-                  <tr v-if='!prices.length'>
+                  <tr v-if="!prices.length">
                     <td
-                      colspan='3'
-                      class='text-center text-secondary py-5'
+                      colspan="3"
+                      class="text-center text-secondary py-5"
                     >
                       История цен пустая
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <div class='card-footer bg-transparent border-0'>
+              <div class="card-footer bg-transparent border-0">
                 <div v-if='isShowMorePrices'>
                   <button
-                    class='btn btn-action btn-sm text-secondary w-100 p-2'
-                    @click='isShowAllPrices = !isShowAllPrices'
+                    class="btn btn-action btn-sm text-secondary w-100 p-2"
+                    @click="isShowAllPrices = !isShowAllPrices"
                   >
                     {{ isShowAllPrices ? 'Скрыть' : 'Показать все' }}
                   </button>
@@ -355,114 +356,114 @@ const chartOptions = computed(() => ({
         </div>
       </div>
 
-      <div class='card'>
-        <div class='card-table'>
-          <div class='card-header pe-0'>
-            <div class='row w-full align-items-center'>
-              <div class='col'>
-                <h2 class='mb-0'>Операции</h2>
+      <div class="card">
+        <div class="card-table">
+          <div class="card-header pe-0">
+            <div class="row w-full align-items-center">
+              <div class="col">
+                <h2 class="mb-0">Операции</h2>
               </div>
-              <div class='col-md-auto col-sm-12'>
-                <div class='ms-auto d-flex gap-2'>
+              <div class="col-md-auto col-sm-12">
+                <div class="ms-auto d-flex gap-2">
                   <button
-                    class='btn btn-outline-green'
-                    type='button'
-                    @click='openCreateTransaction(KIND_INCOME)'
+                    class="btn btn-outline-green"
+                    type="button"
+                    @click="openCreateTransaction(KIND_INCOME)"
                   >
-                    <IconArrowUp stroke-width='2' />
+                    <IconArrowUp stroke-width="2" />
                   </button>
 
                   <button
-                    class='btn btn-primary'
-                    type='button'
-                    @click='openCreateTransaction(KIND_EXPENSE)'
+                    class="btn btn-primary"
+                    type="button"
+                    @click="openCreateTransaction(KIND_EXPENSE)"
                   >
-                    <IconArrowDown stroke-width='2' />
+                    <IconArrowDown stroke-width="2" />
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <div class='advanced-table'>
-            <div class='table-responsive'>
-              <table class='table table-vcenter table-selectable'>
+          <div class="advanced-table">
+            <div class="table-responsive">
+              <table class="table table-vcenter table-selectable">
                 <thead>
                   <tr>
-                    <th class='w-1 text-nowrap'>Дата</th>
-                    <th class='w-1 text-nowrap text-end'>Величина</th>
-                    <th class='w-1 text-nowrap'>Счёт</th>
+                    <th class="w-1 text-nowrap">Дата</th>
+                    <th class="w-1 text-nowrap text-end">Величина</th>
+                    <th class="w-1 text-nowrap">Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
-                    <th class='w-1'/>
+                    <th class="w-1"></th>
                   </tr>
                 </thead>
 
-                <tbody class='table-tbody'>
+                <tbody class="table-tbody">
                   <tr
-                    v-for='transaction in property?.transactions || []'
-                    :key='transaction.id'
+                    v-for="transaction in property?.transactions || []"
+                    :key="transaction.id"
                   >
                     <td :title='formatDateFull(transaction.dateAt)'>
                       {{ formatDate(transaction.dateAt) }}
                     </td>
-                    <td class='text-nowrap text-end'>
+                    <td class="text-nowrap text-end">
                       <div
-                        :class='{
-                          "text-success": transaction.amount > 0,
-                          "text-danger": transaction.amount < 0,
-                        }'
+                        :class="{
+                          'text-success': transaction.amount > 0,
+                          'text-danger': transaction.amount < 0,
+                        }"
                       >
                         <Amount
-                          :value='transaction.amount'
-                          :currency='transaction.account?.currency?.name'
+                          :value="transaction.amount"
+                          :currency="transaction.account?.currency?.name"
                         />
                       </div>
                     </td>
                     <td>
                       <BadgeAccount
-                        :name='transaction.account?.name'
-                        class='no-hover'
+                        :name="transaction.account?.name"
+                        class="no-hover"
                       />
                     </td>
                     <td>
-                      <div class='badges-list'>
+                      <div class="badges-list">
                         <BadgeProject
-                          v-if='transaction.project'
-                          :name='transaction.project.name'
-                          class='no-hover'
+                          v-if="transaction.project"
+                          :name="transaction.project.name"
+                          class="no-hover"
                         />
 
                         <BadgeProperty
-                          v-if='transaction.property'
-                          :name='transaction.property.name'
-                          class='no-hover'
+                          v-if="transaction.property"
+                          :name="transaction.property.name"
+                          class="no-hover"
                         />
 
                         <BadgeCategory
-                          v-for='cat in transaction.categories'
-                          :key='cat.id'
-                          :name='cat.name'
-                          class='no-hover'
+                          v-for="cat in transaction.categories"
+                          :key="cat.id"
+                          :name="cat.name"
+                          class="no-hover"
                         />
                       </div>
                     </td>
-                    <td class='text-secondary'>
+                    <td class="text-secondary">
                       {{ transaction.description }}
                     </td>
                     <td>
-                      <div class='btn-actions'>
+                      <div class="btn-actions">
                         <button
-                          class='btn btn-action'
-                          @click='onEditTransaction(transaction)'
+                          class="btn btn-action"
+                          @click="onEditTransaction(transaction)"
                         >
-                          <IconPencil size='20' stroke-width='1.5' />
+                          <IconPencil size="20" stroke-width="1.5" />
                         </button>
 
                         <button
-                          class='btn btn-action'
-                          @click='onDeleteTransaction(transaction)'
+                          class="btn btn-action"
+                          @click="onDeleteTransaction(transaction)"
                         >
-                          <IconTrash size='20' stroke-width='1.5' />
+                          <IconTrash size="20" stroke-width="1.5" />
                         </button>
                       </div>
                     </td>
