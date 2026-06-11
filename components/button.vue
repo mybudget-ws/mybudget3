@@ -32,7 +32,7 @@ const buttonClass = computed(() => ([
     :type='type'
     :disabled='loading || disabled'
     :class='buttonClass'
-    @click="emit('click', $event)"
+    @click='emit("click", $event)'
   >
     <span
       v-if='loading'

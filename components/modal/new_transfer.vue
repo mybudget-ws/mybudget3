@@ -114,11 +114,11 @@ watch(amountFrom, (newValue) => {
 </script>
 
 <template>
-  <ModalBase id='modal-transaction' @close="emit('close')">
-    <form @submit.prevent='onSubmit' autocomplete='off'>
+  <ModalBase id='modal-transaction' @close='emit("close")'>
+    <form autocomplete='off' @submit.prevent='onSubmit'>
       <div class='modal-header'>
         <h5 class='modal-title'>Новый перевод</h5>
-        <button class='btn-close' type='button' @click="emit('close')" />
+        <button class='btn-close' type='button' @click='emit("close")' />
       </div>
 
       <div class='modal-body'>
@@ -126,16 +126,16 @@ watch(amountFrom, (newValue) => {
           <div class='col'>
             <FormAccounts
               label='Откуда'
-              radioGroupName='accountFrom'
-              :initialSelectedId='props.initialAccountId'
+              radio-group-name='accountFrom'
+              :initial-selected-id='props.initialAccountId'
               @toggle-account='toggleAccountFromCallback'
-              @loaded="isLoaded = true"
+              @loaded='isLoaded = true'
             />
           </div>
           <div class='col'>
             <FormAccounts
               label='Куда'
-              radioGroupName='accountTo'
+              radio-group-name='accountTo'
               @toggle-account='toggleAccountToCallback'
             />
           </div>
@@ -150,9 +150,9 @@ watch(amountFrom, (newValue) => {
         <div v-if='isAccountEmpty' class='row mb-3'>
           <div class='col'>
             <AlertWarning
-              title="Невозможно создать перевод без&nbsp;счетов"
-              button-text="Создайте счет"
-              @action="emit('accountNew')"
+              title='Невозможно создать перевод без&nbsp;счетов'
+              button-text='Создайте счет'
+              @action='emit("accountNew")'
             />
           </div>
         </div>
@@ -163,14 +163,14 @@ watch(amountFrom, (newValue) => {
             <div class='input-group input-group-flat'>
               <Input
                 ref='amountFromRef'
+                v-model='amountFrom'
                 type='text'
                 placeholder='0.00'
                 required
                 :disabled='isSubmitting'
                 :is-error='isAmountFromError'
-                v-model='amountFrom'
               />
-              <span class='input-group-text' :class="isAmountFromError ? 'border-danger' : ''">
+              <span class='input-group-text' :class='isAmountFromError ? "border-danger" : ""'>
                 {{ currentCurrencyNameFrom }}
               </span>
             </div>
@@ -183,14 +183,14 @@ watch(amountFrom, (newValue) => {
             <Label required>Величина (получатель)</Label>
             <div class='input-group input-group-flat'>
               <Input
+                v-model='amountTo'
                 type='text'
                 placeholder='0.00'
                 required
                 :disabled='isSubmitting'
                 :is-error='isAmountToError'
-                v-model='amountTo'
               />
-              <span class='input-group-text' :class="isAmountToError ? 'border-danger' : ''">
+              <span class='input-group-text' :class='isAmountToError ? "border-danger" : ""'>
                 {{ currentCurrencyNameTo }}
               </span>
             </div>
@@ -208,17 +208,17 @@ watch(amountFrom, (newValue) => {
           <div class='col'>
             <Label>Комментарий</Label>
             <Input
+              v-model='description'
               type='text'
               class='form-control'
               :disabled='isSubmitting'
-              v-model='description'
             />
           </div>
         </div>
       </div>
 
       <div class='modal-footer'>
-        <button class='btn-link link-secondary me-auto' type='button' @click="emit('close')">
+        <button class='btn-link link-secondary me-auto' type='button' @click='emit("close")'>
           Отмена
         </button>
         <Button

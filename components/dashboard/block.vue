@@ -107,7 +107,7 @@ const chartOptions = computed(() => ({
       <div v-else class='w-full'>
         <VueApexCharts
           :type='props.chartType'
-          :height=CHART_HEIGTH
+          :height='CHART_HEIGTH'
           :options='chartOptions'
           :series='series'
         />

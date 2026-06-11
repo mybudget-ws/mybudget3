@@ -106,7 +106,7 @@ watchEffect(() => {
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
   />
   <div class='row'>
     <div class='col-12'>
@@ -124,7 +124,7 @@ watchEffect(() => {
                     class='btn btn-primary'
                     @click='openCreate'
                   >
-                    <IconPlus stroke-width=2 />
+                    <IconPlus stroke-width='2' />
                   </button>
                 </div>
               </div>
@@ -140,7 +140,7 @@ watchEffect(() => {
                   <tr>
                     <th>Название</th>
                     <th>Тип</th>
-                    <th class="w-1">Стоимость</th>
+                    <th class='w-1'>Стоимость</th>
                     <th class='w-1'/>
                   </tr>
                 </thead>
@@ -148,18 +148,18 @@ watchEffect(() => {
                   <tr v-for='item in visibleItems' :key='item.id'>
                     <td>
                       <NuxtLink
-                        :to="`/properties/${item.id}`"
-                        class="fw-medium"
-                        :class="linkColorClass"
+                        :to='`/properties/${item.id}`'
+                        class='fw-medium'
+                        :class='linkColorClass'
                       >
                         {{ item.name }}
                       </NuxtLink>
                     </td>
-                    <td class="text-secondary">{{ kindDisplayName(item) }}</td>
-                    <td class="text-nowrap text-end">
+                    <td class='text-secondary'>{{ kindDisplayName(item) }}</td>
+                    <td class='text-nowrap text-end'>
                       <Amount
-                        :value="item.amount"
-                        :currency="item.currency.name"
+                        :value='item.amount'
+                        :currency='item.currency.name'
                       />
                     </td>
                     <td>
@@ -169,22 +169,22 @@ watchEffect(() => {
                           class='btn btn-action'
                           @click='openEdit(item)'
                         >
-                          <IconPencil size=20 stroke-width=1 />
+                          <IconPencil size='20' stroke-width='1' />
                         </button>
                         <button
-                          v-tooltip:bottom="'Скрыть имущество'"
+                          v-tooltip:bottom='"Скрыть имущество"'
                           type='button'
                           class='btn btn-action'
                           @click='toggleHidden(item)'
                         >
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button
                           type='button'
                           class='btn btn-action'
                           @click='destroy(item)'
                         >
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>
@@ -211,14 +211,14 @@ watchEffect(() => {
                           type='button'
                           @click='toggleHidden(item)'
                         >
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button
                           class='btn btn-action'
                           type='button'
                           @click='destroy(item)'
                         >
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>

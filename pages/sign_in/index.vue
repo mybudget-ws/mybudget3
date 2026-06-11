@@ -1,10 +1,10 @@
 <script setup>
+  import api from '~/lib/api';
+  import { useAuth } from '~/composables/use_auth';
+
   definePageMeta({
     middleware: ['authenticated']
   });
-
-  import api from '~/lib/api';
-  import { useAuth } from '~/composables/use_auth';
 
   const { signIn } = useAuth();
   const email = ref('');
@@ -24,6 +24,7 @@
     if (isAuthError.value) {
       return 'Неправильный email или пароль';
     }
+    return null;
   });
 
   const onSubmit = async (event) => {
@@ -58,16 +59,16 @@
           <h2 class='h2 text-center mb-4'>
             Вход в Мой Бюджет
           </h2>
-          <form @submit='onSubmit' autocomplete='off'>
+          <form autocomplete='off' @submit='onSubmit'>
             <div class='mb-3'>
               <Label required>Email</Label>
               <Input
+                v-model='email'
                 type='email'
                 placeholder='мой@email.ru'
                 required
-                v-model='email'
                 :disabled='isSubmitting'
-                :isError='isError'
+                :is-error='isError'
               />
             </div>
             <div class='mb-2'>
@@ -78,13 +79,13 @@
                 </span>
               </Label>
               <Input
+                v-model='password'
                 type='password'
                 placeholder='мой пароль'
                 required
-                v-model='password'
                 :disabled='isSubmitting'
-                :isError='isError'
-                :errorText='errorMessage'
+                :is-error='isError'
+                :error-text='errorMessage'
               />
             </div>
             <div class='form-footer'>
@@ -98,8 +99,8 @@
             </div>
           </form>
         </div>
-        <div class="hr-text">Впервые на сайте?</div>
-        <div class="card-body">
+        <div class='hr-text'>Впервые на сайте?</div>
+        <div class='card-body'>
           <NuxtLink to='/sign_up' class='btn btn-4 w-100'>
             Зарегистрироваться
           </NuxtLink>

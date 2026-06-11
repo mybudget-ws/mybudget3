@@ -3,7 +3,7 @@
     <input
       v-bind='inputAttrs'
       :class='inputClass'
-    />
+    >
     <span class='input-group-text'>{{props.groupText}}</span>
   </div>
 </template>

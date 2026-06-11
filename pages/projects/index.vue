@@ -9,7 +9,6 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
-const route = useRoute();
 const { token } = useAuth();
 const isError = ref(false)
 const isLoading = ref(false);
@@ -97,7 +96,7 @@ watchEffect(() => {
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
   />
 
   <div class='row'>
@@ -116,7 +115,7 @@ watchEffect(() => {
                     class='btn btn-primary'
                     @click='openCreate'
                   >
-                    <IconPlus stroke-width=2 />
+                    <IconPlus stroke-width='2' />
                   </button>
                 </div>
               </div>
@@ -132,19 +131,20 @@ watchEffect(() => {
                   <tr>
                     <th>Название</th>
                     <th class='text-end'>Баланс</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="item in visibleItems" :key="item.id">
+                  <tr v-for='item in visibleItems' :key='item.id'>
                     <td>
                       {{ item.name }}
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span :class="{
-                        'text-success': sumBalance(item) > 0,
-                        'text-danger': sumBalance(item) < 0
-                      }">
+                      <span
+:class='{
+                        "text-success": sumBalance(item) > 0,
+                        "text-danger": sumBalance(item) < 0
+                      }'>
                         <Amount
                           :value='sumBalance(item)'
                           :currency='displayCurrency(item)'
@@ -153,21 +153,22 @@ watchEffect(() => {
                     </td>
                     <td>
                       <div class='btn-actions'>
-                        <button type='button' class='btn btn-action'
+                        <button
+type='button' class='btn btn-action'
                           @click='openEdit(item)'
                         >
-                          <IconPencil size=20 stroke-width=1 />
+                          <IconPencil size='20' stroke-width='1' />
                         </button>
                         <button
+                          v-tooltip:bottom='"Скрыть проект"'
                           type='button'
                           class='btn btn-action'
                           @click='toggleHidden(item)'
-                          v-tooltip:bottom="'Скрыть проект'"
                         >
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button type='button' class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>
@@ -178,19 +179,19 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
-                    <th class='w-1'></th>
+                    <th class='w-1'/>
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
-                  <tr v-for="item in hiddenItems" :key="item.id">
+                  <tr v-for='item in hiddenItems' :key='item.id'>
                     <td>{{ item.name }}</td>
                     <td>
                       <div class='btn-actions justify-content-end'>
                         <button type='button' class='btn btn-action' @click='toggleHidden(item)'>
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button type='button' class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>

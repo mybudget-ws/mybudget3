@@ -124,7 +124,7 @@ watchEffect(() => {
     v-if='isShowModal'
     :item='currentItem'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
   />
 
   <div class='row'>
@@ -143,7 +143,7 @@ watchEffect(() => {
                       class='btn btn-primary'
                       @click='openCreate'
                     >
-                      <IconPlus stroke-width=2 />
+                      <IconPlus stroke-width='2' />
                     </button>
                   </div>
                 </div>
@@ -164,24 +164,24 @@ watchEffect(() => {
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for="item in visibleItems" :key="item.id">
+                  <tr v-for='item in visibleItems' :key='item.id'>
                     <td>
-                      <div class="d-flex align-items-center gap-2">
+                      <div class='d-flex align-items-center gap-2'>
                         <button
-                          type="button"
-                          class="btn btn-action shadow-none border-0"
-                          v-tooltip:right="item.isFavourite ? 'Убрать из избранного' : 'Добавить в избранное'"
-                          @click.stop="toggleFavourite(item)"
+                          v-tooltip:right='item.isFavourite ? "Убрать из избранного" : "Добавить в избранное"'
+                          type='button'
+                          class='btn btn-action shadow-none border-0'
+                          @click.stop='toggleFavourite(item)'
                         >
                           <IconStarFilled
-                            v-if="item.isFavourite"
-                            size=18 stroke-width=1
-                            class="text-yellow"
+                            v-if='item.isFavourite'
+                            size='18' stroke-width='1'
+                            class='text-yellow'
                           />
                           <IconStar
                             v-else
-                            size=18 stroke-width=1
-                            class="text-secondary"
+                            size='18' stroke-width='1'
+                            class='text-secondary'
                           />
                         </button>
                         <span class='me-2'>{{ item.name }}</span>
@@ -193,10 +193,10 @@ watchEffect(() => {
                     <td class='text-secondary'>{{ item.description }}</td>
                     <td class='text-nowrap text-end'>
                       <span
-                        :class="{
-                          'text-success': item.balance > 0,
-                          'text-danger': item.balance < 0
-                        }"
+                        :class='{
+                          "text-success": item.balance > 0,
+                          "text-danger": item.balance < 0
+                        }'
                       >
                         <Amount
                           :value='item.balance'
@@ -211,20 +211,20 @@ watchEffect(() => {
                           class='btn btn-action'
                           @click='openEdit(item)'
                         >
-                          <IconPencil size=20 stroke-width=1 />
+                          <IconPencil size='20' stroke-width='1' />
                         </button>
                         <button
+                          v-tooltip:bottom='"Скрыть счёт"'
                           type='button'
-                          v-tooltip:bottom="'Скрыть счёт'"
                           class='btn btn-action'
                           @click='toggleHidden(item)'
                         >
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button
                           type='button'
                           class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>
@@ -240,7 +240,7 @@ watchEffect(() => {
                   </tr>
                 </thead>
                 <tbody class='opacity-30'>
-                  <tr v-for="item in hiddenItems" :key="item.id">
+                  <tr v-for='item in hiddenItems' :key='item.id'>
                     <td>
                       {{ item.name }}
                     </td>
@@ -250,12 +250,12 @@ watchEffect(() => {
                         <button
                           type='button' 
                           class='btn btn-action' @click='toggleHidden(item)'>
-                          <IconEyeOff size=20 stroke-width=1 />
+                          <IconEyeOff size='20' stroke-width='1' />
                         </button>
                         <button
                           type='button'
                           class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size=20 stroke-width=1 />
+                          <IconTrash size='20' stroke-width='1' />
                         </button>
                       </div>
                     </td>

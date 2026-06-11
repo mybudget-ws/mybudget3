@@ -29,7 +29,7 @@ const onClick = (event) => {
 <template>
   <span
     class='badge'
-    :class="props.isClickable ? 'cursor-pointer' : ''"
+    :class='props.isClickable ? "cursor-pointer" : ""'
     @click='onClick'
   >
     {{ props.name }}

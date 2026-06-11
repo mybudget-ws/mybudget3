@@ -52,5 +52,5 @@ watch(internalDate, (newDate) => {
     :value='inputValue'
     :disabled='disabled'
     @input='onInput'
-  />
+  >
 </template>

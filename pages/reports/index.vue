@@ -242,57 +242,57 @@ const chartOptions = computed(() => ({
           <div class='card-actions'>
             <nav class='nav nav-segmented w-100' role='tablist'>
               <button
-                v-for="[key, label] in Object.entries(PERIODS)"
+                v-for='[key, label] in Object.entries(PERIODS)'
                 :key='key'
                 class='nav-link'
-                :class="{ active: period === key }"
-                @click="setPeriod(key)"
+                :class='{ active: period === key }'
+                @click='setPeriod(key)'
               >
                 {{ label }}
               </button>
             </nav>
           </div>
         </div>
-        <div v-if="isTopFiltersVisible" class="card-body border-top">
-          <div class="badges-list">
+        <div v-if='isTopFiltersVisible' class='card-body border-top'>
+          <div class='badges-list'>
             <BadgeCategory
-              v-for="kind in selectedKinds"
-              :key="kind.id"
-              :name="kind.name"
-              :is-x="true"              
-              @click="onKindClick(kind.id)"
+              v-for='kind in selectedKinds'
+              :key='kind.id'
+              :name='kind.name'
+              :is-x='true'              
+              @click='onKindClick(kind.id)'
             />
 
             <BadgeAccount
-              v-for="account in selectedAccounts"
-              :key="account.id"
-              :name="account.name"
-              :is-x="true"
-              @click="onAccountClick(account.id)"
+              v-for='account in selectedAccounts'
+              :key='account.id'
+              :name='account.name'
+              :is-x='true'
+              @click='onAccountClick(account.id)'
             />
 
             <BadgeCategory
-              v-for="category in selectedCategories"
-              :key="category.id"
-              :name="category.name"
-              :is-x="true"
-              @click="onCategoryClick(category.id)"
+              v-for='category in selectedCategories'
+              :key='category.id'
+              :name='category.name'
+              :is-x='true'
+              @click='onCategoryClick(category.id)'
             />
 
             <BadgeProject
-              v-for="project in selectedProjects"
-              :key="project.id"
-              :name="project.name"
-              :is-x="true"
-              @click="onProjectClick(project.id)"
+              v-for='project in selectedProjects'
+              :key='project.id'
+              :name='project.name'
+              :is-x='true'
+              @click='onProjectClick(project.id)'
             />
 
             <BadgeProperty
-              v-for="property in selectedProperties"
-              :key="property.id"
-              :name="property.name"
-              :is-x="true"
-              @click="onPropertyClick(property.id)"
+              v-for='property in selectedProperties'
+              :key='property.id'
+              :name='property.name'
+              :is-x='true'
+              @click='onPropertyClick(property.id)'
             />
           </div>
         </div>
@@ -308,8 +308,8 @@ const chartOptions = computed(() => ({
           </div>
           <div v-else-if='!isError' class='w-full'>
             <VueApexCharts
-              :type=CHART_TYPE
-              :height=CHART_HEIGTH
+              :type='CHART_TYPE'
+              :height='CHART_HEIGTH'
               :options='chartOptions'
               :series='series'
             />
@@ -330,7 +330,7 @@ const chartOptions = computed(() => ({
     </div>
 
     <div class='col-sm-12 col-lg-3 col-xl-2'>
-      <FilterKinds @update:items="onKindsChange" />
+      <FilterKinds @update:items='onKindsChange' />
       <FilterAccounts @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
       <FilterProjects @update:items='onProjectsChange' />

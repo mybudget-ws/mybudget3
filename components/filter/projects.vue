@@ -41,20 +41,20 @@ const onSaved = async () => {
   <ModalNewProject
     v-if='isShowModal'
     @saved='onSaved'
-    @close="isShowModal = false"
+    @close='isShowModal = false'
   />
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
     <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
       <div class='d-flex align-items-center justify-content-between mb-2'>
-        <div class="subheader">Проекты</div>
+        <div class='subheader'>Проекты</div>
         <button
-          class="btn btn-action"
+          class='btn btn-action'
           title='Создать проект'
-          @click="isShowModal = true"
+          @click='isShowModal = true'
         >
-          <IconPlus size="20" stroke-width="1"/>
+          <IconPlus size='20' stroke-width='1'/>
         </button>
       </div>
       <div v-for='item in visibleItems' :key='item.id'>

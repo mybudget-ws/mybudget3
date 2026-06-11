@@ -116,8 +116,8 @@ onMounted(async () => {
             <div class='row mb-3'>
               <div class='col-md-6 col-lg-4'>
                 <Input
-                  type='email'
                   v-model='email'
+                  type='email'
                   disabled
                 />
               </div>
@@ -125,7 +125,7 @@ onMounted(async () => {
             <div class='row mb-3'>
               <div class='col-md-6 col-lg-4'>
                 <select v-model='selectedCurrency' class='form-select'>
-                  <option disabled value="">Выберите валюту</option>
+                  <option disabled value=''>Выберите валюту</option>
                   <option
                     v-for='currency in currenciesOptions'
                     :key='currency.value'
@@ -136,14 +136,14 @@ onMounted(async () => {
                 </select>
 
                 <AlertDanger
-                  v-if="saveError"
-                  class="mt-2"
-                  :description="saveError"
+                  v-if='saveError'
+                  class='mt-2'
+                  :description='saveError'
                 />
                 <AlertSuccess
-                  v-if="saveSuccess"
-                  class="mt-2"
-                  description="Валюта успешно сохранена"
+                  v-if='saveSuccess'
+                  class='mt-2'
+                  description='Валюта успешно сохранена'
                 />
               </div>
             </div>
