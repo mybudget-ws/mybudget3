@@ -35,10 +35,9 @@ const isShowAllPrices = ref(false);
 
 const DEFAULT_PRICE_ITEMS = 3;
 const CHART_HEIGTH = 300;
-const showFooter = computed(() => hasPriceOverflow.value);
-
 // Убрать в будущем дублирование с report/index.vue
 const CHART_TYPE = 'line';
+
 const textColor = computed(() =>
   appConfig.theme.dark ? '#e2e8f0' : '#334155'
 );
@@ -49,7 +48,8 @@ const allPrices = computed(() => {
   return [...(property.value?.prices || [])]
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 });
-const hasPriceOverflow = computed(() => allPrices.value.length > DEFAULT_PRICE_ITEMS);
+
+const isShowFooter = computed(() => allPrices.value.length > DEFAULT_PRICE_ITEMS);
 
 const prices = computed(() => {
   if (isShowAllPrices.value) {
@@ -400,7 +400,7 @@ const chartOptions = computed(() => ({
                   </tr>
                 </tbody>
               </table>
-              <div v-if='showFooter' class='card-footer bg-transparent border-0'>
+              <div v-if='isShowFooter' class='card-footer bg-transparent border-0'>
                 <button
                   class='btn btn-action btn-sm text-secondary w-100 p-2'
                   @click='isShowAllPrices = !isShowAllPrices'
