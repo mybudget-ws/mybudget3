@@ -23,6 +23,7 @@ const currentItem = ref(null);
 const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
 
+
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
   if (isError.value) return false;
@@ -184,7 +185,18 @@ watchEffect(() => {
                             class='text-secondary'
                           />
                         </button>
-                        <span class='me-2'>{{ item.name }}</span>
+                        <NuxtLink
+                          :to='{
+                            path: "/transactions",
+                            query: {
+                              accounts: item.id,
+                            },
+                          }'
+                          class='fw-medium text-reset'
+                          :class='linkColorClass'
+                        >
+                          {{ item.name }}
+                        </NuxtLink>
                         <span v-if='isShowKind(item)' class='badge'>
                           {{ kindDisplayName(item) }}
                         </span>
