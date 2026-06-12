@@ -189,6 +189,7 @@ watch(() => route, (newRoute) => {
 .content-scroll {
   max-height: 50vh;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0.25rem;
 }
 </style>
