@@ -21,15 +21,31 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  isColor: {
+    type: Boolean,
+    default: false,
+  },
   class: {
     type: String,
     default: '',
   },
-})
+});
+
+const classes = computed(() => {
+  let result = props.class;
+  if (props.isColor) {
+    if (props.value > 0) {
+      result += ' text-success';
+    } else if (props.value < 0) {
+      result += ' text-danger';
+    }
+  }
+  return result;
+});
 </script>
 
 <template>
-  <span :class='props.class'>
+  <span :class='classes'>
     <span class='font-monospace'>
       {{ formatAmount(props.value) }}
     </span>
