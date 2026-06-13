@@ -51,10 +51,10 @@ useHead({
           data-bs-toggle='collapse'
           data-bs-target='#navbar-menu'
           aria-controls='navbar-menu'
-          aria-expanded=false
+          aria-expanded='false'
           aria-label='Toggle navigation'
         >
-          <span class="navbar-toggler-icon" />
+          <span class='navbar-toggler-icon' />
         </button>
 
         <NuxtLink to='/' class='navbar-brand navbar-brand-autodark me-3'>
@@ -65,27 +65,27 @@ useHead({
           <div class='d-flex'>
             <div class='nav-item me-2'>
               <a
-                v-tooltip="'Включить темный режим'"
+                v-tooltip='"Включить темный режим"'
                 href='?theme=dark'
                 class='nav-link px-0 hide-theme-dark'
               >
-                <IconMoon size=20 stroke-width=1 />
+                <IconMoon size='20' stroke-width='1' />
               </a>
               <a
-                v-tooltip="'Включить светлый режим'"
+                v-tooltip='"Включить светлый режим"'
                 href='?theme=light'
                 class='nav-link px-0 hide-theme-light'
               >
-                <IconSun size=20 stroke-width=1 />
+                <IconSun size='20' stroke-width='1' />
               </a>
             </div>
             <div class='nav-item'>
               <NuxtLink v-if='!isSignedIn' to='/sign_in' class='btn btn-outline-primary'>
-                <IconUserCircle size=20 stroke-width=1 />
+                <IconUserCircle size='20' stroke-width='1' />
                 <span class='ms-2 d-none d-xl-block'>Вход</span>
               </NuxtLink>
               <NuxtLink v-if='isSignedIn' to='/profile' class='nav-link'>
-                <IconUserCircle stroke-width=1 />
+                <IconUserCircle stroke-width='1' />
               </NuxtLink>
             </div>
           </div>
@@ -94,43 +94,43 @@ useHead({
           <ul class='navbar-nav'>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/transactions'>
-                <IconReceipt size=20 stroke-width=1 />
+                <IconReceipt size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Операции</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/reports'>
-                <IconChartHistogram size=20 stroke-width=1 />
+                <IconChartHistogram size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Отчёты</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/accounts'>
-                <IconWallet size=20 stroke-width=1 />
+                <IconWallet size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Счета</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/categories'>
-                <IconTags size=20 stroke-width=1 />
+                <IconTags size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Категории</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/goals'>
-                <IconTargetArrow size=20 stroke-width=1 />
+                <IconTargetArrow size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Цели</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/projects'>
-                <IconBulb size=20 stroke-width=1 />
+                <IconBulb size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Проекты</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/properties'>
-                <IconKey size=20 stroke-width=1 />
+                <IconKey size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Имущество</span>
               </NuxtLink>
             </li>
@@ -153,9 +153,15 @@ useHead({
 
 <!-- tabler.io fixes -->
 <style>
+/*
 .table-responsive {
   border-bottom-right-radius: var(--tblr-border-radius-lg);
   border-bottom-left-radius: var(--tblr-border-radius-lg);
+}
+*/
+
+.card {
+  overflow: hidden;
 }
 
 .badge.cursor-pointer:hover {
