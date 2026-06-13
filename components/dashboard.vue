@@ -71,18 +71,27 @@ const load = async () => {
   }
 };
 
-const accountsOrdered = computed(() => {
+const accounts = computed(() => {
   if (isInitialLoading.value) return [];
   if (!dashboard.value.accounts) return [];
 
   return dashboard.value.accounts;
 });
+
 const openCopy = (item) => {
   currentItem.value = { ...item, id: undefined };
   currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
   isCopyItem.value = true;
   isShowModal.value = true;
 };
+
+const assets = computed(() => {
+  if (isInitialLoading.value) return [];
+  if (!dashboard.value.assets) return [];
+
+  return dashboard.value.assets;
+});
+
 watch(token, (val) => {
   if (val) load();
 }, { immediate: true });
@@ -289,7 +298,7 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for='item in accountsOrdered' :key='item.id'>
+              <tr v-for='item in accounts' :key='item.id'>
                 <td class='text-nowrap'>{{ item.name }}</td>
                 <td class='text-nowrap text-end'>
                   <span
@@ -327,16 +336,42 @@ watch(token, (val) => {
         chart-type='donut'
         :is-loading='isInitialLoading'
         :chart-data='dashboard.assetsChart'
-      />
-    </div>
-  </div>
-  <div class='row'>
-    <div class='col'>
-      <AlertWarning
-        class='mt-3'
-        title='В разработке'
-        description='Не обращайте внимание'
-      />
+      >
+        <div class='card-table table-responsive'>
+          <table class='table table-sm table-vcenter'>
+            <thead>
+              <tr>
+                <th class='text-nowrap'>Название</th>
+                <th class='w-1 text-nowrap text-end'>Величина</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for='item in assets' :key='item.id'>
+                <td class='no-button-padding'>
+                  {{ item.name }}
+                  <span v-if='item.tag' class='badge ms-2'>
+                    {{ item.tag }}
+                  </span>
+                </td>
+                <td class='text-nowrap text-end'>
+                  <Amount
+                    :value='item.amount'
+                    :currency='item.currency.name'
+                    is-color
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </DashboardBlock>
     </div>
   </div>
 </template>
+
+<style scoped>
+.no-button-padding {
+  padding-top: 0.88rem;
+  padding-bottom: 0.88rem;
+}
+</style>
