@@ -229,7 +229,7 @@ const onSubmit = async () => {
         </div>
 
         <div class='row'>
-          <div class='col'>
+          <div class='col-md-6'>
             <FormAccounts
               :ids='currentAccountIds'
               @toggle-account='toggleAccountCallback'
@@ -242,7 +242,7 @@ const onSubmit = async () => {
               @action='emit("accountNew")'
             />
           </div>
-          <div class='col'>
+          <div class='col-md-6'>
             <FormCategories
               :ids='currentCategoryIds'
               @toggle-category='toggleCategoryCallback'

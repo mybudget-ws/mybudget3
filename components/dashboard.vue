@@ -107,7 +107,7 @@ watch(token, (val) => {
   />
   <div class='row align-items-center mb-4'>
     <div class='col'>
-      <div v-if='isInitialLoading' class='text-start placeholder-glow'>
+      <div v-if='isInitialLoading' class='text-start placeholder-glow' style='margin-bottom: .3rem;'>
         <div class='d-block placeholder col-1 mb-2' />
         <div class='d-block placeholder placeholder-lg col-2' />
       </div>
