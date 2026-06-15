@@ -123,7 +123,7 @@ watch(amountFrom, (newValue) => {
 
       <div class='modal-body'>
         <div class='row mb-3'>
-          <div class='col'>
+          <div class='col-12 col-md-6 mb-3 mb-md-0'>
             <FormAccounts
               label='Откуда'
               radio-group-name='accountFrom'
@@ -132,7 +132,7 @@ watch(amountFrom, (newValue) => {
               @loaded='isLoaded = true'
             />
           </div>
-          <div class='col'>
+          <div class='col-12 col-md-6'>
             <FormAccounts
               label='Куда'
               radio-group-name='accountTo'
@@ -158,7 +158,7 @@ watch(amountFrom, (newValue) => {
         </div>
 
         <div class='row mb-3'>
-          <div class='col'>
+          <div class='col-12 col-md-6 mb-3 mb-md-0'>
             <Label required>Величина (источник)</Label>
             <div class='input-group input-group-flat'>
               <Input
@@ -179,7 +179,7 @@ watch(amountFrom, (newValue) => {
             </div>
           </div>
 
-          <div class='col'>
+          <div class='col-12 col-md-6'>
             <Label required>Величина (получатель)</Label>
             <div class='input-group input-group-flat'>
               <Input
@@ -201,11 +201,11 @@ watch(amountFrom, (newValue) => {
         </div>
 
         <div class='row'>
-          <div class='col'>
+          <div class='col-12 col-md-6 mb-3 mb-md-0'>
             <Label required>Дата</Label>
             <InputDate v-model='date' :disabled='isSubmitting' />
           </div>
-          <div class='col'>
+          <div class='col-12 col-md-6'>
             <Label>Комментарий</Label>
             <Input
               v-model='description'

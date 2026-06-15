@@ -199,7 +199,7 @@ const onSubmit = async () => {
 
       <div class='modal-body'>
         <div class='row mb-3'>
-          <div class='col'>
+          <div class='col-12 col-md-6 mb-3 mb-md-0'>
             <Label required>Величина</Label>
             <div class='input-group input-group-flat'>
               <Input
@@ -213,9 +213,13 @@ const onSubmit = async () => {
               <span class='input-group-text'>{{ currentCurrencyName }}</span>
             </div>
           </div>
-          <div class='col'>
+
+          <div class='col-12 col-md-6'>
             <Label required>Дата</Label>
-            <InputDate v-model='date' :disabled='isSubmitting' />
+            <InputDate
+              v-model='date'
+              :disabled='isSubmitting'
+            />
           </div>
         </div>
         <div class='mb-3'>
@@ -229,7 +233,7 @@ const onSubmit = async () => {
         </div>
 
         <div class='row'>
-          <div class='col-md-6'>
+          <div class='col-12 col-md-6'>
             <FormAccounts
               :ids='currentAccountIds'
               @toggle-account='toggleAccountCallback'
@@ -250,13 +254,13 @@ const onSubmit = async () => {
           </div>
         </div>
         <div class='row'>
-          <div class='col'>
+          <div class='col-12 col-md-6'>
             <FormProjects
               :id='currentProjectId'
               @toggle-project='toggleProjectCallback'
             />
           </div>
-          <div class='col'>
+          <div class='col-12 col-md-6'>
             <FormProperties
               :id='currentPropertyId'
               @toggle-property='togglePropertyCallback'
