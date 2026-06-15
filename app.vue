@@ -1,5 +1,6 @@
 <script setup>
 import { getData, setData } from 'nuxt-storage/local-storage';
+import Collapse from 'bootstrap/js/dist/collapse'
 import {
   IconSun,
   IconMoon,
@@ -39,6 +40,19 @@ useHead({
     class: 'sticky-top', // 'layout-fluid',
   },
 });
+
+watch(
+  () => route.fullPath,
+  () => {
+    if (window.innerWidth >= 768) return
+
+    const menu = document.getElementById('navbar-menu')
+
+    if (menu?.classList.contains('show')) {
+      Collapse.getOrCreateInstance(menu).hide()
+    }
+  }
+)
 </script>
 
 <template>
