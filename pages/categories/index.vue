@@ -10,8 +10,10 @@ import {
 
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
+import { useDevice } from '~/composables/use_device';
 
 const { token } = useAuth();
+const { isMobile } = useDevice();
 const isError = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
@@ -142,10 +144,18 @@ watchEffect(() => {
               </div>
             </div>
           </div>
+
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
-          <div v-else class='advanced-table'>
+
+          <div v-if='!isLoading && isMobile' class=''>
+            <div v-for='item in visibleItems' :key='item.id'>
+              {{ item.name }}
+            </div>
+          </div>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
