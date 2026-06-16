@@ -116,7 +116,7 @@ watch(profileCurrency, (currency) => {
 
       <div class='modal-body'>
         <div class='row mb-3'>
-          <div class='col-md-6'>
+          <div class='col-md-6 mb-3'>
             <Label required>Название</Label>
             <Input
               v-model='accountName'
@@ -140,7 +140,7 @@ watch(profileCurrency, (currency) => {
           </div>
         </div>
         <div class='row mb-3'>
-          <div class='col-md-6'>
+          <div class='col-md-6 mb-3'>
             <Label required>Валюта</Label>
             <select
               v-model='accountCurrency'
@@ -171,7 +171,7 @@ watch(profileCurrency, (currency) => {
         </div>
         <div class='mb-3'>
           <Label>Тип счёта</Label>
-          <div class='form-selectgroup form-selectgroup-boxes d-flex'>
+          <div class='form-selectgroup form-selectgroup-boxes d-flex flex-column flex-md-row'>
             <label
               v-for='kind in KINDS'
               :key='kind.value'

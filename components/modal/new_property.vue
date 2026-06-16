@@ -105,8 +105,8 @@ watch(
           />
         </div>
 
-        <div class='row mb-3'>
-          <div :class='isEdit ? "col-lg-4" : "col-lg-6"' class='col-md-12'>
+        <div class='row'>
+          <div :class='isEdit ? "col-lg-4" : "col-lg-6"' class='col-md-12 mb-3'>
             <Label required>Текущая стоимость</Label>
             <div class='input-group input-group-flat'>
               <Input
@@ -120,7 +120,7 @@ watch(
               <span class='input-group-text'>{{ propertyCurrency }}</span>
             </div>
           </div>
-          <div :class='isEdit ? "col-lg-4" : "col-lg-6"' class='col-md-12'>
+          <div :class='isEdit ? "col-lg-4" : "col-lg-6"' class='col-md-12 mb-3'>
             <Label required>Валюта</Label>
             <select
               v-model='propertyCurrency'
