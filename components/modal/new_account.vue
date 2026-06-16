@@ -169,13 +169,14 @@ watch(profileCurrency, (currency) => {
             />
           </div>
         </div>
-        <div class='col-12 col-md-6 mb-3 mb-md-0'>
+        <div class='mb-3'>
           <Label>Тип счёта</Label>
           <div class='form-selectgroup form-selectgroup-boxes d-flex flex-column flex-md-row'>
             <label
               v-for='kind in KINDS'
               :key='kind.value'
-              class='form-selectgroup-item flex-fill'
+              class='form-selectgroup-item'
+              style='flex: 1 1 0;'
             >
               <input
                 type='radio'
