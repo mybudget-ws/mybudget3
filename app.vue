@@ -1,5 +1,6 @@
 <script setup>
 import { getData, setData } from 'nuxt-storage/local-storage';
+import Collapse from 'bootstrap/js/dist/collapse'
 import {
   IconSun,
   IconMoon,
@@ -12,10 +13,12 @@ import {
   IconWallet,
   IconUserCircle,
 } from '@tabler/icons-vue';
+import { useDevice } from '~/composables/use_device';
 
 const appConfig = useAppConfig()
 const route = useRoute();
 const { isSignedIn } = useAuth();
+const { isMobile } = useDevice();
 
 const queryTheme = route.query.theme;
 if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
@@ -27,6 +30,7 @@ if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
 }
 // console.log('appConfig.theme.dark', appConfig.theme.dark);
 const theme = appConfig.theme.dark ? 'dark' : 'light';
+const navbarMenu = ref(null);
 
 useHead({
   htmlAttrs: {
@@ -39,6 +43,15 @@ useHead({
     class: 'sticky-top', // 'layout-fluid',
   },
 });
+
+watch(
+  () => route.fullPath,
+  () => {
+    if (isMobile && navbarMenu.value) {
+      Collapse.getOrCreateInstance(navbarMenu.value).hide();
+    }
+  }
+)
 </script>
 
 <template>
@@ -90,7 +103,12 @@ useHead({
             </div>
           </div>
         </div>
-        <div v-if='isSignedIn' id='navbar-menu' class='collapse navbar-collapse'>
+        <div
+          v-if='isSignedIn'
+          id='navbar-menu'
+          ref='navbarMenu'
+          class='collapse navbar-collapse'
+        >
           <ul class='navbar-nav'>
             <li class='nav-item'>
               <NuxtLink class='nav-link' href='/transactions'>
