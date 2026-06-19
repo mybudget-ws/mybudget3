@@ -13,7 +13,6 @@ export const useDevice = () => {
   const isMobile = computed(() => width.value < 1024);
 
   const updateWidth = () => {
-    console.log('update_width');
     width.value = window.innerWidth;
   };
 
