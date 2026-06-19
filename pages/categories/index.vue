@@ -200,29 +200,29 @@ watchEffect(() => {
                   </a>
 
                   <div class='dropdown-menu dropdown-menu-end'>
-                    <a
+                    <button
+                      type='button'
                       class='dropdown-item'
-                      href='#'
-                      @click.prevent='openEdit(item)'
+                      @click='openEdit(item)'
                     >
                       Редактировать
-                    </a>
+                    </button>
 
-                    <a
+                    <button
+                      type='button'
                       class='dropdown-item'
-                      href='#'
-                      @click.prevent='toggleHidden(item)'
+                      @click='toggleHidden(item)'
                     >
                       Скрыть
-                    </a>
+                    </button>
 
-                    <a
+                    <button
+                      type='button'
                       class='dropdown-item text-danger'
-                      href='#'
-                      @click.prevent='destroy(item)'
+                      @click='destroy(item)'
                     >
                       Удалить
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
