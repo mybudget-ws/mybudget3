@@ -129,7 +129,7 @@ watchEffect(() => {
             <PlaceholderLoading />
           </div>
 
-          <div v-if='!isLoading && isMobile' class='class="card border-top-0 rounded-top-0 rounded-bottom"'>
+          <div v-if='!isLoading && isMobile'>
             <div
               v-for='(item, index) in visibleItems'
               :key='item.id'
