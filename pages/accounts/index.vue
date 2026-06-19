@@ -11,6 +11,7 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 
+const appConfig = useAppConfig();
 const { token } = useAuth();
 
 const isLoading = ref(false);
@@ -114,6 +115,14 @@ const isShowKind = ({ kind }) => {
 const kindDisplayName = ({ kind }) => {
   return kind == 'credit' ? 'Кредит' : '';
 }
+
+// TODO: Удалить дублирование кода, посмотреть остальные файлы, где
+//       так же объявлена эта функция .
+const linkColorClass = computed(() => {
+  return appConfig.theme.dark ?
+    'link-light' :
+    'link-dark';
+});
 
 watchEffect(() => {
   if (token.value) load();
