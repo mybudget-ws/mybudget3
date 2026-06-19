@@ -6,6 +6,7 @@ import {
   IconTrash,
   IconStar,
   IconStarFilled,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -149,9 +150,82 @@ watchEffect(() => {
             <PlaceholderLoading />
           </div>
 
-          <div v-if='!isLoading && isMobile' class=''>
-            <div v-for='item in visibleItems' :key='item.id'>
-              {{ item.name }}
+          <div v-if='!isLoading && isMobile' class='class="card border-top-0 rounded-top-0 rounded-bottom"'>
+            <div
+              v-for='(item, index) in visibleItems'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
+            >
+              <div class='d-flex flex-grow-1 align-items-center'>
+                <div class='me-2'>
+                  <button
+                    v-tooltip:right='item.isFavourite ? "Убрать из избранного" : "Добавить в избранное"'
+                    type='button'
+                    class='btn btn-action shadow-none border-0'
+                    @click.stop='toggleFavourite(item)'
+                  >
+                    <IconStarFilled
+                      v-if='item.isFavourite'
+                      size='18'
+                      stroke-width='1'
+                      class='text-yellow'
+                    />
+                    <IconStar
+                      v-else
+                      size='18'
+                      stroke-width='1'
+                      class='text-secondary'
+                    />
+                  </button>
+                </div>
+
+                <div class='col'>
+                  <div class='card-title mb-0'>
+                    {{ item.name }}
+                  </div>
+                </div>
+              </div>
+
+              <div class='card-actions'>
+                <div class='dropdown'>
+                  <a
+                    href='#'
+                    class='btn-action'
+                    data-bs-toggle='dropdown'
+                    aria-expanded='false'
+                    @click.prevent
+                  >
+                    <IconDotsVertical size='20' stroke-width='1' />
+                  </a>
+
+                  <div class='dropdown-menu dropdown-menu-end'>
+                    <a
+                      class='dropdown-item'
+                      href='#'
+                      @click.prevent='openEdit(item)'
+                    >
+                      Редактировать
+                    </a>
+
+                    <a
+                      class='dropdown-item'
+                      href='#'
+                      @click.prevent='toggleHidden(item)'
+                    >
+                      Скрыть
+                    </a>
+
+                    <a
+                      class='dropdown-item text-danger'
+                      href='#'
+                      @click.prevent='destroy(item)'
+                    >
+                      Удалить
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

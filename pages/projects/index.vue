@@ -4,10 +4,12 @@ import {
   IconPencil,
   IconEyeOff,
   IconTrash,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
+import { useDevice } from '~/composables/use_device';
 
 const { token } = useAuth();
 const isError = ref(false)
@@ -18,6 +20,7 @@ const isShowModal = ref(false);
 const currentItem = ref(null);
 const visibleItems = computed(() => items.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => items.value.filter(v => v.isHidden));
+const { isMobile } = useDevice();
 
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
@@ -121,10 +124,70 @@ watchEffect(() => {
               </div>
             </div>
           </div>
+          
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
-          <div v-else class='advanced-table'>
+
+          <div v-if='!isLoading && isMobile' class='class="card border-top-0 rounded-top-0 rounded-bottom"'>
+            <div
+              v-for='(item, index) in visibleItems'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
+            >
+              <div class='d-flex flex-grow-1 align-items-center'>
+                <div class='col'>
+                  <div class='card-title mb-0'>
+                    {{ item.name }}
+                  </div>
+
+                  <div class='card-subtitle text-secondary'>
+                    <span
+                      :class='{
+                        "text-success": sumBalance(item) > 0,
+                        "text-danger": sumBalance(item) < 0
+                      }'
+                    >
+                      <Amount
+                        :value='sumBalance(item)'
+                        :currency='displayCurrency(item)'
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class='card-actions'>
+                <div class='dropdown'>
+                  <a
+                    href='#'
+                    class='btn-action'
+                    data-bs-toggle='dropdown'
+                    @click.prevent
+                  >
+                    <IconDotsVertical size='20' stroke-width='1' />
+                  </a>
+
+                  <div class='dropdown-menu dropdown-menu-end'>
+                    <a class='dropdown-item' href='#' @click.prevent='openEdit(item)'>
+                      Редактировать
+                    </a>
+
+                    <a class='dropdown-item' href='#' @click.prevent='toggleHidden(item)'>
+                      Скрыть
+                    </a>
+
+                    <a class='dropdown-item text-danger' href='#' @click.prevent='destroy(item)'>
+                      Удалить
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
@@ -141,7 +204,7 @@ watchEffect(() => {
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
-:class='{
+                        :class='{
                         "text-success": sumBalance(item) > 0,
                         "text-danger": sumBalance(item) < 0
                       }'>
@@ -154,7 +217,7 @@ watchEffect(() => {
                     <td>
                       <div class='btn-actions'>
                         <button
-type='button' class='btn btn-action'
+                          type='button' class='btn btn-action'
                           @click='openEdit(item)'
                         >
                           <IconPencil size='20' stroke-width='1' />
