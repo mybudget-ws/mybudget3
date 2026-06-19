@@ -47,7 +47,7 @@ useHead({
 watch(
   () => route.fullPath,
   () => {
-    if (isMobile && navbarMenu.value) {
+    if (isMobile.value && navbarMenu.value) {
       Collapse.getOrCreateInstance(navbarMenu.value).hide();
     }
   }
