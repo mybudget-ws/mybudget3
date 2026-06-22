@@ -487,6 +487,8 @@ watch(
                         <Amount
                           :value='item.amount'
                           :currency='item.account.currency.name'
+                          is-color
+                          copyable
                         />
                       </span>
                     </td>

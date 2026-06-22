@@ -152,6 +152,7 @@ watchEffect(() => {
                       <Amount
                         :value='sumBalance(item)'
                         :currency='displayCurrency(item)'
+                        copyable
                       />
                     </span>
                   </div>
@@ -211,6 +212,7 @@ watchEffect(() => {
                         <Amount
                           :value='sumBalance(item)'
                           :currency='displayCurrency(item)'
+                          copyable
                         />
                       </span>
                     </td>
