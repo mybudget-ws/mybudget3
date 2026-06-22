@@ -48,7 +48,6 @@ const allPrices = computed(() => {
   return [...(property.value?.prices || [])]
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 });
-
 const isShowFooter = computed(() => allPrices.value.length > DEFAULT_PRICE_ITEMS);
 
 const prices = computed(() => {
@@ -227,26 +226,23 @@ const chartOptions = computed(() => ({
   />
 
   <div>
-    <div v-if='isLoading' class='card'>
-      <div class='card-body'>Загрузка...</div>
-    </div>
-
-    <div v-else-if='isError' class='alert alert-danger'>
+    <div v-if='isError' class='alert alert-danger'>
       Ошибка загрузки имущества
     </div>
-
     <template v-else>
       <div class='card mb-4'>
         <div class='card-body d-flex justify-content-between align-items-center'>
           <div>
-            <h2 class='mb-1'>
-              {{ property?.name || 'Имущество' }}
+            <h2 class='mb-1 d-flex align-items-center'>
+              <span>
+                {{ property?.name || 'Имущество' }}
+              </span>
+
               <PlaceholderLoading
-                v-if='isQuiteLoading'
+                v-if='isLoading || isQuiteLoading'
                 class='spinner-border-sm ms-2'
               />
             </h2>
-
             <div class='text-secondary'>
               Имущество
             </div>
