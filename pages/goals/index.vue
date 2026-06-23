@@ -137,10 +137,9 @@ watchEffect(() => {
               <table class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
-                    <th class='w-1'>Название</th>
-                    <th class='w-1'/>
+                    <th>Название</th>
+                    <th>Прогресс</th>
                     <th>Счёт</th>
-                    <th class='text-end'>Величина</th>
                     <th class='w-1 text-end'>В месяц</th>
                     <th class='w-1'/>
                     <th class='w-1'>Дата</th>
@@ -149,20 +148,62 @@ watchEffect(() => {
                 </thead>
                 <tbody class='table-tbody'>
                   <tr v-for='item in visibleItems' :key='item.id'>
-                    <td class='text-nowrap'>
-                      <span class='me-2'>{{ item.name }}</span>
+                    <td>
+                      <div>
+                        <div class='text-nowrap'>
+                          {{ item.name }}
+                        </div>
+
+                        <div
+                          :class='{
+                            "text-success": isGoalFinish(item),
+                          }'
+                        >
+                          <Amount
+                            :value='item.amount'
+                            :currency='displayCurrency(item)'
+                          />
+                        </div>
+                      </div>
                     </td>
-                    <td class='text-nowrap text-end font-monospace'>
-                      <span
-                        v-tooltip:bottom='`Прогресс: ${ Math.round(item.balance) }\u00A0${ displayCurrency(item) }`'
-                        :class='{
-                          "text-success": isGoalFinish(item),
-                          "text-secondary": !isGoalFinish(item),
-                        }'
+
+                    <td style='min-width: 260px;'>
+                      <div
+                        v-tooltip:bottom='`Прогресс: ${Math.round(item.balance)}\u00A0${displayCurrency(item)}`'
                       >
-                        {{ item.percentage }} %
-                      </span>
+                        <div
+                          :class='{
+                            "text-success": isGoalFinish(item),
+                            "text-secondary": !isGoalFinish(item),
+                          }'
+                        >
+                          {{ item.percentage }} %
+                        </div>
+
+                        <div class='progress mt-1' style='height: 6px;'>
+                          <div
+                            class='progress-bar'
+                            :class='{
+                              "bg-success": isGoalFinish(item),
+                            }'
+                            :style='{ width: `${Math.min(item.percentage, 100)}%` }'
+                          />
+                        </div>
+
+                        <small class='text-secondary'>
+                          <Amount
+                            :value='item.balance'
+                            :currency='displayCurrency(item)'
+                          />
+                          /
+                          <Amount
+                            :value='item.amount'
+                            :currency='displayCurrency(item)'
+                          />
+                        </small>
+                      </div>
                     </td>
+
                     <td>
                       <div class='badges-list'>
                         <span
@@ -174,6 +215,7 @@ watchEffect(() => {
                         </span>
                       </div>
                     </td>
+
                     <td class='text-nowrap text-end'>
                       <span
                         :class='{
@@ -181,24 +223,13 @@ watchEffect(() => {
                         }'
                       >
                         <Amount
-                          :value='item.amount'
-                          :currency='displayCurrency(item)'
-                        />
-                      </span>
-                    </td>
-                    <td class='text-nowrap text-end'>
-                      <span
-                        :class='{
-                          "text-success": isGoalFinish(item),
-                        }'
-                      >
-                        <Amount
-                          v-tooltip:bottom='`Осталось накопить: ${ rest(item) }\u00A0${ displayCurrency(item) }`'
+                          v-tooltip:bottom='`Осталось накопить: ${rest(item)}\u00A0${displayCurrency(item)}`'
                           :value='item.amountPerMonth'
                           :currency='displayCurrency(item)'
                         />
                       </span>
                     </td>
+
                     <td class='text-nowrap text-end'>
                       <span
                         v-if='!isGoalFinish(item)'
@@ -211,6 +242,7 @@ watchEffect(() => {
                         {{ item.dueMonths }} м
                       </span>
                     </td>
+
                     <td>
                       <span
                         :class='{
