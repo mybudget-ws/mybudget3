@@ -1,6 +1,4 @@
 <script setup>
-import { computed } from 'vue';
-
 const LOCALE = 'ru-RU';
 
 const props = defineProps({
