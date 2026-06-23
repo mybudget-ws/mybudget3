@@ -146,23 +146,28 @@ watchEffect(() => {
               :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
             >
               <div class='d-flex flex-column flex-grow-1'>
-                <div class='card-title mb-1'>
-                  {{ item.name }}
-                </div>
-
-                <div class='card-subtitle text-secondary d-flex flex-column gap-1 mb-1'>
-                  <div>
-                    {{ kindDisplayName(item) }}
-                  </div>
-                </div>
-                  <div class='fw-medium'>
-                    <Amount
-                      :value='item.amount'
-                      :currency='item.currency.name'
-                    />
+                <div class='d-flex align-items-center mb-1'>
+                  <NuxtLink
+                    :to='`/properties/${item.id}`'
+                    class='card-title'
+                    :class='linkColorClass'
+                  >
+                    {{ item.name }}
+                  </NuxtLink>
+                  <div class='ms-2'>
+                    <div class='badge'>
+                      {{ kindDisplayName(item) }}
+                    </div>
                   </div>
                 </div>
 
+                <div class='fw-medium'>
+                  <Amount
+                    :value='item.amount'
+                    :currency='item.currency.name'
+                  />
+                </div>
+              </div>    
               <div class='card-actions'>
                 <div class='dropdown'>
                   <a
@@ -191,6 +196,7 @@ watchEffect(() => {
               </div>
             </div>
           </div>
+
           <div v-else class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
