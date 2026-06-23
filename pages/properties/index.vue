@@ -4,10 +4,14 @@ import {
   IconPencil,
   IconEyeOff,
   IconTrash,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
+import { useDevice } from '~/composables/use_device';
+
+const { isMobile } = useDevice();
 
 const appConfig = useAppConfig();
 
@@ -132,6 +136,60 @@ watchEffect(() => {
           </div>
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
+          </div>
+          
+          <div v-if='!isLoading && isMobile'>
+            <div
+              v-for='(item, index) in visibleItems'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
+            >
+              <div class='d-flex flex-column flex-grow-1'>
+                <div class='card-title mb-1'>
+                  {{ item.name }}
+                </div>
+
+                <div class='card-subtitle text-secondary d-flex flex-column gap-1 mb-1'>
+                  <div>
+                    {{ kindDisplayName(item) }}
+                  </div>
+                </div>
+                  <div class='fw-medium'>
+                    <Amount
+                      :value='item.amount'
+                      :currency='item.currency.name'
+                    />
+                  </div>
+                </div>
+
+              <div class='card-actions'>
+                <div class='dropdown'>
+                  <a
+                    href='#'
+                    class='btn-action'
+                    data-bs-toggle='dropdown'
+                    @click.prevent
+                  >
+                    <IconDotsVertical size='20' stroke-width='1' />
+                  </a>
+
+                  <div class='dropdown-menu dropdown-menu-end'>
+                    <a class='dropdown-item' href='#' @click.prevent='openEdit(item)'>
+                      Редактировать
+                    </a>
+
+                    <a class='dropdown-item' href='#' @click.prevent='toggleHidden(item)'>
+                      Скрыть
+                    </a>
+
+                    <a class='dropdown-item text-danger' href='#' @click.prevent='destroy(item)'>
+                      Удалить
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div v-else class='advanced-table'>
             <div class='table-responsive'>
