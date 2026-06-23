@@ -478,19 +478,12 @@ watch(
                       {{ formatDate(item.dateAt) }}
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span
-                        :class='{
-                          "text-success": !item.isTransfer && item.amount > 0,
-                          "text-danger": !item.isTransfer && item.amount < 0
-                        }'
-                      >
-                        <Amount
-                          :value='item.amount'
-                          :currency='item.account.currency.name'
-                          is-color
-                          copyable
-                        />
-                      </span>
+                      <Amount
+                        :value='item.amount'
+                        :currency='item.account.currency.name'
+                        :is-color='!item.isTransfer'
+                        copyable
+                      />
                     </td>
                     <td class='text-secondary'>
                       <BadgeAccount

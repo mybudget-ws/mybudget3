@@ -203,7 +203,6 @@ watch(token, (val) => {
                   <Amount
                     :value='item.amount'
                     :currency='item.account.currency.name'
-                    is-color
                     copyable
                   />
                 </td>
@@ -264,7 +263,6 @@ watch(token, (val) => {
                   <Amount
                     :value='item.amount'
                     :currency='item.account.currency.name'
-                    is-color
                     copyable
                   />
                 </td>
