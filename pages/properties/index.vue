@@ -224,6 +224,7 @@ watchEffect(() => {
                       <Amount
                         :value='item.amount'
                         :currency='item.currency.name'
+                        copyable
                       />
                     </td>
                     <td>

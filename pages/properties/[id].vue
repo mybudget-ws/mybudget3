@@ -264,6 +264,7 @@ const chartOptions = computed(() => ({
                   class='fw-medium'
                   :value='property.totalIncome'
                   :currency='property.currency.name'
+                  copyable
                 />
 
                 <div class='text-secondary small'>
@@ -284,6 +285,7 @@ const chartOptions = computed(() => ({
                   class='fw-medium'
                   :value='Math.abs(property.totalExpense)'
                   :currency='property.currency.name'
+                  copyable
                 />
 
                 <div class='text-secondary small'>
@@ -303,6 +305,7 @@ const chartOptions = computed(() => ({
                   class='fw-medium'
                   :value='property.amount'
                   :currency='property.currency.name'
+                  copyable
                 />
 
                 <div class='text-secondary small'>
@@ -367,6 +370,7 @@ const chartOptions = computed(() => ({
                       <Amount
                         :value='price.amount'
                         :currency='price.currency?.name'
+                        copyable
                       />
                     </td>
 
@@ -473,6 +477,7 @@ const chartOptions = computed(() => ({
                         <Amount
                           :value='transaction.amount'
                           :currency='transaction.account?.currency?.name'
+                          copyable
                         />
                       </div>
                     </td>
