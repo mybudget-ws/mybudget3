@@ -61,9 +61,8 @@ const displayCurrency = ({ currency }) => {
   return currency ? currency.name : '';
 };
 
-const isGoalFinish = ({ percentage }) => {
-  return percentage >= 100;
-};
+const isGoalFinish = ({ percentage }) => (percentage >= 100);
+const isGoalFail = ({ dueDateOn }) => (new Date(dueDateOn) < new Date());
 
 const toggleHidden = async ({ id }) => {
   isQuiteLoading.value = true;
@@ -141,7 +140,6 @@ watchEffect(() => {
                     <th>Прогресс</th>
                     <th>Счёт</th>
                     <th class='w-1 text-end'>В месяц</th>
-                    <th class='w-1'/>
                     <th class='w-1'>Дата</th>
                     <th class='w-1'/>
                   </tr>
@@ -150,57 +148,48 @@ watchEffect(() => {
                   <tr v-for='item in visibleItems' :key='item.id'>
                     <td>
                       <div>
-                        <div class='text-nowrap'>
+                        <div class='text-nowrap mb-1'>
                           {{ item.name }}
                         </div>
 
-                        <div
-                          :class='{
-                            "text-success": isGoalFinish(item),
-                          }'
-                        >
-                          <Amount
-                            :value='item.amount'
-                            :currency='displayCurrency(item)'
-                          />
-                        </div>
-                      </div>
-                    </td>
-
-                    <td style='min-width: 260px;'>
-                      <div
-                        v-tooltip:bottom='`Прогресс: ${Math.round(item.balance)}\u00A0${displayCurrency(item)}`'
-                      >
-                        <div
+                        <Amount
                           :class='{
                             "text-success": isGoalFinish(item),
                             "text-secondary": !isGoalFinish(item),
                           }'
+                          :value='item.amount'
+                          :currency='displayCurrency(item)'
+                        />
+                      </div>
+                    </td>
+
+                    <td style='min-width: 260px;'>
+                      <div class='d-flex justify-content-between'>
+                        <div
+                          :class='{
+                            "text-success": isGoalFinish(item),
+                            "text-secondary": !isGoalFinish(item),
+                            "text-danger": isGoalFail(item),
+                          }'
                         >
                           {{ item.percentage }} %
                         </div>
+                        <Amount
+                          class='text-secondary'
+                          :value='item.balance'
+                          :currency='displayCurrency(item)'
+                        />
+                      </div>
 
-                        <div class='progress mt-1' style='height: 6px;'>
-                          <div
-                            class='progress-bar'
-                            :class='{
-                              "bg-success": isGoalFinish(item),
-                            }'
-                            :style='{ width: `${Math.min(item.percentage, 100)}%` }'
-                          />
-                        </div>
-
-                        <small class='text-secondary'>
-                          <Amount
-                            :value='item.balance'
-                            :currency='displayCurrency(item)'
-                          />
-                          /
-                          <Amount
-                            :value='item.amount'
-                            :currency='displayCurrency(item)'
-                          />
-                        </small>
+                      <div class='progress mt-1'>
+                        <div
+                          class='progress-bar'
+                          :class='{
+                            "bg-success": isGoalFinish(item),
+                            "bg-danger": isGoalFail(item),
+                          }'
+                          :style='{ width: `${Math.min(item.percentage, 100)}%` }'
+                        />
                       </div>
                     </td>
 
@@ -217,36 +206,20 @@ watchEffect(() => {
                     </td>
 
                     <td class='text-nowrap text-end'>
-                      <span
+                      <Amount
+                        v-tooltip:bottom='`Осталось накопить ${rest(item)}\u00A0${displayCurrency(item)} за\u00A0${item.dueMonths}\u00A0месяцев(а)`'
                         :class='{
                           "text-success": isGoalFinish(item),
                         }'
-                      >
-                        <Amount
-                          v-tooltip:bottom='`Осталось накопить: ${rest(item)}\u00A0${displayCurrency(item)}`'
-                          :value='item.amountPerMonth'
-                          :currency='displayCurrency(item)'
-                        />
-                      </span>
-                    </td>
-
-                    <td class='text-nowrap text-end'>
-                      <span
-                        v-if='!isGoalFinish(item)'
-                        v-tooltip:bottom='"Месяцев в запасе"'
-                        :class='{
-                          "text-danger": new Date(item.dueDateOn) <= new Date(),
-                          "text-secondary": new Date(item.dueDateOn) > new Date(),
-                        }'
-                      >
-                        {{ item.dueMonths }} м
-                      </span>
+                        :value='item.amountPerMonth'
+                        :currency='displayCurrency(item)'
+                      />
                     </td>
 
                     <td>
                       <span
                         :class='{
-                          "text-danger": new Date(item.dueDateOn) < new Date(),
+                          "text-danger": isGoalFail(item),
                         }'
                       >
                         {{ new Date(item.dueDateOn).toLocaleDateString(DEFAULT_LOCALE) }}
