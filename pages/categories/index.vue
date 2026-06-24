@@ -7,6 +7,7 @@ import {
   IconStar,
   IconStarFilled,
   IconDotsVertical,
+  IconChevronCompactDown,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -24,6 +25,7 @@ const isShowModal = ref(false);
 const currentItem = ref(null);
 const visibleItems = computed(() => categories.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => categories.value.filter(v => v.isHidden));
+const isArchiveOpen = ref(false);
 
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
@@ -227,97 +229,75 @@ watchEffect(() => {
                 </div>
               </div>
             </div>
+
             <div
               v-if='hiddenItems.length > 0'
-              class='px-3 py-2 border-top bg-transparent'
+              class='border-top'
+            >
+              <button
+                type='button'
+                class='w-100 btn btn-link text-decoration-none text-secondary ps-5 px-3 py-2 d-flex align-items-center justify-content-between'
+                @click='isArchiveOpen = !isArchiveOpen'
               >
-              <div id='categories-archive' class='accordion'>
-                <div class='accordion-item'>
-                  <div class='accordion-header'>
-                    <button
-                      class='accordion-button collapsed text-secondary'
-                      type='button'
-                      data-bs-toggle='collapse'
-                      data-bs-target='#categories-archive-collapse'
-                      aria-expanded='false'
-                    >
-                      Архив ({{ hiddenItems.length }})
+                <span>Архив ({{ hiddenItems.length }})</span>
 
-                      <div class='accordion-button-toggle'>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          width='24'
-                          height='24'
-                          viewBox='0 0 24 24'
-                          fill='none'
-                          stroke='currentColor'
-                          stroke-width='2'
-                          stroke-linecap='round'
-                          stroke-linejoin='round'
-                          class='icon icon-1'
-                        >
-                          <path d='M6 9l6 6l6 -6' />
-                        </svg>
-                      </div>
-                    </button>
+                <IconChevronCompactDown
+                  size='20'
+                  :style='{
+                    transform: isArchiveOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform .2s"
+                  }'
+                />
+              </button>
+
+              <template v-if='isArchiveOpen'>
+                <div
+                  v-for='(item, index) in hiddenItems'
+                  :key='item.id'
+                  class='card-header ps-5'
+                  :class='{ "border-bottom-0": index === hiddenItems.length - 1 }'
+                >
+                  <div class='col'>
+                    <div class='card-title mb-0 text-secondary'>
+                      {{ item.name }}
+                    </div>
                   </div>
 
-                  <div
-                    id='categories-archive-collapse'
-                    class='accordion-collapse collapse'
-                  >
-                    <div class='accordion-body p-0'>
-                      <div
-                        v-for='(item, index) in hiddenItems'
-                        :key='item.id'
-                        class='card-header opacity-75'
-                        :class='{ "border-bottom-0": index === hiddenItems.length - 1 }'
+                  <div class='card-actions'>
+                    <div class='dropdown'>
+                      <a
+                        href='#'
+                        class='btn-action'
+                        data-bs-toggle='dropdown'
+                        aria-expanded='false'
+                        @click.prevent
                       >
-                        <div class='col'>
-                          <div class='card-title mb-0'>
-                            {{ item.name }}
-                          </div>
-                        </div>
+                        <IconDotsVertical size='20' stroke-width='1' />
+                      </a>
 
-                        <div class='card-actions'>
-                          <div class='dropdown'>
-                            <a
-                              href='#'
-                              class='btn-action'
-                              data-bs-toggle='dropdown'
-                              aria-expanded='false'
-                              @click.prevent
-                            >
-                              <IconDotsVertical size='20' stroke-width='1' />
-                            </a>
+                      <div class='dropdown-menu dropdown-menu-end'>
+                        <button
+                          type='button'
+                          class='dropdown-item'
+                          @click='toggleHidden(item)'
+                        >
+                          Восстановить
+                        </button>
 
-                            <div class='dropdown-menu dropdown-menu-end'>
-                              <button
-                                type='button'
-                                class='dropdown-item'
-                                @click='toggleHidden(item)'
-                              >
-                                Восстановить
-                              </button>
-
-                              <button
-                                type='button'
-                                class='dropdown-item text-danger'
-                                @click='destroy(item)'
-                              >
-                                Удалить
-                              </button>
-                            </div>
-                          </div>
-                        </div>
+                        <button
+                          type='button'
+                          class='dropdown-item text-danger'
+                          @click='destroy(item)'
+                        >
+                          Удалить
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </template>
             </div>
           </div>
-
           <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
