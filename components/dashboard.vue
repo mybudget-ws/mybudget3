@@ -92,6 +92,18 @@ const assets = computed(() => {
   return dashboard.value.assets;
 });
 
+const totalAccountsBalance = computed(() => {
+  return accounts.value?.reduce((sum, a) => {
+    return sum + (a.balanceBase ?? a.balance ?? 0)
+  }, 0) || 0
+})
+
+const totalAssetsAmount = computed(() => {
+  return assets.value?.reduce((sum, a) => {
+    return sum + (a.amountBase ?? a.amount ?? 0)
+  }, 0) || 0
+})
+
 watch(token, (val) => {
   if (val) load();
 }, { immediate: true });
@@ -300,6 +312,17 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td >Всего</td>
+                <td class='text-end text-success no-button-padding'>
+                  <Amount
+                    :value='totalAccountsBalance'
+                    currency='???'
+                    copyable
+                  />
+                </td>
+                <td />
+              </tr>
               <tr v-for='item in accounts' :key='item.id'>
                 <td class='text-nowrap'>{{ item.name }}</td>
                 <td class='text-nowrap text-end'>
@@ -349,6 +372,17 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>Всего</td>
+                <td class='text-end text-success no-button-padding'>
+                  <Amount
+                    :value='totalAssetsAmount'
+                    currency='???'
+                    is-color
+                    copyable
+                  />
+                </td>
+              </tr>
               <tr v-for='item in assets' :key='item.id'>
                 <td class='no-button-padding'>
                   {{ item.name }}
