@@ -96,13 +96,13 @@ const totalAccountsBalance = computed(() => {
   return accounts.value?.reduce((sum, a) => {
     return sum + (a.balanceBase ?? a.balance ?? 0)
   }, 0) || 0
-})
+});
 
 const totalAssetsAmount = computed(() => {
   return assets.value?.reduce((sum, a) => {
     return sum + (a.amountBase ?? a.amount ?? 0)
   }, 0) || 0
-})
+});
 
 watch(token, (val) => {
   if (val) load();
