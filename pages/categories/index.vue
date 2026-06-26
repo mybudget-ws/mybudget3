@@ -7,7 +7,7 @@ import {
   IconStar,
   IconStarFilled,
   IconDotsVertical,
-  IconChevronCompactDown,
+  IconChevronDown,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -241,7 +241,7 @@ watchEffect(() => {
               >
                 <span>Архив ({{ hiddenItems.length }})</span>
 
-                <IconChevronCompactDown
+                <IconChevronDown
                   size='20'
                   :style='{
                     transform: isArchiveOpen ? "rotate(180deg)" : "rotate(0deg)",
