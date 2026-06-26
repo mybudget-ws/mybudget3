@@ -236,7 +236,7 @@ watchEffect(() => {
             >
               <button
                 type='button'
-                class='w-100 btn btn-link text-decoration-none text-secondary ps-5 px-3 py-2 d-flex align-items-center justify-content-between'
+                class='w-100 btn btn-link text-decoration-none text-secondary d-flex align-items-center justify-content-between'
                 @click='isArchiveOpen = !isArchiveOpen'
               >
                 <span>Архив ({{ hiddenItems.length }})</span>
@@ -254,8 +254,11 @@ watchEffect(() => {
                 <div
                   v-for='(item, index) in hiddenItems'
                   :key='item.id'
-                  class='card-header ps-5'
-                  :class='{ "border-bottom-0": index === hiddenItems.length - 1 }'
+                  class='card-header'
+                  :class='{
+                    "border-bottom-0": index === hiddenItems.length - 1,
+                    "border-top": index === 0,
+                  }'
                 >
                   <div class='col'>
                     <div class='card-title mb-0 text-secondary'>
