@@ -19,16 +19,16 @@ export default defineNuxtPlugin(nuxtApp => {
     },
 
     unmounted(el) {
-  try {
-    el?._tooltip?.dispose?.()
-  } catch (e) {
-    // игнорируем ошибки Tabler при unmount race condition
-  } finally {
-    if (el) {
-      el._tooltip = null
+      try {
+        el?._tooltip?.dispose?.()
+      } catch (e) {
+        // игнорируем ошибки Tabler при unmount race condition
+      } finally {
+        if (el) {
+          el._tooltip = null
+        }
+      }
     }
-  }
-}
   })
 });
 
