@@ -138,6 +138,7 @@ watchEffect(() => {
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
+
           <div v-if='!isLoading && isMobile'>
             <div
               v-for='(item, index) in visibleItems'
@@ -146,22 +147,28 @@ watchEffect(() => {
               :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
             >
               <div class='d-flex flex-column flex-grow-1'>
-                <div class='card-title mb-1'>
-                  {{ item.name }}
+                <div class='d-flex align-items-center mb-1'>
+                  <NuxtLink
+                    :to='`/properties/${item.id}`'
+                    class='card-title'
+                    :class='linkColorClass'
+                  >
+                    {{ item.name }}
+                  </NuxtLink>
+                  <div class='ms-2'>
+                    <div class='badge'>
+                      {{ kindDisplayName(item) }}
+                    </div>
+                  </div>
                 </div>
 
-                <div class='card-subtitle text-secondary d-flex flex-column gap-1 mb-1'>
-                  <div>
-                    {{ kindDisplayName(item) }}
-                  </div>
+                <div class='fw-medium'>
+                  <Amount
+                    :value='item.amount'
+                    :currency='item.currency.name'
+                  />
                 </div>
-                  <div class='fw-medium'>
-                    <Amount
-                      :value='item.amount'
-                      :currency='item.currency.name'
-                    />
-                  </div>
-                </div>
+              </div>    
 
               <div class='card-actions'>
                 <div class='dropdown'>
@@ -190,7 +197,7 @@ watchEffect(() => {
                 </div>
               </div>
             </div>
-
+            
             <div
               v-if='hiddenItems.length > 0'
               class='border-top'
@@ -287,6 +294,7 @@ watchEffect(() => {
                       <Amount
                         :value='item.amount'
                         :currency='item.currency.name'
+                        copyable
                       />
                     </td>
                     <td>
