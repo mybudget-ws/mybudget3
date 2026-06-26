@@ -92,15 +92,20 @@ const assets = computed(() => {
   return dashboard.value.assets;
 });
 
-const totalAccountsBalance = computed(() => {
+const currencyBaseName = computed(() => {
+  if (accounts.value.length === 0) return '';
+  return accounts.value[0].currencyBase.name;
+});
+
+const totalAccountsBalanceBase = computed(() => {
   return accounts.value?.reduce((sum, a) => {
-    return sum + (a.balanceBase ?? a.balance ?? 0)
+    return sum + a.balanceBase;
   }, 0) || 0
 });
 
-const totalAssetsAmount = computed(() => {
+const totalAssetsAmountBase = computed(() => {
   return assets.value?.reduce((sum, a) => {
-    return sum + (a.amountBase ?? a.amount ?? 0)
+    return sum + a.amountBase;
   }, 0) || 0
 });
 
@@ -313,11 +318,11 @@ watch(token, (val) => {
             </thead>
             <tbody>
               <tr>
-                <td >Всего</td>
+                <td class='text-secondary'><b>Всего</b></td>
                 <td class='text-end text-success no-button-padding'>
                   <Amount
-                    :value='totalAccountsBalance'
-                    currency='???'
+                    :value='totalAccountsBalanceBase'
+                    :currency='currencyBaseName'
                     copyable
                   />
                 </td>
@@ -326,18 +331,12 @@ watch(token, (val) => {
               <tr v-for='item in accounts' :key='item.id'>
                 <td class='text-nowrap'>{{ item.name }}</td>
                 <td class='text-nowrap text-end'>
-                  <span
-                    :class='{
-                      "text-success": item.balance > 0,
-                      "text-danger": item.balance < 0
-                    }'
-                  >
-                    <Amount
-                      :value='item.balance'
-                      :currency='item.currency.name'
-                      copyable
-                    />
-                  </span>
+                  <Amount
+                    :value='item.balance'
+                    :currency='item.currency.name'
+                    is-color
+                    copyable
+                  />
                 </td>
                 <td>
                   <button
@@ -373,11 +372,11 @@ watch(token, (val) => {
             </thead>
             <tbody>
               <tr>
-                <td>Всего</td>
+                <td class='text-secondary'><b>Всего</b></td>
                 <td class='text-end text-success no-button-padding'>
                   <Amount
-                    :value='totalAssetsAmount'
-                    currency='???'
+                    :value='totalAssetsAmountBase'
+                    :currency='currencyBaseName'
                     is-color
                     copyable
                   />
