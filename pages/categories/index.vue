@@ -12,7 +12,6 @@ import {
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 import { useDevice } from '~/composables/use_device';
-import Mobile_archive from '~/components/mobile_archive.vue';
 
 const { token } = useAuth();
 const { isMobile } = useDevice();
@@ -233,7 +232,7 @@ watchEffect(() => {
               v-if='hiddenItems.length > 0'
               class='border-top-0'
             >
-              <Mobile_archive
+              <MobileArchive
                 :items='hiddenItems'
                 :is-open='isArchiveOpen'
                 title='Архив'
