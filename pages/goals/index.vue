@@ -228,17 +228,20 @@ watchEffect(() => {
 
                 <div class='d-flex justify-content-between align-items-center mt-2'>
                   <span
-                    class='text-secondary small'
+                    class='small'
                     :class='{ "text-danger": isGoalFail(item) }'
                   >
                     {{ new Date(item.dueDateOn).toLocaleDateString(DEFAULT_LOCALE) }}
                   </span>
 
-                  <Amount
-                    :value='item.amountPerMonth'
-                    :currency='displayCurrency(item)'
-                    class='small'
-                  />
+                  <div>
+                    <Amount
+                      :value='item.amountPerMonth'
+                      :currency='displayCurrency(item)'
+                      class='small'
+                    />
+                    <span class='text-secondary fw-light'>&nbsp;/&nbsp;мес.</span>
+                  </div>
                 </div>
 
                 <div
