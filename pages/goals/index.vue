@@ -273,6 +273,7 @@ watchEffect(() => {
               />
             </div>
           </div>
+
           <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
@@ -415,18 +416,19 @@ watchEffect(() => {
                 </tbody>
               </table>
             </div>
-            <div
-              v-if='isShowFooter'
-              class='card-footer d-flex align-items-center'
-            >
-              <i v-if='isEmpty' class='text-secondary'>
-                Похоже таких целей ещё нет
-              </i>
-              <i v-if='isError' class='text-danger'>
-                Ошибка: не удалось загрузить цели.
-                Попробуйте повторить операцию, или обратитесь в поддержку.
-              </i>
-            </div>
+          </div>
+
+          <div
+            v-if='isShowFooter'
+            class='card-footer d-flex align-items-center border-top-0'
+          >
+            <i v-if='isEmpty' class='text-secondary'>
+              Похоже таких целей ещё нет
+            </i>
+            <i v-if='isError' class='text-danger'>
+              Ошибка: не удалось загрузить цели.
+              Попробуйте повторить операцию, или обратитесь в поддержку.
+            </i>
           </div>
         </div>
       </div>
