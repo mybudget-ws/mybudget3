@@ -352,7 +352,7 @@ watch(
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <!-- https://tabler.io/admin-template/preview -->
-      <div class='card'>
+      <div class='card mb-3'>
         <div class='card-table'>
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
