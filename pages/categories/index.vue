@@ -7,12 +7,12 @@ import {
   IconStar,
   IconStarFilled,
   IconDotsVertical,
-  IconChevronDown,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
 import { useDevice } from '~/composables/use_device';
+import Mobile_archive from '~/components/mobile_archive.vue';
 
 const { token } = useAuth();
 const { isMobile } = useDevice();
@@ -229,76 +229,18 @@ watchEffect(() => {
                 </div>
               </div>
             </div>
-
             <div
               v-if='hiddenItems.length > 0'
-              class='border-top'
+              class='border-top-0'
             >
-              <button
-                type='button'
-                class='w-100 btn btn-link text-decoration-none text-secondary d-flex align-items-center justify-content-between'
-                @click='isArchiveOpen = !isArchiveOpen'
-              >
-                <span>Архив ({{ hiddenItems.length }})</span>
-
-                <IconChevronDown
-                  size='20'
-                  :style='{
-                    transform: isArchiveOpen ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform .2s"
-                  }'
-                />
-              </button>
-
-              <template v-if='isArchiveOpen'>
-                <div
-                  v-for='(item, index) in hiddenItems'
-                  :key='item.id'
-                  class='card-header'
-                  :class='{
-                    "border-bottom-0": index === hiddenItems.length - 1,
-                    "border-top": index === 0,
-                  }'
-                >
-                  <div class='col'>
-                    <div class='card-title mb-0 text-secondary'>
-                      {{ item.name }}
-                    </div>
-                  </div>
-
-                  <div class='card-actions'>
-                    <div class='dropdown'>
-                      <a
-                        href='#'
-                        class='btn-action'
-                        data-bs-toggle='dropdown'
-                        aria-expanded='false'
-                        @click.prevent
-                      >
-                        <IconDotsVertical size='20' stroke-width='1' />
-                      </a>
-
-                      <div class='dropdown-menu dropdown-menu-end'>
-                        <button
-                          type='button'
-                          class='dropdown-item'
-                          @click='toggleHidden(item)'
-                        >
-                          Восстановить
-                        </button>
-
-                        <button
-                          type='button'
-                          class='dropdown-item text-danger'
-                          @click='destroy(item)'
-                        >
-                          Удалить
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </template>
+              <Mobile_archive
+                :items='hiddenItems'
+                :is-open='isArchiveOpen'
+                title='Архив'
+                @toggle-open='isArchiveOpen = !isArchiveOpen'
+                @restore='toggleHidden'
+                @delete='destroy'
+              />
             </div>
           </div>
           <div v-if='!isLoading && !isMobile' class='advanced-table'>
