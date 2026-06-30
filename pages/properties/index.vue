@@ -5,7 +5,6 @@ import {
   IconEyeOff,
   IconTrash,
   IconDotsVertical,
-  IconChevronDown,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';

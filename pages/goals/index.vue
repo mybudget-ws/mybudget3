@@ -4,19 +4,23 @@ import {
   IconPencil,
   IconEyeOff,
   IconTrash,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { DEFAULT_LOCALE } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
+import { useDevice } from '~/composables/use_device';
 
 const { token } = useAuth();
+const { isMobile } = useDevice();
 const isError = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const items = ref([]);
 const isShowModal = ref(false);
 const currentItem = ref(null);
+const isArchiveOpen = ref(false);
 const visibleItems = computed(() => items.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => items.value.filter(v => v.isHidden));
 
@@ -131,7 +135,142 @@ watchEffect(() => {
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
-          <div v-else class='advanced-table'>
+          <div v-if='!isLoading && isMobile'>
+          <div
+              v-for='(item, index) in visibleItems'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
+            >
+              <div class='flex-grow-1'>
+                <div class='d-flex justify-content-between align-items-start'>
+                  <div class='pe-2'>
+                    <div class='card-title mb-1'>
+                      {{ item.name }}
+                    </div>
+
+                    <Amount
+                      :value='item.amount'
+                      :currency='displayCurrency(item)'
+                      :class='{
+                        "text-success": isGoalFinish(item),
+                        "text-secondary": !isGoalFinish(item),
+                      }'
+                    />
+                  </div>
+
+                  <div class='dropdown'>
+                    <a
+                      href='#'
+                      class='btn-action'
+                      data-bs-toggle='dropdown'
+                      @click.prevent
+                    >
+                      <IconDotsVertical
+                        size='20'
+                        stroke-width='1'
+                      />
+                    </a>
+
+                    <div class='dropdown-menu dropdown-menu-end'>
+                      <button
+                        class='dropdown-item'
+                        @click='openEdit(item)'
+                      >
+                        Редактировать
+                      </button>
+
+                      <button
+                        class='dropdown-item'
+                        @click='toggleHidden(item)'
+                      >
+                        Скрыть
+                      </button>
+
+                      <button
+                        class='dropdown-item text-danger'
+                        @click='destroy(item)'
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class='d-flex justify-content-between mt-2 small'>
+                  <Amount
+                    :value='item.balance'
+                    :currency='displayCurrency(item)'
+                    class='text-secondary'
+                  />
+
+                  <span
+                    :class='{
+                      "text-success": isGoalFinish(item),
+                      "text-danger": isGoalFail(item),
+                      "text-secondary": !isGoalFinish(item) && !isGoalFail(item),
+                    }'
+                  >
+                    {{ item.percentage }}%
+                  </span>
+                </div>
+
+                <div class='progress mt-1'>
+                  <div
+                    class='progress-bar'
+                    :class='{
+                      "bg-success": isGoalFinish(item),
+                      "bg-danger": isGoalFail(item),
+                    }'
+                    :style='{ width: `${Math.min(item.percentage, 100)}%` }'
+                  />
+                </div>
+
+                <div class='d-flex justify-content-between align-items-center mt-2'>
+                  <span
+                    class='text-secondary small'
+                    :class='{ "text-danger": isGoalFail(item) }'
+                  >
+                    {{ new Date(item.dueDateOn).toLocaleDateString(DEFAULT_LOCALE) }}
+                  </span>
+
+                  <Amount
+                    :value='item.amountPerMonth'
+                    :currency='displayCurrency(item)'
+                    class='small'
+                  />
+                </div>
+
+                <div
+                  v-if='item.accounts.length'
+                  class='badges-list mt-2'
+                >
+                  <span
+                    v-for='account in item.accounts'
+                    :key='account.id'
+                    class='badge'
+                  >
+                    {{ account.name }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-if='hiddenItems.length > 0'
+              class='border-top-0'
+            >
+              <Mobile_archive
+                :items='hiddenItems'
+                :is-open='isArchiveOpen'
+                title='Архив'
+                @toggle-open='isArchiveOpen = !isArchiveOpen'
+                @restore='toggleHidden'
+                @delete='destroy'
+              />
+            </div>
+          </div>
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
