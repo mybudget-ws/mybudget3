@@ -31,8 +31,6 @@ const isEmpty = computed(() => {
   return properties.value.length === 0;
 });
 
-const isShowFooter = computed(() => isEmpty.value || isError.value);
-
 const load = async (isQuite = false) => {
   isError.value = false;
   if (isQuite) {
@@ -306,9 +304,10 @@ watchEffect(() => {
                 </tbody>
               </table>
             </div>
-            <div
-              v-if='isShowFooter'
-              class='card-footer d-flex align-items-center'
+          </div>
+          <div
+              v-if='isEmpty || isError'
+              class='card-footer d-flex align-items-center border-top-0'
             >
               <i v-if='isEmpty' class='text-secondary'>
                 Похоже имущества ещё нет
@@ -318,7 +317,6 @@ watchEffect(() => {
                 Попробуйте повторить операцию, или обратитесь в поддержку.
               </i>
             </div>
-          </div>
         </div>
       </div>
     </div>
