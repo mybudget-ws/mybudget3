@@ -6,14 +6,17 @@ import {
   IconTrash,
   IconStar,
   IconStarFilled,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
+import { useDevice } from '~/composables/use_device';
 
 const appConfig = useAppConfig();
 const { token } = useAuth();
-
+const { isMobile } = useDevice();
+const isArchiveOpen = ref(false);
 const isLoading = ref(false);
 const isQuiteLoading = ref(false);
 const accounts = ref([]);
@@ -162,7 +165,111 @@ watchEffect(() => {
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
-          <div v-else class='advanced-table'>
+          <div v-if='!isLoading && isMobile'>
+            <div
+              v-for='(item, index) in visibleItems'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
+            >
+              <div class='d-flex w-100'>
+
+                <div class='me-2 d-flex align-items-center'>
+                  <button
+                    type='button'
+                    class='btn btn-action shadow-none border-0'
+                    @click.stop='toggleFavourite(item)'
+                  >
+                    <IconStarFilled
+                      v-if='item.isFavourite'
+                      size='18'
+                      stroke-width='1'
+                      class='text-yellow'
+                    />
+                    <IconStar
+                      v-else
+                      size='18'
+                      stroke-width='1'
+                      class='text-secondary'
+                    />
+                  </button>
+                </div>
+
+                <div class='flex-grow-1 min-w-0'>
+
+                  <div class='fw-medium text-truncate'>
+                    {{ item.name }}
+
+                    <span v-if='isShowKind(item)' class='badge ms-1'>
+                      {{ kindDisplayName(item) }}
+                    </span>
+                  </div>
+
+                  <div
+                    class='mt-1 fw-medium'
+                    :class='{
+                      "text-success": item.balance > 0,
+                      "text-danger": item.balance < 0
+                    }'
+                  >
+                    <Amount
+                      :value='item.balance'
+                      :currency='item.currency.name'
+                    />
+                  </div>
+
+                  <div
+                    v-if='item.description'
+                    class='text-secondary small mt-1'
+                  >
+                    {{ item.description }}
+                  </div>
+
+                </div>
+
+                <div class='ms-2 d-flex align-items-center'>
+                  <div class='dropdown'>
+                    <a
+                      href='#'
+                      class='btn-action'
+                      data-bs-toggle='dropdown'
+                      @click.prevent
+                    >
+                      <IconDotsVertical size='20' stroke-width='1' />
+                    </a>
+
+                    <div class='dropdown-menu dropdown-menu-end'>
+                      <button class='dropdown-item' @click='openEdit(item)'>
+                        Редактировать
+                      </button>
+
+                      <button class='dropdown-item' @click='toggleHidden(item)'>
+                        Скрыть
+                      </button>
+
+                      <button class='dropdown-item text-danger' @click='destroy(item)'>
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div v-if='hiddenItems.length > 0' class='border-top-0'>
+              <Mobile_archive
+                :items='hiddenItems'
+                :is-open='isArchiveOpen'
+                title='Архив'
+                @toggle-open='isArchiveOpen = !isArchiveOpen'
+                @restore='toggleHidden'
+                @delete='destroy'
+              />
+            </div>
+          </div>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
@@ -285,15 +392,15 @@ watchEffect(() => {
                 </tbody>
               </table>
             </div>
-            <div class='card-footer d-flex align-items-center'>
-              <i v-if='isEmpty' class='text-secondary'>
-                Похоже таких счетов ещё нет
-              </i>
-              <i v-if='isError' class='text-danger'>
-                Ошибка: не удалось загрузить счета.
-                Попробуйте повторить операцию, или обратитесь в поддержку.
-              </i>
-            </div>
+          </div>
+          <div v-if='isEmpty || isError' class='card-footer d-flex align-items-center border-top-0'>
+            <i v-if='isEmpty' class='text-secondary'>
+              Похоже таких счетов ещё нет
+            </i>
+            <i v-if='isError' class='text-danger'>
+              Ошибка: не удалось загрузить счета.
+              Попробуйте повторить операцию, или обратитесь в поддержку.
+            </i>
           </div>
         </div>
       </div>
