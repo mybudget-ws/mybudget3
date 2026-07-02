@@ -27,7 +27,6 @@ const currentItem = ref(null);
 const visibleItems = computed(() => accounts.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => accounts.value.filter(v => v.isHidden));
 
-const isShowFooter = computed(() => isEmpty.value || isError.value);
 
 const isEmpty = computed(() => {
   if (isLoading.value) return false;
@@ -393,18 +392,15 @@ watchEffect(() => {
                 </tbody>
               </table>
             </div>
-            <div
-              v-if='isShowFooter'
-              class='card-footer d-flex align-items-center border-top-0'
-              >
-              <i v-if='isEmpty' class='text-secondary'>
-                Похоже таких счетов ещё нет
-              </i>
-              <i v-if='isError' class='text-danger'>
-                Ошибка: не удалось загрузить счета.
-                Попробуйте повторить операцию, или обратитесь в поддержку.
-              </i>
-            </div>
+          </div>
+          <div v-if='isEmpty || isError' class='card-footer d-flex align-items-center border-top-0'>
+            <i v-if='isEmpty' class='text-secondary'>
+              Похоже таких счетов ещё нет
+            </i>
+            <i v-if='isError' class='text-danger'>
+              Ошибка: не удалось загрузить счета.
+              Попробуйте повторить операцию, или обратитесь в поддержку.
+            </i>
           </div>
         </div>
       </div>
