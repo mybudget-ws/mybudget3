@@ -9,6 +9,7 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconSearch,
+  IconFilter,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -16,7 +17,11 @@ import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
+import MobileTransactionFilters from '~/components/filter/mobile_transaction_filters.vue';
+import { useDevice } from '~/composables/use_device';
 
+const { isMobile } = useDevice();
+const isShowMobileFilters = ref(false);
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
@@ -348,6 +353,21 @@ watch(
     @saved='onSaved'
     @close='isShowModalAccount = false'
   />
+  <ModalBase
+    v-if='isShowMobileFilters'
+    @close='isShowMobileFilters = false'
+  >
+    <MobileTransactionFilters
+      :is-loaded='isLoaded'
+      :transaction-event-ticks='transactionEventTicks'
+      @close='isShowMobileFilters = false'
+      @kinds-change='onKindsChange'
+      @accounts-change='onAccountsChange'
+      @categories-change='onCategoriesChange'
+      @projects-change='onProjectsChange'
+      @properties-change='onPropertiesChange'
+    />
+  </ModalBase>
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
@@ -401,6 +421,14 @@ watch(
                     @click='openCreate(KIND_EXPENSE)'
                   >
                     <IconArrowDown stroke-width='2' />
+                  </button>
+                  <button
+                    v-if='isMobile'
+                    class='btn btn-ghost-secondary'
+                    type='button'
+                    @click='isShowMobileFilters = true'
+                  >
+                    <IconFilter stroke-width='2' />
                   </button>
                 </div>
               </div>
@@ -582,7 +610,7 @@ watch(
         </div>
       </div>
     </div>
-    <div class='col-sm-12 col-lg-3 col-xl-2'>
+    <div v-if='!isMobile' class='col-sm-12 col-lg-3 col-xl-2'>
       <FilterKinds :is-loading='!isLoaded' @update:items='onKindsChange' />
       <FilterAccounts :reload='transactionEventTicks' @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
