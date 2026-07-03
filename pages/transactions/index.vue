@@ -512,15 +512,12 @@ watch(
                     {{ formatDate(item.dateAt) }}
                   </div>
 
-                  <div
-                    class='fw-medium mt-1'
-                  >
-                    <Amount
-                      :value='item.amount'
-                      :currency='item.account.currency.name'
-                      :is-color='!item.isTransfer'
-                    />
-                  </div>
+                  <Amount
+                    class='d-block mt-1'
+                    :value='item.amount'
+                    :currency='item.account.currency.name'
+                    :is-color='!item.isTransfer'
+                  />
 
                   <div class='badges-list mt-2'>
                     <BadgeAccount
