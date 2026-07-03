@@ -20,11 +20,10 @@ import { useAuth } from '~/composables/use_auth';
 import MobileTransactionFilters from '~/components/filter/mobile_transaction_filters.vue';
 import { useDevice } from '~/composables/use_device';
 
-const { isMobile } = useDevice();
-const isShowMobileFilters = ref(false);
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
+const { isMobile } = useDevice();
 
 const PER_PAGE = 50;
 const hasMore = ref(true);
@@ -36,6 +35,7 @@ const isCopyItem = ref(false);
 const isShowModal = ref(false);
 const isShowModalTransfer = ref(false);
 const isShowModalAccount = ref(false);
+const isShowMobileFilters = ref(false);
 const currentKind = ref(KIND_EXPENSE);
 const currentItem = ref(null);
 const page = ref(1);
@@ -353,21 +353,17 @@ watch(
     @saved='onSaved'
     @close='isShowModalAccount = false'
   />
-  <ModalBase
+  <MobileTransactionFilters
     v-if='isShowMobileFilters'
+    :is-loaded='isLoaded'
+    :transaction-event-ticks='transactionEventTicks'
     @close='isShowMobileFilters = false'
-  >
-    <MobileTransactionFilters
-      :is-loaded='isLoaded'
-      :transaction-event-ticks='transactionEventTicks'
-      @close='isShowMobileFilters = false'
-      @kinds-change='onKindsChange'
-      @accounts-change='onAccountsChange'
-      @categories-change='onCategoriesChange'
-      @projects-change='onProjectsChange'
-      @properties-change='onPropertiesChange'
-    />
-  </ModalBase>
+    @kinds-change='onKindsChange'
+    @accounts-change='onAccountsChange'
+    @categories-change='onCategoriesChange'
+    @projects-change='onProjectsChange'
+    @properties-change='onPropertiesChange'
+  />
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
@@ -610,7 +606,10 @@ watch(
         </div>
       </div>
     </div>
-    <div v-if='!isMobile' class='col-sm-12 col-lg-3 col-xl-2'>
+    <div
+      v-show='!isMobile'
+      class='col-sm-12 col-lg-3 col-xl-2'
+    >
       <FilterKinds :is-loading='!isLoaded' @update:items='onKindsChange' />
       <FilterAccounts :reload='transactionEventTicks' @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
