@@ -470,19 +470,13 @@ watch(
               :class='{ "border-bottom-1": index === transactions.length - 1 }'
             >
               <div class='d-flex w-100'>
-
                 <div class='flex-grow-1 min-w-0'>
-
                   <div>
                     {{ formatDate(item.dateAt) }}
                   </div>
 
                   <div
                     class='fw-medium mt-1'
-                    :class='{
-                      "text-success": item.amount > 0 && !item.isTransfer,
-                      "text-danger": item.amount < 0 && !item.isTransfer
-                    }'
                   >
                     <Amount
                       :value='item.amount'
@@ -491,14 +485,12 @@ watch(
                     />
                   </div>
 
-                  <div class='mt-1'>
+                  <div class='badges-list mt-2'>
                     <BadgeAccount
                       :name='item.account.name'
                       @click='onAccountClick(item.account.id)'
                     />
-                  </div>
 
-                  <div class='badges-list mt-3'>
                     <template v-if='item.isTransfer'>
                       <span
                         v-if='item.amount > 0'
@@ -520,13 +512,11 @@ watch(
                       :name='item.project.name'
                       @click='onProjectClick(item.project.id)'
                     />
-
                     <BadgeProperty
                       v-if='item.property'
                       :name='item.property.name'
                       @click='onPropertyClick(item.property.id)'
                     />
-
                     <BadgeCategory
                       v-for='cat in item.categories'
                       :key='cat.id'
@@ -693,6 +683,7 @@ watch(
                 </tbody>
               </table>
             </div>
+
             <div class='card-footer bg-transparent'>
               <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких операций ещё нет
