@@ -21,7 +21,7 @@ const emit = defineEmits([
 </script>
 
 <template>
-  <ModalBase @close='isShowMobileFilters = false'>
+  <ModalBase @close='emit("close")'>
     <div class='modal-header'>
       <h5 class='modal-title'>Фильтры операций</h5>
       <button class='btn-close' type='button' @click='emit("close")' />
