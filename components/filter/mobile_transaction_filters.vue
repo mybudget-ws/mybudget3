@@ -21,35 +21,48 @@ const emit = defineEmits([
 </script>
 
 <template>
-  <div class='col-12'>
-    <FilterKinds
-      :is-loading='!isLoaded'
-      @update:items='emit("kinds-change", $event)'
-    />
+  <ModalBase @close='isShowMobileFilters = false'>
+    <div class='modal-header'>
+      <h5 class='modal-title'>Фильтры операций</h5>
+      <button class='btn-close' type='button' @click='emit("close")' />
+    </div>
 
-    <FilterAccounts
-      :reload='transactionEventTicks'
-      @update:items='emit("accounts-change", $event)'
-    />
+    <div class='modal-body'>
+      <div class='row mb-3'>
+        <div class='col-12'>
+          <block />
+          <FilterKinds
+            :is-loading='!isLoaded'
+            @update:items='emit("kinds-change", $event)'
+          />
 
-    <FilterCategories
-      @update:items='emit("categories-change", $event)'
-    />
+          <FilterAccounts
+            :reload='transactionEventTicks'
+            @update:items='emit("accounts-change", $event)'
+          />
 
-    <FilterProjects
-      @update:items='emit("projects-change", $event)'
-    />
+          <FilterCategories
+            @update:items='emit("categories-change", $event)'
+          />
 
-    <FilterProperties
-      @update:items='emit("properties-change", $event)'
-    />
+          <FilterProjects
+            @update:items='emit("projects-change", $event)'
+          />
 
-    <button
-      type='button'
-      class='btn btn-primary btn-sm d-block mx-auto mb-3'
-      @click='emit("close")'
-    >
-      Закрыть
-    </button>
-  </div>
+          <FilterProperties
+            @update:items='emit("properties-change", $event)'
+          />
+        </div>        
+      </div>
+    </div>
+    <div class='modal-footer'>
+      <button
+        type='button'
+        class='btn btn-primary'
+        @click='emit("close")'
+      >
+        Закрыть
+      </button>
+    </div>
+  </ModalBase>
 </template>
