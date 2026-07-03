@@ -196,8 +196,7 @@ watchEffect(() => {
                 </div>
 
                 <div class='flex-grow-1 min-w-0'>
-
-                  <div class='fw-medium text-truncate'>
+                  <div class='card-title text-truncate'>
                     {{ item.name }}
 
                     <span v-if='isShowKind(item)' class='badge ms-1'>
@@ -205,18 +204,11 @@ watchEffect(() => {
                     </span>
                   </div>
 
-                  <div
-                    class='mt-1 fw-medium'
-                    :class='{
-                      "text-success": item.balance > 0,
-                      "text-danger": item.balance < 0
-                    }'
-                  >
-                    <Amount
-                      :value='item.balance'
-                      :currency='item.currency.name'
-                    />
-                  </div>
+                  <Amount
+                    is-color
+                    :value='item.balance'
+                    :currency='item.currency.name'
+                  />
 
                   <div
                     v-if='item.description'
