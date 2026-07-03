@@ -280,7 +280,11 @@ watchEffect(() => {
                 </tbody>
               </table>
             </div>
-              <div class='card-footer d-flex align-items-center'>
+          </div>
+          <div
+              v-if='isEmpty || isError'
+              class='card-footer d-flex align-items-center border-top-0'
+            >
               <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких проектов ещё нет
               </i>
@@ -289,7 +293,6 @@ watchEffect(() => {
                 Попробуйте повторить операцию, или обратитесь в поддержку.
               </i>
             </div>
-          </div>
         </div>
       </div>
     </div>
