@@ -9,6 +9,7 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconSearch,
+  IconFilter,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -16,10 +17,13 @@ import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
+import MobileTransactionFilters from '~/components/filter/mobile_transaction_filters.vue';
+import { useDevice } from '~/composables/use_device';
 
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
+const { isMobile } = useDevice();
 
 const PER_PAGE = 50;
 const hasMore = ref(true);
@@ -31,6 +35,7 @@ const isCopyItem = ref(false);
 const isShowModal = ref(false);
 const isShowModalTransfer = ref(false);
 const isShowModalAccount = ref(false);
+const isShowMobileFilters = ref(false);
 const currentKind = ref(KIND_EXPENSE);
 const currentItem = ref(null);
 const page = ref(1);
@@ -348,6 +353,17 @@ watch(
     @saved='onSaved'
     @close='isShowModalAccount = false'
   />
+  <MobileTransactionFilters
+    v-if='isShowMobileFilters'
+    :is-loaded='isLoaded'
+    :transaction-event-ticks='transactionEventTicks'
+    @close='isShowMobileFilters = false'
+    @kinds-change='onKindsChange'
+    @accounts-change='onAccountsChange'
+    @categories-change='onCategoriesChange'
+    @projects-change='onProjectsChange'
+    @properties-change='onPropertiesChange'
+  />
 
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
@@ -364,7 +380,13 @@ watch(
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex flex-wrap btn-list'>
-                  <div class='input-group input-group-flat w-auto'>
+                  <div
+                    class='input-group input-group-flat'
+                    :class='{
+                      "w-auto" : !isMobile,
+                      "mt-1" : isMobile,
+                     }'
+                  >
                     <span class='input-group-text'>
                       <IconSearch size='20' stroke-width='1' />
                     </span>
@@ -381,27 +403,43 @@ watch(
                       <kbd>Enter</kbd>
                     </span>
                   </div>
-                  <button
-                    class='btn btn-outline-green'
-                    type='button'
-                    @click='openCreate(KIND_INCOME)'
+
+                  <div
+                    class='d-flex justify-content-between'
+                    :class='{ "w-100": isMobile }'
                   >
-                    <IconArrowUp stroke-width='2' />
-                  </button>
-                  <button
-                    class='btn btn-outline-secondary'
-                    type='button'
-                    @click='openCreateTransfer()'
-                  >
-                    <IconArrowsRightLeft stroke-width='2' />
-                  </button>
-                  <button
-                    class='btn btn-primary'
-                    type='button'
-                    @click='openCreate(KIND_EXPENSE)'
-                  >
-                    <IconArrowDown stroke-width='2' />
-                  </button>
+                    <div class='d-flex gap-2'>
+                      <button
+                        class='btn btn-outline-green'
+                        type='button'
+                        @click='openCreate(KIND_INCOME)'
+                      >
+                        <IconArrowUp stroke-width='2' />
+                      </button>
+                      <button
+                        class='btn btn-outline-secondary'
+                        type='button'
+                        @click='openCreateTransfer()'
+                      >
+                        <IconArrowsRightLeft stroke-width='2' />
+                      </button>
+                      <button
+                        class='btn btn-primary'
+                        type='button'
+                        @click='openCreate(KIND_EXPENSE)'
+                      >
+                        <IconArrowDown stroke-width='2' />
+                      </button>
+                    </div>
+                    <button
+                      v-if='isMobile'
+                      class='btn btn-ghost-secondary'
+                      type='button'
+                      @click='isShowMobileFilters = true'
+                    >
+                      <IconFilter stroke-width='2' />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -582,7 +620,10 @@ watch(
         </div>
       </div>
     </div>
-    <div class='col-sm-12 col-lg-3 col-xl-2'>
+    <div
+      v-show='!isMobile'
+      class='col-sm-12 col-lg-3 col-xl-2'
+    >
       <FilterKinds :is-loading='!isLoaded' @update:items='onKindsChange' />
       <FilterAccounts :reload='transactionEventTicks' @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
