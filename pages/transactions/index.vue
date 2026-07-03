@@ -19,7 +19,6 @@ import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
 import { useDevice } from '~/composables/use_device';
-import MobileTransactionFilters from '~/components/filter/mobile_transaction_filters.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -354,7 +353,7 @@ watch(
     @saved='onSaved'
     @close='isShowModalAccount = false'
   />
-  <MobileTransactionFilters
+  <ModalTransactionFilters
     v-if='isShowMobileFilters'
     :is-loaded='isLoaded'
     :transaction-event-ticks='transactionEventTicks'
