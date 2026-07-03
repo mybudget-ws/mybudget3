@@ -380,7 +380,13 @@ watch(
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex flex-wrap btn-list'>
-                  <div class='input-group input-group-flat w-auto'>
+                  <div
+                    class='input-group input-group-flat'
+                    :class='{
+                      "w-auto" : !isMobile,
+                      "mt-1" : isMobile,
+                     }'
+                  >
                     <span class='input-group-text'>
                       <IconSearch size='20' stroke-width='1' />
                     </span>
@@ -397,35 +403,43 @@ watch(
                       <kbd>Enter</kbd>
                     </span>
                   </div>
-                  <button
-                    class='btn btn-outline-green'
-                    type='button'
-                    @click='openCreate(KIND_INCOME)'
+
+                  <div
+                    class='d-flex justify-content-between'
+                    :class='{ "w-100": isMobile }'
                   >
-                    <IconArrowUp stroke-width='2' />
-                  </button>
-                  <button
-                    class='btn btn-outline-secondary'
-                    type='button'
-                    @click='openCreateTransfer()'
-                  >
-                    <IconArrowsRightLeft stroke-width='2' />
-                  </button>
-                  <button
-                    class='btn btn-primary'
-                    type='button'
-                    @click='openCreate(KIND_EXPENSE)'
-                  >
-                    <IconArrowDown stroke-width='2' />
-                  </button>
-                  <button
-                    v-if='isMobile'
-                    class='btn btn-ghost-secondary'
-                    type='button'
-                    @click='isShowMobileFilters = true'
-                  >
-                    <IconFilter stroke-width='2' />
-                  </button>
+                    <div class='d-flex gap-2'>
+                      <button
+                        class='btn btn-outline-green'
+                        type='button'
+                        @click='openCreate(KIND_INCOME)'
+                      >
+                        <IconArrowUp stroke-width='2' />
+                      </button>
+                      <button
+                        class='btn btn-outline-secondary'
+                        type='button'
+                        @click='openCreateTransfer()'
+                      >
+                        <IconArrowsRightLeft stroke-width='2' />
+                      </button>
+                      <button
+                        class='btn btn-primary'
+                        type='button'
+                        @click='openCreate(KIND_EXPENSE)'
+                      >
+                        <IconArrowDown stroke-width='2' />
+                      </button>
+                    </div>
+                    <button
+                      v-if='isMobile'
+                      class='btn btn-ghost-secondary'
+                      type='button'
+                      @click='isShowMobileFilters = true'
+                    >
+                      <IconFilter stroke-width='2' />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
