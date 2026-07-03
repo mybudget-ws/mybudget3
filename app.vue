@@ -1,6 +1,6 @@
 <script setup>
 import { getData, setData } from 'nuxt-storage/local-storage';
-import Collapse from 'bootstrap/js/dist/collapse'
+import { Collapse } from '@tabler/core/dist/js/tabler.min.js'
 import {
   IconSun,
   IconMoon,
