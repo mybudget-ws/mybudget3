@@ -9,6 +9,7 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconSearch,
+  IconDotsVertical,
   IconFilter,
 } from '@tabler/icons-vue';
 
@@ -17,7 +18,6 @@ import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
-import MobileTransactionFilters from '~/components/filter/mobile_transaction_filters.vue';
 import { useDevice } from '~/composables/use_device';
 
 const route = useRoute();
@@ -353,7 +353,7 @@ watch(
     @saved='onSaved'
     @close='isShowModalAccount = false'
   />
-  <MobileTransactionFilters
+  <ModalTransactionFilters
     v-if='isShowMobileFilters'
     :is-loaded='isLoaded'
     :transaction-event-ticks='transactionEventTicks'
@@ -497,7 +497,131 @@ watch(
           <div v-if='isLoading' class='card-body text-center'>
             <PlaceholderLoading />
           </div>
-          <div v-else class='advanced-table'>
+
+          <div v-if='!isLoading && isMobile'>
+            <div
+              v-for='(item, index) in transactions'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-1": index === transactions.length - 1 }'
+            >
+              <div class='d-flex w-100'>
+                <div class='flex-grow-1 min-w-0'>
+                  <div>
+                    {{ formatDate(item.dateAt) }}
+                  </div>
+
+                  <Amount
+                    class='d-block mt-1'
+                    :value='item.amount'
+                    :currency='item.account.currency.name'
+                    :is-color='!item.isTransfer'
+                  />
+
+                  <div class='badges-list mt-2'>
+                    <BadgeAccount
+                      :name='item.account.name'
+                      @click='onAccountClick(item.account.id)'
+                    />
+
+                    <template v-if='item.isTransfer'>
+                      <span
+                        v-if='item.amount > 0'
+                        class='badge bg-green-lt text-green-lt-fg'
+                      >
+                        <IconArrowNarrowLeft size='14' />
+                      </span>
+
+                      <span
+                        v-if='item.amount < 0'
+                        class='badge bg-red-lt text-red-lt-fg'
+                      >
+                        <IconArrowNarrowRight size='14' />
+                      </span>
+                    </template>
+
+                    <BadgeProject
+                      v-if='item.project'
+                      :name='item.project.name'
+                      @click='onProjectClick(item.project.id)'
+                    />
+                    <BadgeProperty
+                      v-if='item.property'
+                      :name='item.property.name'
+                      @click='onPropertyClick(item.property.id)'
+                    />
+                    <BadgeCategory
+                      v-for='cat in item.categories'
+                      :key='cat.id'
+                      :name='cat.name'
+                      @click='onCategoryClick(cat.id)'
+                    />
+                  </div>
+
+                  <div
+                    v-if='item.description'
+                    class='text-secondary small mt-1 text-truncate'
+                  >
+                    {{ item.description }}
+                  </div>
+
+                </div>
+
+                <div class='ms-2 d-flex align-items-center'>
+                  <div class='dropdown'>
+                    <a
+                      href='#'
+                      class='btn-action'
+                      data-bs-toggle='dropdown'
+                      @click.prevent
+                    >
+                      <IconDotsVertical size='20' stroke-width='1' />
+                    </a>
+
+                    <div class='dropdown-menu dropdown-menu-end'>
+                      <button class='dropdown-item' @click='openEdit(item)'>
+                        Редактировать
+                      </button>
+
+                      <button class='dropdown-item' @click='openCopy(item)'>
+                        Повторить
+                      </button>
+
+                      <button class='dropdown-item text-danger' @click='destroy(item)'>
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div v-if='isEmpty' class='text-secondary text-center mt-3'>
+              Похоже таких операций ещё нет
+            </div>
+
+            <button
+              v-else
+              class='btn btn-outline-secondary w-100 border-0'
+              :disabled='!hasMore || isLoadingMore'
+              @click='loadMore'
+            >
+              <template v-if='isLoadingMore'>
+                Загрузка...
+              </template>
+
+              <template v-else-if='hasMore'>
+                Загрузить ещё
+              </template>
+
+              <template v-else>
+                Операций больше нет
+              </template>
+            </button>
+          </div>
+            
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
@@ -592,6 +716,7 @@ watch(
                 </tbody>
               </table>
             </div>
+
             <div class='card-footer bg-transparent'>
               <i v-if='isEmpty' class='text-secondary'>
                 Похоже таких операций ещё нет
