@@ -417,7 +417,6 @@ watchEffect(() => {
               </table>
             </div>
           </div>
-
           <div
             v-if='isShowFooter'
             class='card-footer d-flex align-items-center border-top-0'
