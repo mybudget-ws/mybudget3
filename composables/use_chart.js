@@ -97,5 +97,5 @@ export const useChart = () => {
     onProjectClick,
     onPropertyClick,
     onKindClick,
-  }
-}
+  };
+};
