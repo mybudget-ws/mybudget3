@@ -22,6 +22,8 @@ const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {
 
 const PERIODS = computed(() => ({
   CURRENT_MONTH: currentMonthLabel.charAt(0).toUpperCase() + currentMonthLabel.slice(1),
+  DAYS_30: '30 дней',
+  DAYS_60: '60 дней',
   YEARS_1: 'Год',
   YEARS_2: 'Два года',
   YEARS_5: 'Пять лет',
