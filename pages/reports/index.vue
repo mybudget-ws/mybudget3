@@ -8,6 +8,7 @@ import { useChart } from '~/composables/use_chart';
 const route = useRoute();
 const { token } = useAuth();
 const {
+  CHART_LABEL_COLOR,
   CHART_HEIGTH,
   PERIODS,
   period,
@@ -18,7 +19,6 @@ const {
   onProjectClick,
   onPropertyClick,
   onKindClick,
-  labelColor,
 } = useChart();
 
 const CHART_TYPE = 'line';
@@ -119,7 +119,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 0,
       style: {
-        colors: labelColor,
+        colors: CHART_LABEL_COLOR,
       }
     },
     tooltip: { enabled: false },
@@ -130,7 +130,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 4,
       style: {
-        colors: labelColor,
+        colors: CHART_LABEL_COLOR,
       },
       formatter: (val) => {
         return new Intl.NumberFormat('ru-RU', {
@@ -154,7 +154,7 @@ const chartOptions = computed(() => ({
       vertical: 8
     },
     labels: {
-      colors: labelColor,
+      colors: CHART_LABEL_COLOR,
     },
   },
 }));

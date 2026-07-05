@@ -6,8 +6,7 @@ export const useChart = () => {
   const appConfig = useAppConfig();
 
   const CHART_HEIGTH = 500;
-
-  const labelColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
+  const CHART_LABEL_COLOR = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 
   const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {
     month: 'long',
@@ -88,6 +87,7 @@ export const useChart = () => {
 
   return {
     CHART_HEIGTH,
+    CHART_LABEL_COLOR,
     PERIODS,
     period,
     setPeriod,
@@ -97,6 +97,5 @@ export const useChart = () => {
     onProjectClick,
     onPropertyClick,
     onKindClick,
-    labelColor,
   }
 }
