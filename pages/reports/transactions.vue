@@ -15,7 +15,7 @@ const isError = ref(false);
 const chartData = ref({});
 
 const CHART_HEIGTH = 500;
-const CHART_TYPE = 'line';
+const CHART_TYPE = 'bar';
 const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {
   month: 'long',
 }).format(new Date());
@@ -32,9 +32,7 @@ const PERIODS = computed(() => ({
 const isPeriodValid = (value) => Boolean(PERIODS.value[value]);
 const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
 
-const textColor = computed(() =>
-  appConfig.theme.dark ? '#e2e8f0' : '#334155'
-);
+const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
 
@@ -88,7 +86,7 @@ const load = async () => {
   isError.value = false;
 
   try {
-    const result = await api.chartBalances(token.value, filters.value);
+    const result = await api.chartTransactions(token.value, filters.value);
     if (result) {
       chartData.value = result;
     } else {
@@ -185,22 +183,25 @@ const chartOptions = computed(() => ({
     },
     strokeDashArray: 4,
   },
+  dataLabels: {
+    enabled: false,
+  },
   xaxis: {
+    categories: [...categories.value],
     labels: {
       padding: 0,
       style: {
-        colors: textColor.value,
+        colors: textColor,
       }
     },
     tooltip: { enabled: false },
-    type: 'datetime',
-    categories: [...categories.value],
+    // type: 'datetime',
   },
   yaxis: {
     labels: {
       padding: 4,
       style: {
-        colors: textColor.value,
+        colors: textColor,
       },
       formatter: (val) => {
         return new Intl.NumberFormat('ru-RU', {
@@ -227,6 +228,11 @@ const chartOptions = computed(() => ({
       colors: textColor.value,
     },
   },
+  // labels: [
+  //   '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24',
+  //   '2020-06-25', '2020-06-26', '2020-06-27', '2020-06-28',
+  //   '2020-06-29', '2020-06-30', '2020-07-01', '2020-07-02'
+  // ],
 }));
 </script>
 
@@ -297,15 +303,14 @@ const chartOptions = computed(() => ({
 
       <div class='card mt-3'>
         <div class='card-header'>
-          <h3 class='card-title'>Баланс</h3>
           <NuxtLink
-            to='/reports/transactions'
-            class='card-title text-secondary ms-3'
+            to='/reports'
+            class='card-title text-secondary'
           >
-            Операции
+            Баланс
           </NuxtLink>
+          <h3 class='card-title ms-3'>Операции</h3>
         </div>
-
         <div class='card-body'>
           <div v-if='isLoading' class='text-center w-full'>
             <PlaceholderLoading />
