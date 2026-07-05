@@ -101,11 +101,7 @@ const chartOptions = computed(() => ({
   },
   colors: CHART_COLORS,
   tooltip: { theme: 'dark' },
-  stroke: {
-    width: 3,
-    lineCap: 'round',
-    curve: 'straight',
-  },
+  stroke: { show: false },
   grid: {
     padding: {
       top: -20,
