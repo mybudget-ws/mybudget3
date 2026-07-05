@@ -19,6 +19,7 @@ const CHART_TYPE = 'bar';
 const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {
   month: 'long',
 }).format(new Date());
+const labelColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 
 const PERIODS = computed(() => ({
   CURRENT_MONTH: currentMonthLabel.charAt(0).toUpperCase() + currentMonthLabel.slice(1),
@@ -32,7 +33,6 @@ const PERIODS = computed(() => ({
 const isPeriodValid = (value) => Boolean(PERIODS.value[value]);
 const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
 
-const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 const series = computed(() => chartData.value.series);
 const categories = computed(() => chartData.value.categories);
 
@@ -191,7 +191,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 0,
       style: {
-        colors: textColor,
+        colors: labelColor,
       }
     },
     tooltip: { enabled: false },
@@ -201,7 +201,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 4,
       style: {
-        colors: textColor,
+        colors: labelColor,
       },
       formatter: (val) => {
         return new Intl.NumberFormat('ru-RU', {
@@ -225,7 +225,7 @@ const chartOptions = computed(() => ({
       vertical: 8
     },
     labels: {
-      colors: textColor.value,
+      colors: labelColor,
     },
   },
   // labels: [
