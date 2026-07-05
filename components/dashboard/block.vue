@@ -1,9 +1,12 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
 import { CHART_COLORS } from '~/lib/consts';
+import { useChart } from '~/composables/use_chart';
 
-const appConfig = useAppConfig()
-const textColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
+const {
+  labelColor,
+} = useChart();
+
 const CHART_HEIGTH = 200;
 
 const props = defineProps({
@@ -76,7 +79,7 @@ const chartOptions = computed(() => ({
       show: false,
       padding: 0,
       style: {
-        colors: textColor,
+        colors: labelColor,
       }
     },
   },
@@ -85,7 +88,7 @@ const chartOptions = computed(() => ({
     labels: {
       padding: 4,
       style: {
-        colors: textColor,
+        colors: labelColor,
       }
     },
   },
