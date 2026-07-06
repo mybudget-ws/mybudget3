@@ -55,14 +55,48 @@ const allPrices = computed(() => {
 
 const isShowFooter = computed(() => allPrices.value.length > DEFAULT_PRICE_ITEMS);
 
-const prices = computed(() => {
-  if (isShowAllPrices.value) {
-    return allPrices.value;
-  }
+const pricesWithChange = computed(() => {
+  const sorted = [...allPrices.value].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
 
-  return allPrices.value.slice(0, DEFAULT_PRICE_ITEMS);
+  return sorted.map((price, index) => {
+    const previous = sorted[index + 1];
+
+    if (!previous || previous.amount === 0) {
+      return {
+        ...price,
+        change: null,
+        changeClass: '',
+      };
+    }
+
+    const change = ((price.amount - previous.amount) / previous.amount) * 100;
+    const rounded = Number(change.toFixed(2));
+
+    let changeClass = 'text-secondary';
+
+    if (rounded > 0) {
+      changeClass = 'text-success';
+    } else if (rounded < 0) {
+      changeClass = 'text-danger';
+    }
+
+    return {
+      ...price,
+      change: rounded,
+      changeClass,
+    };
+  });
 });
 
+const prices = computed(() => {
+  if (isShowAllPrices.value) {
+    return pricesWithChange.value;
+  }
+
+  return pricesWithChange.value.slice(0, DEFAULT_PRICE_ITEMS);
+});
 const load = async (isQuite = false) => {
   isError.value = false;
   if (isQuite) {
@@ -373,6 +407,13 @@ const chartOptions = computed(() => ({
                       copyable
                     />
                   </div>
+                  <div
+                    v-if='price.change !== null'
+                    class='small mt-1'
+                    :class='price.changeClass'
+                  >
+                    {{ price.change }} %
+                  </div>
                 </div>
               </div>
 
@@ -438,6 +479,7 @@ const chartOptions = computed(() => ({
                 <thead>
                   <tr>
                     <th>Дата</th>
+                    <th class='w-1 text-nowrap text-end'/>
                     <th class='w-1 text-nowrap text-end'>Величина</th>
                     <th class='w-1'/>
                   </tr>
@@ -449,7 +491,14 @@ const chartOptions = computed(() => ({
                     :key='price.id'
                   >
                     <td>{{ formatDate(price.date) }}</td>
-
+                     <td class='text-nowrap text-end'>
+                      <span
+                        v-if='price.change !== null'
+                        :class='price.changeClass'
+                      >
+                        {{ price.change }} %
+                      </span>
+                    </td>
                     <td class='text-nowrap text-end'>
                       <Amount
                         :value='price.amount'
@@ -457,7 +506,6 @@ const chartOptions = computed(() => ({
                         copyable
                       />
                     </td>
-
                     <td>
                       <div class='btn-actions'>
                         <button
@@ -635,6 +683,7 @@ const chartOptions = computed(() => ({
                   <tr>
                     <th class='w-1 text-nowrap'>Дата</th>
                     <th class='w-1 text-nowrap text-end'>Величина</th>
+                    <th class='w-1 text-nowrap text-end'/>
                     <th class='w-1 text-nowrap'>Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
