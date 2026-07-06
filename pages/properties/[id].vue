@@ -609,14 +609,6 @@ const chartOptions = computed(() => ({
                       >
                         Редактировать
                       </button>
-
-                      <button
-                        class='dropdown-item'
-                        @click='openCreateTransaction(KIND_EXPENSE, item)'
-                      >
-                        Повторить
-                      </button>
-
                       <button
                         class='dropdown-item text-danger'
                         @click='onDeleteTransaction(item)'
