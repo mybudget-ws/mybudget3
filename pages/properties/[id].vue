@@ -7,12 +7,16 @@ import {
   IconPencil,
   IconTrash,
   IconPlus,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS  } from '~/lib/consts';
+import { useDevice } from '~/composables/use_device';
+
+const { isMobile } = useDevice();
 
 definePageMeta({
   middleware: ['authenticated'],
@@ -237,7 +241,12 @@ const chartOptions = computed(() => ({
 
     <template v-else>
       <div class='card mb-4'>
-        <div class='card-body d-flex justify-content-between align-items-center'>
+        <div
+          class='card-body'
+          :class='isMobile
+            ? "d-flex flex-column gap-2"
+            : "d-flex justify-content-between align-items-center"'
+        >
           <div>
             <h2 class='mb-1'>
               {{ property?.name || 'Имущество' }}
@@ -252,62 +261,58 @@ const chartOptions = computed(() => ({
             </div>
           </div>
 
-          <div v-if='property' class='d-flex gap-4'>
-            <div class='row align-items-center'>
-              <div class='col-auto'>
-                <div class='bg-green-lt avatar shadow-none'>
-                  <IconArrowUp size='24' />
-                </div>
+          <div
+            v-if='property'
+            :class='isMobile ? "d-flex flex-column gap-3 mt-2" : "d-flex gap-4"'
+          >
+            <div class='d-flex align-items-center gap-2'>
+              <div class='bg-green-lt avatar shadow-none'>
+                <IconArrowUp size='24' />
               </div>
-              <div class='col'>
+
+              <div>
                 <Amount
                   class='fw-medium'
                   :value='property.totalIncome'
                   :currency='property.currency.name'
                   copyable
                 />
-
                 <div class='text-secondary small'>
                   Доходы
                 </div>
               </div>
             </div>
 
-            <div class='row align-items-center'>
-              <div class='col-auto'>
-                <span class='bg-red-lt avatar shadow-none'>
-                  <IconArrowDown size='24' />
-                </span>
+            <div class='d-flex align-items-center gap-2'>
+              <div class='bg-red-lt avatar shadow-none'>
+                <IconArrowDown size='24' />
               </div>
 
-              <div class='col'>
+              <div>
                 <Amount
                   class='fw-medium'
                   :value='Math.abs(property.totalExpense)'
                   :currency='property.currency.name'
                   copyable
                 />
-
                 <div class='text-secondary small'>
                   Расходы
                 </div>
               </div>
             </div>
 
-            <div class='row align-items-center'>
-              <div class='col-auto'>
-                <span class='bg-primary-lt avatar shadow-none'>
-                  <IconCoins size='24' />
-                </span>
-              </div>  
-              <div class='col'>
+            <div class='d-flex align-items-center gap-2'>
+              <div class='bg-primary-lt avatar shadow-none'>
+                <IconCoins size='24' />
+              </div>
+
+              <div>
                 <Amount
                   class='fw-medium'
                   :value='property.amount'
                   :currency='property.currency.name'
                   copyable
                 />
-
                 <div class='text-secondary small'>
                   Стоимость
                 </div>
@@ -348,7 +353,86 @@ const chartOptions = computed(() => ({
             </div>
           </div>
 
-          <div class='advanced-table'>
+          <div v-if='!isLoading && isMobile'>
+  <div
+    v-for='(price, index) in prices'
+    :key='price.id'
+    class='card-header'
+    :class='{ "border-bottom-0": index === prices.length - 1 && !isShowFooter }'
+  >
+    <div class='d-flex flex-grow-1 align-items-center'>
+      <div class='col'>
+        <div class='card-title mb-0'>
+          {{ formatDate(price.date) }}
+        </div>
+
+        <div class='card-subtitle text-secondary'>
+          <Amount
+            :value='price.amount'
+            :currency='price.currency?.name'
+            copyable
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class='card-actions'>
+      <div class='dropdown'>
+        <a
+          href='#'
+          class='btn-action'
+          data-bs-toggle='dropdown'
+          @click.prevent
+        >
+          <IconDotsVertical
+            size='20'
+            stroke-width='1'
+          />
+        </a>
+
+        <div class='dropdown-menu dropdown-menu-end'>
+          <a
+            class='dropdown-item'
+            href='#'
+            @click.prevent='onEditPrice(price)'
+          >
+            Редактировать
+          </a>
+
+          <a
+            v-if='allPrices.length > 1'
+            class='dropdown-item text-danger'
+            href='#'
+            @click.prevent='onDeletePrice(price)'
+          >
+            Удалить
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-if='!prices.length'
+    class='card-body text-center text-secondary py-5'
+  >
+    История цен пустая
+  </div>
+
+  <div
+    v-if='isShowFooter'
+    class='card-footer bg-transparent border-0'
+  >
+    <button
+      class='btn btn-action btn-sm text-secondary w-100 p-2'
+      @click='isShowAllPrices = !isShowAllPrices'
+    >
+      {{ isShowAllPrices ? 'Скрыть' : 'Показать все' }}
+    </button>
+  </div>
+</div>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
