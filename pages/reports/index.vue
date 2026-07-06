@@ -180,7 +180,11 @@ const chartOptions = computed(() => ({
             </nav>
           </div>
         </div>
-        <div v-if='isTopFiltersVisible' class='card-body border-top'>
+        <div
+          v-if='isTopFiltersVisible'
+          class='card-body border-top'
+          :style='{ minHeight: "56px" }'
+        >
           <div class='badges-list'>
             <BadgeCategory
               v-for='kind in selectedKinds'
