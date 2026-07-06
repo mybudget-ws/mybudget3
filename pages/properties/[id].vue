@@ -354,83 +354,83 @@ const chartOptions = computed(() => ({
           </div>
 
           <div v-if='!isLoading && isMobile'>
-  <div
-    v-for='(price, index) in prices'
-    :key='price.id'
-    class='card-header'
-    :class='{ "border-bottom-0": index === prices.length - 1 && !isShowFooter }'
-  >
-    <div class='d-flex flex-grow-1 align-items-center'>
-      <div class='col'>
-        <div class='card-title mb-0'>
-          {{ formatDate(price.date) }}
-        </div>
+            <div
+              v-for='(price, index) in prices'
+              :key='price.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === prices.length - 1 && !isShowFooter }'
+            >
+              <div class='d-flex flex-grow-1 align-items-center'>
+                <div class='col'>
+                  <div class='card-title mb-0'>
+                    {{ formatDate(price.date) }}
+                  </div>
 
-        <div class='card-subtitle text-secondary'>
-          <Amount
-            :value='price.amount'
-            :currency='price.currency?.name'
-            copyable
-          />
-        </div>
-      </div>
-    </div>
+                  <div class='card-subtitle text-secondary'>
+                    <Amount
+                      :value='price.amount'
+                      :currency='price.currency?.name'
+                      copyable
+                    />
+                  </div>
+                </div>
+              </div>
 
-    <div class='card-actions'>
-      <div class='dropdown'>
-        <a
-          href='#'
-          class='btn-action'
-          data-bs-toggle='dropdown'
-          @click.prevent
-        >
-          <IconDotsVertical
-            size='20'
-            stroke-width='1'
-          />
-        </a>
+              <div class='card-actions'>
+                <div class='dropdown'>
+                  <a
+                    href='#'
+                    class='btn-action'
+                    data-bs-toggle='dropdown'
+                    @click.prevent
+                  >
+                    <IconDotsVertical
+                      size='20'
+                      stroke-width='1'
+                    />
+                  </a>
 
-        <div class='dropdown-menu dropdown-menu-end'>
-          <a
-            class='dropdown-item'
-            href='#'
-            @click.prevent='onEditPrice(price)'
-          >
-            Редактировать
-          </a>
+                  <div class='dropdown-menu dropdown-menu-end'>
+                    <a
+                      class='dropdown-item'
+                      href='#'
+                      @click.prevent='onEditPrice(price)'
+                    >
+                      Редактировать
+                    </a>
 
-          <a
-            v-if='allPrices.length > 1'
-            class='dropdown-item text-danger'
-            href='#'
-            @click.prevent='onDeletePrice(price)'
-          >
-            Удалить
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+                    <a
+                      v-if='allPrices.length > 1'
+                      class='dropdown-item text-danger'
+                      href='#'
+                      @click.prevent='onDeletePrice(price)'
+                    >
+                      Удалить
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  <div
-    v-if='!prices.length'
-    class='card-body text-center text-secondary py-5'
-  >
-    История цен пустая
-  </div>
+            <div
+              v-if='!prices.length'
+              class='card-body text-center text-secondary py-5'
+            >
+              История цен пустая
+            </div>
 
-  <div
-    v-if='isShowFooter'
-    class='card-footer bg-transparent border-0'
-  >
-    <button
-      class='btn btn-action btn-sm text-secondary w-100 p-2'
-      @click='isShowAllPrices = !isShowAllPrices'
-    >
-      {{ isShowAllPrices ? 'Скрыть' : 'Показать все' }}
-    </button>
-  </div>
-</div>
+            <div
+              v-if='isShowFooter'
+              class='card-footer bg-transparent border-0'
+            >
+              <button
+                class='btn btn-action btn-sm text-secondary w-100 p-2'
+                @click='isShowAllPrices = !isShowAllPrices'
+              >
+                {{ isShowAllPrices ? 'Скрыть' : 'Показать все' }}
+              </button>
+            </div>
+          </div>
 
           <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
@@ -506,7 +506,9 @@ const chartOptions = computed(() => ({
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
               <div class='col'>
-                <h2 class='mb-0'>Операции</h2>
+                <h2 :class='isMobile ? "mb-2" : "mb-0"'>
+                  Операции
+                </h2>
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex gap-2'>
@@ -529,7 +531,112 @@ const chartOptions = computed(() => ({
               </div>
             </div>
           </div>
-          <div class='advanced-table'>
+
+          <div v-if='!isLoading && isMobile'>
+            <div
+              v-for='(item, index) in property?.transactions || []'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === property?.transactions.length - 1 }'
+            >
+              <div class='d-flex w-100'>
+
+                <div class='flex-grow-1 min-w-0'>
+
+                  <div class='text-secondary'>
+                    {{ formatDate(item.dateAt) }}
+                  </div>
+
+                  <div class='mt-1'>
+                    <Amount
+                      :value='item.amount'
+                      :currency='item.account?.currency?.name'
+                      :is-color='true'
+                      copyable
+                    />
+                  </div>
+
+                  <div class='badges-list mt-2'>
+                    <BadgeAccount
+                      :name='item.account?.name'
+                      class='no-hover'
+                    />
+
+                    <BadgeProject
+                      v-if='item.project'
+                      :name='item.project.name'
+                      class='no-hover'
+                    />
+
+                    <BadgeProperty
+                      v-if='item.property'
+                      :name='item.property.name'
+                      class='no-hover'
+                    />
+
+                    <BadgeCategory
+                      v-for='cat in item.categories'
+                      :key='cat.id'
+                      :name='cat.name'
+                      class='no-hover'
+                    />
+                  </div>
+
+                  <div
+                    v-if='item.description'
+                    class='text-secondary small mt-1 text-truncate'
+                  >
+                    {{ item.description }}
+                  </div>
+
+                </div>
+
+                <div class='ms-2 d-flex align-items-center'>
+                  <div class='dropdown'>
+                    <a
+                      href='#'
+                      class='btn-action'
+                      data-bs-toggle='dropdown'
+                      @click.prevent
+                    >
+                      <IconDotsVertical size='20' stroke-width='1' />
+                    </a>
+
+                    <div class='dropdown-menu dropdown-menu-end'>
+                      <button
+                        class='dropdown-item'
+                        @click='onEditTransaction(item)'
+                      >
+                        Редактировать
+                      </button>
+
+                      <button
+                        class='dropdown-item'
+                        @click='openCreateTransaction(KIND_EXPENSE, item)'
+                      >
+                        Повторить
+                      </button>
+
+                      <button
+                        class='dropdown-item text-danger'
+                        @click='onDeleteTransaction(item)'
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              v-if='!property?.transactions?.length'
+              class='text-secondary text-center mt-3'
+            >
+              Похоже, операций ещё нет
+            </div>
+          </div>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
