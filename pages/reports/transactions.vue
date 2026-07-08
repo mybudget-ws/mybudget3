@@ -167,22 +167,12 @@ const chartOptions = computed(() => ({
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <div class='card'>
-        <div class='card-header border-bottom-0'>
-          <h2 class='my-2'>Отчёты</h2>
-          <div class='card-actions'>
-            <nav class='nav nav-segmented w-100' role='tablist'>
-              <button
-                v-for='[key, label] in Object.entries(PERIODS)'
-                :key='key'
-                class='nav-link'
-                :class='{ active: period === key }'
-                @click='setPeriod(key)'
-              >
-                {{ label }}
-              </button>
-            </nav>
-          </div>
-        </div>
+        <ReportsHeader
+          :period='period'
+          :periods='PERIODS'
+          @change-period='setPeriod'
+          @show-filters='isShowMobileFilters = true'
+        />
         <div v-if='isTopFiltersVisible' class='card-body border-top'>
           <div class='badges-list'>
             <BadgeCategory
