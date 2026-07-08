@@ -185,7 +185,9 @@ const chartOptions = computed(() => ({
           class='card-body border-top'
           :style='{ minHeight: "56px" }'
         >
-          <div class='badges-list'>
+          <div
+            class='badges-list'
+            :style='{ minHeight: "22px" }'>
             <BadgeCategory
               v-for='kind in selectedKinds'
               :key='kind.id'
