@@ -4,7 +4,9 @@ import api from '~/lib/api';
 import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
+import { useDevice } from '~/composables/use_device';
 
+const { isMobile } = useDevice();
 const isShowMobileFilters = ref(false);
 const route = useRoute();
 const { token } = useAuth();
@@ -162,6 +164,15 @@ const chartOptions = computed(() => ({
 </script>
 
 <template>
+  <ModalReportsFilters
+    v-if='isShowMobileFilters'
+    @close='isShowMobileFilters = false'
+    @kinds-change='onKindsChange'
+    @accounts-change='onAccountsChange'
+    @categories-change='onCategoriesChange'
+    @projects-change='onProjectsChange'
+    @properties-change='onPropertiesChange'
+  />
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <div class='card'>
@@ -254,7 +265,10 @@ const chartOptions = computed(() => ({
       />
     </div>
 
-    <div class='col-sm-12 col-lg-3 col-xl-2'>
+    <div
+      v-show='!isMobile'
+      class='col-sm-12 col-lg-3 col-xl-2'
+    >
       <FilterKinds @update:items='onKindsChange' />
       <FilterAccounts @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
