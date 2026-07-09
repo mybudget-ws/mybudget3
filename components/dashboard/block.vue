@@ -100,7 +100,7 @@ const chartOptions = computed(() => ({
       </div>
     </div>
 
-    <div class='p-3 d-flex'>
+    <div class='p-3 d-flex border-bottom'>
       <div v-if='isLoading' class='text-center w-full'>
         <PlaceholderLoading />
       </div>
