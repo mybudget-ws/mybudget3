@@ -4,7 +4,10 @@ import api from '~/lib/api';
 import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
+import { useDevice } from '~/composables/use_device';
 
+const { isMobile } = useDevice();
+const isShowMobileFilters = ref(false);
 const route = useRoute();
 const { token } = useAuth();
 const {
@@ -161,29 +164,25 @@ const chartOptions = computed(() => ({
 </script>
 
 <template>
+  <ModalReportsFilters
+    v-if='isShowMobileFilters'
+    @close='isShowMobileFilters = false'
+    @kinds-change='onKindsChange'
+    @accounts-change='onAccountsChange'
+    @categories-change='onCategoriesChange'
+    @projects-change='onProjectsChange'
+    @properties-change='onPropertiesChange'
+  />
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <div class='card'>
-        <div class='card-header border-bottom-0'>
-          <h2 class='my-2'>Отчёты</h2>
-          <div class='card-actions'>
-            <nav class='nav nav-segmented w-100' role='tablist'>
-              <button
-                v-for='[key, label] in Object.entries(PERIODS)'
-                :key='key'
-                class='nav-link'
-                :class='{ active: period === key }'
-                @click='setPeriod(key)'
-              >
-                {{ label }}
-              </button>
-            </nav>
-          </div>
-        </div>
-        <div
-          v-if='isTopFiltersVisible'
-          class='card-body border-top'
-        >
+        <ReportsHeader
+          :period='period'
+          :periods='PERIODS'
+          @change-period='setPeriod'
+          @show-filters='isShowMobileFilters = true'
+        />
+        <div v-if='isTopFiltersVisible' class='card-body border-top'>
           <div class='badges-list'>
             <BadgeCategory
               v-for='kind in selectedKinds'
@@ -258,15 +257,12 @@ const chartOptions = computed(() => ({
           />
         </div>
       </div>
-
-      <AlertWarning
-        class='mt-3'
-        title='В разработке'
-        description='Не обращайте внимание'
-      />
     </div>
 
-    <div class='col-sm-12 col-lg-3 col-xl-2'>
+    <div
+      v-show='!isMobile'
+      class='col-sm-12 col-lg-3 col-xl-2'
+    >
       <FilterKinds @update:items='onKindsChange' />
       <FilterAccounts @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
