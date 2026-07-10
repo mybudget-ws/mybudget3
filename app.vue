@@ -185,4 +185,8 @@ watch(
 .badge.cursor-pointer:hover {
   opacity: 0.8;
 }
+
+.dropdown > .dropdown-menu {
+  position: fixed !important;
+}
 </style>
