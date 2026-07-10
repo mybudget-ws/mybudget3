@@ -180,7 +180,10 @@ const chartOptions = computed(() => ({
             </nav>
           </div>
         </div>
-        <div v-if='isTopFiltersVisible' class='card-body border-top'>
+        <div
+          v-if='isTopFiltersVisible'
+          class='card-body border-top'
+        >
           <div class='badges-list'>
             <BadgeCategory
               v-for='kind in selectedKinds'
