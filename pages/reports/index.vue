@@ -257,12 +257,6 @@ const chartOptions = computed(() => ({
           />
         </div>
       </div>
-
-      <AlertWarning
-        class='mt-3'
-        title='В разработке'
-        description='Не обращайте внимание'
-      />
     </div>
 
     <div
