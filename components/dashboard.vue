@@ -9,7 +9,9 @@ import {
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
+import { useDevice } from '~/composables/use_device';
 
+const { isMobile } = useDevice();
 const { token } = useAuth();
 const isLoading = ref(true);
 const isError = ref(false);
@@ -131,7 +133,10 @@ watch(token, (val) => {
     @saved='onSaved'
     @close='closeModals'
   />
-  <div class='row align-items-center mb-4'>
+  <div
+    class='row align-items-center'
+    :class='isMobile ? "mb-2" : "mb-4"'
+  >
     <div class='col'>
       <div v-if='isInitialLoading' class='text-start placeholder-glow' style='margin-bottom: .3rem;'>
         <div class='d-block placeholder col-1 mb-2' />
@@ -139,7 +144,10 @@ watch(token, (val) => {
       </div>
       <template v-else>
         <div class='page-pretitle'>Обзор</div>
-        <h2 class='page-title d-flex align-items-center gap-2'>
+        <h2
+          class='page-title d-flex align-items-center gap-2'
+          :class='{ "mb-1": isMobile }'
+        >
           {{ dashboard?.currentMonth }}
           <span
             v-if='isLoading'
@@ -186,7 +194,58 @@ watch(token, (val) => {
         :colors='["#0ca678"]'
         :chart-data='dashboard.incomesChart'
       >
-        <div class='card-table table-responsive'>
+        <div v-if='!isLoading && isMobile'>
+          <div
+            v-for='(item, index) in dashboard.incomes'
+            :key='item.id'
+            class='card-header'
+            :class='{ "border-bottom-0": index === dashboard.incomes.length - 1 }'
+          >
+            <div class='flex-fill'>
+
+              <div class='card-title'>
+                {{ formatDate(item.dateAt) }}
+              </div>
+
+              <div class='text-secondary mt-1'>
+                {{ item.account.name }}
+              </div>
+
+              <div class='mt-1'>
+                <Amount
+                  :value='item.amount'
+                  :currency='item.account.currency.name'
+                  class='text-success'
+                  copyable
+                />
+              </div>
+
+              <div class='badges-list mt-2'>
+                <BadgeCategory
+                  v-for='cat in item.categories'
+                  :key='cat.id'
+                  :name='cat.name'
+                  :is-clickable='false'
+                />
+              </div>
+
+            </div>
+
+            <div class='card-actions'>
+              <button
+                v-tooltip:bottom='"Повторить операцию"'
+                type='button'
+                class='btn btn-action'
+                @click='openCopy(item)'
+              >
+                <IconCopy size='18' stroke-width='1' />
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        <div v-else class='card-table table-responsive'>
           <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
@@ -246,7 +305,57 @@ watch(token, (val) => {
         :is-loading='isInitialLoading'
         :chart-data='dashboard.expensesChart'
       >
-        <div class='card-table table-responsive'>
+        <div v-if='!isLoading && isMobile'>
+          <div
+            v-for='(item, index) in dashboard.expenses'
+            :key='item.id'
+            class='card-header'
+            :class='{ "border-bottom-0": index === dashboard.expenses.length - 1 }'
+          >
+            <div class='flex-fill'>
+
+              <div class='card-title'>
+                {{ formatDate(item.dateAt) }}
+              </div>
+
+              <div class='text-secondary mt-1'>
+                {{ item.account.name }}
+              </div>
+
+              <div class='mt-1'>
+                <Amount
+                  :value='item.amount'
+                  :currency='item.account.currency.name'
+                  class='text-danger'
+                  copyable
+                />
+              </div>
+
+              <div class='badges-list mt-2'>
+                <BadgeCategory
+                  v-for='cat in item.categories'
+                  :key='cat.id'
+                  :name='cat.name'
+                  :is-clickable='false'
+                />
+              </div>
+
+            </div>
+
+            <div class='card-actions'>
+              <button
+                v-tooltip:bottom='"Повторить операцию"'
+                type='button'
+                class='btn btn-action'
+                @click='openCopy(item)'
+              >
+                <IconCopy size='18' stroke-width='1' />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class='card-table table-responsive'>
           <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
@@ -307,7 +416,59 @@ watch(token, (val) => {
         :is-loading='isInitialLoading'
         :chart-data='dashboard.accountsChart'
       >
-        <div class='card-table table-responsive'>
+        <div v-if='!isLoading && isMobile'>
+          <div class='card-header'>
+            <div class='flex-fill'>
+              <div class='card-title'>
+                Всего
+              </div>
+
+              <div class='mt-1'>
+                <Amount
+                  :value='totalAccountsBalanceBase'
+                  :currency='currencyBaseName'
+                  class='text-success'
+                  copyable
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-for='(item, index) in accounts'
+            :key='item.id'
+            class='card-header'
+            :class='{ "border-bottom-0": index === accounts.length - 1 }'
+          >
+            <div class='flex-fill'>
+              <div class='card-title'>
+                {{ item.name }}
+              </div>
+              <div class='mt-1'>
+                <Amount
+                  :value='item.balance'
+                  :currency='item.currency.name'
+                  is-color
+                  copyable
+                />
+              </div>
+            </div>
+            <div class='card-actions'>
+              <button
+                v-tooltip:bottom='"Создать перевод"'
+                type='button'
+                class='btn btn-action'
+                @click='openCreateTransfer(item.id)'
+              >
+                <IconArrowsRightLeft
+                  size='18'
+                  stroke-width='1'
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div v-else class='card-table table-responsive'>
           <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
@@ -362,7 +523,55 @@ watch(token, (val) => {
         :is-loading='isInitialLoading'
         :chart-data='dashboard.assetsChart'
       >
-        <div class='card-table table-responsive'>
+        <div v-if='!isLoading && isMobile'>
+          <div class='card-header'>
+            <div class='flex-fill'>
+              <div class='card-title'>
+                Всего
+              </div>
+
+              <div class='mt-1'>
+                <Amount
+                  :value='totalAssetsAmountBase'
+                  :currency='currencyBaseName'
+                  is-color
+                  copyable
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-for='(item, index) in assets'
+            :key='item.id'
+            class='card-header'
+            :class='{ "border-bottom-0": index === assets.length - 1 }'
+          >
+            <div class='flex-fill'>
+
+              <div class='card-title'>
+                {{ item.name }}
+                <span
+                  v-if='item.tag'
+                  class='badge ms-2'
+                >
+                  {{ item.tag }}
+                </span>
+              </div>
+
+              <div class='mt-1'>
+                <Amount
+                  :value='item.amount'
+                  :currency='item.currency.name'
+                  is-color
+                  copyable
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class='card-table table-responsive'>
           <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
