@@ -27,7 +27,7 @@ const appConfig = useAppConfig();
 const { token } = useAuth();
 
 const property = ref(null);
-const isLoading = ref(false);
+const isLoading = ref(true);
 const isQuiteLoading = ref(false);
 const isError = ref(false);
 const isShowPriceModal = ref(false);
@@ -174,7 +174,7 @@ const onTransactionSaved = async () => {
   await load(true);
 };
 
-onMounted(load);
+//onMounted(load);
 
 const chartOptions = computed(() => ({
   chart: {
@@ -265,8 +265,82 @@ const chartOptions = computed(() => ({
   />
 
   <div>
-    <div v-if='isLoading' class='card'>
-      <div class='card-body'>Загрузка...</div>
+    <div v-if='isLoading'>
+      <div class='card mb-4'>
+        <div class='card-body'>
+          <div class='d-flex justify-content-between align-items-center'>
+            <!-- название -->
+            <div class='placeholder-glow'>
+              <div
+                class='placeholder'
+                style='width: 120px'
+              />
+            </div>
+
+            <!-- показатели справа -->
+            <div class='d-flex gap-3'>
+              <div class='d-flex align-items-center'>
+                <div class='avatar placeholder'/>
+                <div class='placeholder ms-2' style='width: 80px'/>
+              </div>
+
+              <div class='d-flex align-items-center'>
+                <div class='avatar placeholder'/>
+                <div class='placeholder ms-2' style='width: 80px'/>
+              </div>
+
+              <div class='d-flex align-items-center'>
+                <div class='avatar placeholder'/>
+                <div class='placeholder ms-2' style='width: 80px'/>
+              </div>
+            </div>
+          </div>
+
+          <!-- график -->
+          <div class='placeholder-glow mt-4'>
+            <div
+              class='placeholder w-100'
+              style='height: 300px'
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- История цены -->
+      <div class='card mb-4'>
+        <div class='card-header'>
+          <div class='placeholder col-2'/>
+        </div>
+
+        <div
+          v-for='i in 3'
+          :key='i'
+          class='card-header'
+        >
+          <div class='d-flex justify-content-between align-items-center w-100'>
+            <div class='placeholder col-1'/>
+            <div class='placeholder col-1'/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Операции -->
+      <div class='card'>
+        <div class='card-header'>
+          <div class='placeholder col-2'/>
+        </div>
+
+        <div
+          v-for='i in 5'
+          :key='i'
+          class='card-header'
+        >
+          <div class='d-flex justify-content-between align-items-center w-100'>
+            <div class='placeholder col-1'/>
+            <div class='placeholder col-1'/>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-else-if='isError' class='alert alert-danger'>
