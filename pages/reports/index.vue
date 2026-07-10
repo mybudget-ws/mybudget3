@@ -183,11 +183,8 @@ const chartOptions = computed(() => ({
         <div
           v-if='isTopFiltersVisible'
           class='card-body border-top'
-          :style='{ minHeight: "56px" }'
         >
-          <div
-            class='badges-list'
-            :style='{ minHeight: "22px" }'>
+          <div class='badges-list'>
             <BadgeCategory
               v-for='kind in selectedKinds'
               :key='kind.id'
