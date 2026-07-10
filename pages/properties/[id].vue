@@ -494,6 +494,7 @@ const chartOptions = computed(() => ({
                      <td class='text-nowrap text-end'>
                       <span
                         v-if='price.change !== null'
+                        class='font-monospace'
                         :class='price.changeClass'
                       >
                         {{ price.change }} %
@@ -683,7 +684,6 @@ const chartOptions = computed(() => ({
                   <tr>
                     <th class='w-1 text-nowrap'>Дата</th>
                     <th class='w-1 text-nowrap text-end'>Величина</th>
-                    <th class='w-1 text-nowrap text-end'/>
                     <th class='w-1 text-nowrap'>Счёт</th>
                     <th>Категории</th>
                     <th>Описание</th>
@@ -700,18 +700,12 @@ const chartOptions = computed(() => ({
                       {{ formatDate(transaction.dateAt) }}
                     </td>
                     <td class='text-nowrap text-end'>
-                      <div
-                        :class='{
-                          "text-success": transaction.amount > 0,
-                          "text-danger": transaction.amount < 0,
-                        }'
-                      >
-                        <Amount
-                          :value='transaction.amount'
-                          :currency='transaction.account?.currency?.name'
-                          copyable
-                        />
-                      </div>
+                      <Amount
+                        :value='transaction.amount'
+                        :currency='transaction.account?.currency?.name'
+                        is-color
+                        copyable
+                      />
                     </td>
                     <td>
                       <BadgeAccount
