@@ -7,12 +7,16 @@ import {
   IconPencil,
   IconTrash,
   IconPlus,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS  } from '~/lib/consts';
+import { useDevice } from '~/composables/use_device';
+
+const { isMobile } = useDevice();
 
 definePageMeta({
   middleware: ['authenticated'],
@@ -51,14 +55,48 @@ const allPrices = computed(() => {
 
 const isShowFooter = computed(() => allPrices.value.length > DEFAULT_PRICE_ITEMS);
 
-const prices = computed(() => {
-  if (isShowAllPrices.value) {
-    return allPrices.value;
-  }
+const pricesWithChange = computed(() => {
+  const sorted = [...allPrices.value].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
 
-  return allPrices.value.slice(0, DEFAULT_PRICE_ITEMS);
+  return sorted.map((price, index) => {
+    const previous = sorted[index + 1];
+
+    if (!previous || previous.amount === 0) {
+      return {
+        ...price,
+        change: null,
+        changeClass: '',
+      };
+    }
+
+    const change = ((price.amount - previous.amount) / previous.amount) * 100;
+    const rounded = Number(change.toFixed(2));
+
+    let changeClass = 'text-secondary';
+
+    if (rounded > 0) {
+      changeClass = 'text-success';
+    } else if (rounded < 0) {
+      changeClass = 'text-danger';
+    }
+
+    return {
+      ...price,
+      change: rounded,
+      changeClass,
+    };
+  });
 });
 
+const prices = computed(() => {
+  if (isShowAllPrices.value) {
+    return pricesWithChange.value;
+  }
+
+  return pricesWithChange.value.slice(0, DEFAULT_PRICE_ITEMS);
+});
 const load = async (isQuite = false) => {
   isError.value = false;
   if (isQuite) {
@@ -237,7 +275,12 @@ const chartOptions = computed(() => ({
 
     <template v-else>
       <div class='card mb-4'>
-        <div class='card-body d-flex justify-content-between align-items-center'>
+        <div
+          class='card-body'
+          :class='isMobile
+            ? "d-flex flex-column gap-2"
+            : "d-flex justify-content-between align-items-center"'
+        >
           <div>
             <h2 class='mb-1'>
               {{ property?.name || 'Имущество' }}
@@ -252,62 +295,58 @@ const chartOptions = computed(() => ({
             </div>
           </div>
 
-          <div v-if='property' class='d-flex gap-4'>
-            <div class='row align-items-center'>
-              <div class='col-auto'>
-                <div class='bg-green-lt avatar shadow-none'>
-                  <IconArrowUp size='24' />
-                </div>
+          <div
+            v-if='property'
+            :class='isMobile ? "d-flex flex-column gap-3 mt-2" : "d-flex gap-4"'
+          >
+            <div class='d-flex align-items-center gap-2'>
+              <div class='bg-green-lt avatar shadow-none'>
+                <IconArrowUp size='24' />
               </div>
-              <div class='col'>
+
+              <div>
                 <Amount
                   class='fw-medium'
                   :value='property.totalIncome'
                   :currency='property.currency.name'
                   copyable
                 />
-
                 <div class='text-secondary small'>
                   Доходы
                 </div>
               </div>
             </div>
 
-            <div class='row align-items-center'>
-              <div class='col-auto'>
-                <span class='bg-red-lt avatar shadow-none'>
-                  <IconArrowDown size='24' />
-                </span>
+            <div class='d-flex align-items-center gap-2'>
+              <div class='bg-red-lt avatar shadow-none'>
+                <IconArrowDown size='24' />
               </div>
 
-              <div class='col'>
+              <div>
                 <Amount
                   class='fw-medium'
                   :value='Math.abs(property.totalExpense)'
                   :currency='property.currency.name'
                   copyable
                 />
-
                 <div class='text-secondary small'>
                   Расходы
                 </div>
               </div>
             </div>
 
-            <div class='row align-items-center'>
-              <div class='col-auto'>
-                <span class='bg-primary-lt avatar shadow-none'>
-                  <IconCoins size='24' />
-                </span>
-              </div>  
-              <div class='col'>
+            <div class='d-flex align-items-center gap-2'>
+              <div class='bg-primary-lt avatar shadow-none'>
+                <IconCoins size='24' />
+              </div>
+
+              <div>
                 <Amount
                   class='fw-medium'
                   :value='property.amount'
                   :currency='property.currency.name'
                   copyable
                 />
-
                 <div class='text-secondary small'>
                   Стоимость
                 </div>
@@ -348,12 +387,99 @@ const chartOptions = computed(() => ({
             </div>
           </div>
 
-          <div class='advanced-table'>
+          <div v-if='!isLoading && isMobile'>
+            <div
+              v-for='(price, index) in prices'
+              :key='price.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === prices.length - 1 && !isShowFooter }'
+            >
+              <div class='d-flex flex-grow-1 align-items-center'>
+                <div class='col'>
+                  <div class='card-title mb-0'>
+                    {{ formatDate(price.date) }}
+                  </div>
+
+                  <div class='card-subtitle text-secondary'>
+                    <Amount
+                      :value='price.amount'
+                      :currency='price.currency?.name'
+                      copyable
+                    />
+                  </div>
+                  <div
+                    v-if='price.change !== null'
+                    class='small mt-1'
+                    :class='price.changeClass'
+                  >
+                    {{ price.change }} %
+                  </div>
+                </div>
+              </div>
+
+              <div class='card-actions'>
+                <div class='dropdown'>
+                  <a
+                    href='#'
+                    class='btn-action'
+                    data-bs-toggle='dropdown'
+                    @click.prevent
+                  >
+                    <IconDotsVertical
+                      size='20'
+                      stroke-width='1'
+                    />
+                  </a>
+
+                  <div class='dropdown-menu dropdown-menu-end'>
+                    <a
+                      class='dropdown-item'
+                      href='#'
+                      @click.prevent='onEditPrice(price)'
+                    >
+                      Редактировать
+                    </a>
+
+                    <a
+                      v-if='allPrices.length > 1'
+                      class='dropdown-item text-danger'
+                      href='#'
+                      @click.prevent='onDeletePrice(price)'
+                    >
+                      Удалить
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-if='!prices.length'
+              class='card-body text-center text-secondary py-5'
+            >
+              История цен пустая
+            </div>
+
+            <div
+              v-if='isShowFooter'
+              class='card-footer bg-transparent border-0'
+            >
+              <button
+                class='btn btn-action btn-sm text-secondary w-100 p-2'
+                @click='isShowAllPrices = !isShowAllPrices'
+              >
+                {{ isShowAllPrices ? 'Скрыть' : 'Показать все' }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
                   <tr>
                     <th>Дата</th>
+                    <th class='w-1 text-nowrap text-end'/>
                     <th class='w-1 text-nowrap text-end'>Величина</th>
                     <th class='w-1'/>
                   </tr>
@@ -365,7 +491,15 @@ const chartOptions = computed(() => ({
                     :key='price.id'
                   >
                     <td>{{ formatDate(price.date) }}</td>
-
+                     <td class='text-nowrap text-end'>
+                      <span
+                        v-if='price.change !== null'
+                        class='font-monospace'
+                        :class='price.changeClass'
+                      >
+                        {{ price.change }} %
+                      </span>
+                    </td>
                     <td class='text-nowrap text-end'>
                       <Amount
                         :value='price.amount'
@@ -373,7 +507,6 @@ const chartOptions = computed(() => ({
                         copyable
                       />
                     </td>
-
                     <td>
                       <div class='btn-actions'>
                         <button
@@ -422,7 +555,9 @@ const chartOptions = computed(() => ({
           <div class='card-header pe-0'>
             <div class='row w-full align-items-center'>
               <div class='col'>
-                <h2 class='mb-0'>Операции</h2>
+                <h2 :class='isMobile ? "mb-2" : "mb-0"'>
+                  Операции
+                </h2>
               </div>
               <div class='col-md-auto col-sm-12'>
                 <div class='ms-auto d-flex gap-2'>
@@ -445,7 +580,104 @@ const chartOptions = computed(() => ({
               </div>
             </div>
           </div>
-          <div class='advanced-table'>
+
+          <div v-if='!isLoading && isMobile'>
+            <div
+              v-for='(item, index) in property?.transactions || []'
+              :key='item.id'
+              class='card-header'
+              :class='{ "border-bottom-0": index === property?.transactions.length - 1 }'
+            >
+              <div class='d-flex w-100'>
+
+                <div class='flex-grow-1 min-w-0'>
+
+                  <div class='text-secondary'>
+                    {{ formatDate(item.dateAt) }}
+                  </div>
+
+                  <div class='mt-1'>
+                    <Amount
+                      :value='item.amount'
+                      :currency='item.account?.currency?.name'
+                      :is-color='true'
+                      copyable
+                    />
+                  </div>
+
+                  <div class='badges-list mt-2'>
+                    <BadgeAccount
+                      :name='item.account?.name'
+                      class='no-hover'
+                    />
+
+                    <BadgeProject
+                      v-if='item.project'
+                      :name='item.project.name'
+                      class='no-hover'
+                    />
+
+                    <BadgeProperty
+                      v-if='item.property'
+                      :name='item.property.name'
+                      class='no-hover'
+                    />
+
+                    <BadgeCategory
+                      v-for='cat in item.categories'
+                      :key='cat.id'
+                      :name='cat.name'
+                      class='no-hover'
+                    />
+                  </div>
+
+                  <div
+                    v-if='item.description'
+                    class='text-secondary small mt-1 text-truncate'
+                  >
+                    {{ item.description }}
+                  </div>
+
+                </div>
+
+                <div class='ms-2 d-flex align-items-center'>
+                  <div class='dropdown'>
+                    <a
+                      href='#'
+                      class='btn-action'
+                      data-bs-toggle='dropdown'
+                      @click.prevent
+                    >
+                      <IconDotsVertical size='20' stroke-width='1' />
+                    </a>
+
+                    <div class='dropdown-menu dropdown-menu-end'>
+                      <button
+                        class='dropdown-item'
+                        @click='onEditTransaction(item)'
+                      >
+                        Редактировать
+                      </button>
+                      <button
+                        class='dropdown-item text-danger'
+                        @click='onDeleteTransaction(item)'
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              v-if='!property?.transactions?.length'
+              class='text-secondary text-center mt-3'
+            >
+              Похоже, операций ещё нет
+            </div>
+          </div>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
@@ -468,18 +700,12 @@ const chartOptions = computed(() => ({
                       {{ formatDate(transaction.dateAt) }}
                     </td>
                     <td class='text-nowrap text-end'>
-                      <div
-                        :class='{
-                          "text-success": transaction.amount > 0,
-                          "text-danger": transaction.amount < 0,
-                        }'
-                      >
-                        <Amount
-                          :value='transaction.amount'
-                          :currency='transaction.account?.currency?.name'
-                          copyable
-                        />
-                      </div>
+                      <Amount
+                        :value='transaction.amount'
+                        :currency='transaction.account?.currency?.name'
+                        is-color
+                        copyable
+                      />
                     </td>
                     <td>
                       <BadgeAccount
