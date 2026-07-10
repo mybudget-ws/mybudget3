@@ -5,6 +5,7 @@ import { CHART_COLORS } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
 import { useDevice } from '~/composables/use_device';
+
 const route = useRoute();
 const { token } = useAuth();
 const {

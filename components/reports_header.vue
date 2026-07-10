@@ -31,7 +31,7 @@ const emit = defineEmits([
           <button
             class='btn btn-ghost-secondary'
             type='button'
-            @click='emit(&apos;show-filters&apos;)'
+            @click='emit("show-filters")'
           >
             <IconFilter stroke-width='2' />
           </button>
@@ -43,7 +43,7 @@ const emit = defineEmits([
             :key='key'
             class='nav-link'
             :class='{ active: period === key }'
-            @click='emit(&apos;change-period&apos;, key)'
+            @click='emit("change-period", key)'
           >
             {{ label }}
           </button>
@@ -61,7 +61,7 @@ const emit = defineEmits([
             :key='key'
             class='nav-link'
             :class='{ active: period === key }'
-            @click='emit(&apos;change-period&apos;, key)'
+            @click='emit("change-period", key)'
           >
             {{ label }}
           </button>

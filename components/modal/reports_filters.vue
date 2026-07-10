@@ -10,7 +10,7 @@ const emit = defineEmits([
 </script>
 
 <template>
-  <ModalBase @close='emit(&apos;close&apos;)'>
+  <ModalBase @close='emit("close")'>
     <div class='modal-header'>
       <h5 class='modal-title'>
         Фильтры отчетов
@@ -19,7 +19,7 @@ const emit = defineEmits([
       <button
         class='btn-close'
         type='button'
-        @click='emit(&apos;close&apos;)'
+        @click='emit("close")'
       />
     </div>
 
@@ -27,23 +27,23 @@ const emit = defineEmits([
       <div class='row'>
         <div class='col-12'>
           <FilterKinds
-            @update:items='emit(&apos;kinds-change&apos;, $event)'
+            @update:items='emit("kinds-change", $event)'
           />
 
           <FilterAccounts
-            @update:items='emit(&apos;accounts-change&apos;, $event)'
+            @update:items='emit("accounts-change", $event)'
           />
 
           <FilterCategories
-            @update:items='emit(&apos;categories-change&apos;, $event)'
+            @update:items='emit("categories-change", $event)'
           />
 
           <FilterProjects
-            @update:items='emit(&apos;projects-change&apos;, $event)'
+            @update:items='emit("projects-change", $event)'
           />
 
           <FilterProperties
-            @update:items='emit(&apos;properties-change&apos;, $event)'
+            @update:items='emit("properties-change", $event)'
           />
         </div>
       </div>
@@ -53,7 +53,7 @@ const emit = defineEmits([
       <button
         type='button'
         class='btn btn-primary'
-        @click='emit(&apos;close&apos;)'
+        @click='emit("close")'
       >
         Закрыть
       </button>
