@@ -164,7 +164,6 @@ watchEffect(() => {
               <div class='card-actions'>
                 <div class='dropdown'>
                   <a
-                    href='#'
                     class='btn-action'
                     data-bs-toggle='dropdown'
                     @click.prevent

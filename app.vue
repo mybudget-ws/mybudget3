@@ -182,7 +182,15 @@ watch(
   overflow: hidden;
 }
 
+.badges-list > .badge {
+  min-height: 1.375rem;
+}
+
 .badge.cursor-pointer:hover {
   opacity: 0.8;
+}
+
+.dropdown > .dropdown-menu {
+  position: fixed !important;
 }
 </style>
