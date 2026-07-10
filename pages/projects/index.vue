@@ -166,8 +166,6 @@ watchEffect(() => {
                   <a
                     class='btn-action'
                     data-bs-toggle='dropdown'
-                    data-bs-container='body'
-                    data-bs-boundary='viewport'
                     @click.prevent
                   >
                     <IconDotsVertical size='20' stroke-width='1' />
@@ -299,9 +297,3 @@ watchEffect(() => {
     </div>
   </div>
 </template>
-
-<style>
-  .dropdown-menu {
-  position: fixed !important;
-}
-</style>
