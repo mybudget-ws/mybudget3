@@ -34,8 +34,8 @@
     error.value = null;
 
     try {
-      const result = await api.registraion(email.value, password.value);
-      if (result && result.user !== null) {
+      const result = await api.registration(email.value, password.value);
+      if (result && result.user && result.user.token) {
         signIn(result.user.token);
         navigateTo('/');
       } else {
