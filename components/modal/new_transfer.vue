@@ -19,6 +19,7 @@ const sameAccountError = ref('');
 const props = defineProps({
   initialAccountId: {
     type: Number,
+    default: undefined,
   },
 });
 
@@ -59,7 +60,7 @@ const currentCurrencyNameTo = computed(() => {
 });
 
 const isAccountEmpty = computed(() => {
-  if (!isLoaded.value) return;
+  if (!isLoaded.value) return false;
   return !currentAccountFrom.value || !currentAccountTo.value;
 });
 
