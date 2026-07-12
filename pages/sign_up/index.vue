@@ -1,19 +1,49 @@
 <script setup>
+  import api from '~/lib/api';
+  import { useAuth } from '~/composables/use_auth';
+
   definePageMeta({
     middleware: ['authenticated']
   });
 
+  const { signIn } = useAuth();
   const email = ref('');
   const password = ref('');
+  const error = ref(null);
   const isSubmitting = ref(false);
+  const isApiError = ref(false);
+
+  const isError = computed(() => {
+    return isApiError.value || error.value !== null;
+  });
+
+  const errorMessage = computed(() => {
+    if (isApiError.value) {
+      return 'Ошибка сервера. Попробуйте повторить операцию, или обратитесь в поддержку.';
+    }
+    if (error.value !== null) {
+      return error.value;
+    }
+    return undefined;
+  });
 
   const onSubmit = async (event) => {
     event.preventDefault();
     isSubmitting.value = true
+    isApiError.value = false;
+    error.value = null;
+
     try {
-      // ...
+      const result = await api.registraion(email.value, password.value);
+      if (result && result.user !== null) {
+        signIn(result.user.token);
+        navigateTo('/');
+      } else {
+        error.value = result.error;
+      }
     } catch (err) {
       console.error(err);
+      isApiError.value = true;
     } finally {
       isSubmitting.value = false
     }
@@ -35,6 +65,7 @@
                 placeholder='мой@email.ru'
                 required
                 :disabled='isSubmitting'
+                :is-error='isError'
               />
             </div>
             <div class='mb-2'>
@@ -45,6 +76,8 @@
                 placeholder='мой пароль'
                 required
                 :disabled='isSubmitting'
+                :is-error='isError'
+                :error-text='errorMessage'
               />
             </div>
             <div class='form-footer'>

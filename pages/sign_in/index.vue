@@ -24,7 +24,7 @@
     if (isAuthError.value) {
       return 'Неправильный email или пароль';
     }
-    return null;
+    return undefined;
   });
 
   const onSubmit = async (event) => {
