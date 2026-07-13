@@ -418,36 +418,34 @@ const chartOptions = computed(() => ({
               </div>
 
               <div class='card-actions'>
-                <div class='dropdown'>
-                  <a
-                    href='#'
-                    class='btn-action'
+                <div class='dropdown position-relative'>
+                  <button
+                    type='button'
+                    class='btn-action border-0 bg-transparent'
                     data-bs-toggle='dropdown'
-                    @click.prevent
+                    data-bs-display='static'
                   >
                     <IconDotsVertical
                       size='20'
                       stroke-width='1'
                     />
-                  </a>
+                  </button>
 
                   <div class='dropdown-menu dropdown-menu-end'>
-                    <a
+                    <button
                       class='dropdown-item'
-                      href='#'
-                      @click.prevent='onEditPrice(price)'
+                      @click='onEditPrice(price)'
                     >
                       Редактировать
-                    </a>
+                    </button>
 
-                    <a
+                    <button
                       v-if='allPrices.length > 1'
                       class='dropdown-item text-danger'
-                      href='#'
-                      @click.prevent='onDeletePrice(price)'
+                      @click='onDeletePrice(price)'
                     >
                       Удалить
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -637,19 +635,18 @@ const chartOptions = computed(() => ({
                   >
                     {{ item.description }}
                   </div>
-
                 </div>
 
-                <div class='ms-2 d-flex align-items-center'>
+                <div class='ms-auto d-flex align-items-center'>
                   <div class='dropdown'>
-                    <a
-                      href='#'
-                      class='btn-action'
+                    <button
+                      type='button'
+                      class='btn-action border-0 bg-transparent'
                       data-bs-toggle='dropdown'
-                      @click.prevent
+                      data-bs-display='static'
                     >
                       <IconDotsVertical size='20' stroke-width='1' />
-                    </a>
+                    </button>
 
                     <div class='dropdown-menu dropdown-menu-end'>
                       <button
@@ -658,6 +655,7 @@ const chartOptions = computed(() => ({
                       >
                         Редактировать
                       </button>
+
                       <button
                         class='dropdown-item text-danger'
                         @click='onDeleteTransaction(item)'
@@ -778,5 +776,13 @@ const chartOptions = computed(() => ({
   filter: none !important;
   box-shadow: none !important;
   transform: none !important;
+}
+.card,
+.card-table,
+.card-header {
+  overflow: visible !important;
+}
+.dropdown-menu {
+  position: absolute !important;
 }
 </style>
