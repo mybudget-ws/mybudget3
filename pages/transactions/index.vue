@@ -507,12 +507,10 @@ watch(
             >
               <div class='d-flex w-100'>
                 <div class='flex-grow-1 min-w-0'>
-                  <div>
-                    {{ formatDate(item.dateAt) }}
-                  </div>
+                  <div>{{ formatDate(item.dateAt) }}</div>
 
                   <Amount
-                    class='d-block mt-1'
+                    class='d-block mt-1 fs-3'
                     :value='item.amount'
                     :currency='item.account.currency.name'
                     :is-color='!item.isTransfer'
@@ -560,7 +558,7 @@ watch(
 
                   <div
                     v-if='item.description'
-                    class='text-secondary small mt-1 text-truncate'
+                    class='text-secondary mt-1 text-truncate'
                   >
                     {{ item.description }}
                   </div>
@@ -717,13 +715,13 @@ watch(
               </table>
             </div>
 
-            <div class='card-footer bg-transparent'>
-              <i v-if='isEmpty' class='text-secondary'>
+            <div v-if='isEmpty' class='card-footer bg-transparent'>
+              <i class='text-secondary'>
                 Похоже таких операций ещё нет
               </i>
-
-              <button
-                v-else
+            </div>
+            <div v-else class='card-footer bg-transparent border-top'>
+              <button                
                 class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
                 :disabled='!hasMore || isLoadingMore'
                 @click='loadMore'

@@ -43,7 +43,7 @@ const load = async (isQuite = false) => {
   try {
     const items = await api.categories(token.value);
     if (items) {
-      categories.value = items
+      categories.value = items;
     } else {
       console.log('TODO: error');
     }
@@ -300,7 +300,7 @@ watchEffect(() => {
                   </tr>
                 </tbody>
               </table>
-              <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
+              <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable border-top'>
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>
