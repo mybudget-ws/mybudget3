@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  to: {
+    type: [String, Object],
+    default: null,
+  },
   colors: {
     type: Array,
     default: () => CHART_COLORS,
@@ -95,7 +99,18 @@ const chartOptions = computed(() => ({
 <template>
   <div class='card'>
     <div class='card-header border-0'>
-      <div class='card-title'>
+      <NuxtLink
+        v-if='props.to'
+        :to='props.to'
+        class='card-title fw-medium text-reset'
+      >
+        {{ props.title }}
+      </NuxtLink>
+
+      <div
+        v-else
+        class='card-title'
+      >
         {{ props.title }}
       </div>
     </div>
