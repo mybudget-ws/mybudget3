@@ -507,12 +507,12 @@ watch(
             >
               <div class='d-flex w-100'>
                 <div class='flex-grow-1 min-w-0'>
-                  <div>
+                  <div class='mb-1'>
                     {{ formatDate(item.dateAt) }}
                   </div>
 
                   <Amount
-                    class='d-block mt-1'
+                    class='d-block mt-1 fs-3'
                     :value='item.amount'
                     :currency='item.account.currency.name'
                     :is-color='!item.isTransfer'
@@ -560,7 +560,7 @@ watch(
 
                   <div
                     v-if='item.description'
-                    class='text-secondary small mt-1 text-truncate'
+                    class='text-secondary mt-1 text-truncate'
                   >
                     {{ item.description }}
                   </div>
