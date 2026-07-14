@@ -550,10 +550,35 @@ const chartOptions = computed(() => ({
 
       <div class='card'>
         <div class='card-table'>
-            <TransactionHeader
-              :is-mobile='isMobile'
-              @create='openCreateTransaction'
-            />
+          <div class='card-header pe-0'>
+            <div class='row w-full align-items-center'>
+              <div class='col'>
+                <h2 :class='isMobile ? "mb-2" : "mb-0"'>
+                  Операции
+                </h2>
+              </div>
+              <div class='col-md-auto col-sm-12'>
+                <div class='ms-auto d-flex gap-2'>
+                  <button
+                    class='btn btn-outline-green'
+                    type='button'
+                    @click='openCreateTransaction(KIND_INCOME)'
+                  >
+                    <IconArrowUp stroke-width='2' />
+                  </button>
+
+                  <button
+                    class='btn btn-primary'
+                    type='button'
+                    @click='openCreateTransaction(KIND_EXPENSE)'
+                  >
+                    <IconArrowDown stroke-width='2' />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div v-if='!isLoading && isMobile'>
             <div
               v-for='(item, index) in property?.transactions || []'
