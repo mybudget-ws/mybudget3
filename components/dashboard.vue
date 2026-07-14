@@ -190,6 +190,12 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Доходы'
+        :to='{
+          path: "/transactions",
+          query: {
+            kinds: "INCOME",
+          },
+        }'
         :is-loading='isInitialLoading'
         :colors='["#0ca678"]'
         :chart-data='dashboard.incomesChart'
@@ -302,6 +308,12 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
+        :to='{
+          path: "/transactions",
+          query: {
+            kinds: "EXPENSE",
+          },
+        }'
         :is-loading='isInitialLoading'
         :chart-data='dashboard.expensesChart'
       >
@@ -412,6 +424,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Счета'
+        :to='{
+          path: "/accounts",
+        }'
         chart-type='donut'
         :is-loading='isInitialLoading'
         :chart-data='dashboard.accountsChart'
