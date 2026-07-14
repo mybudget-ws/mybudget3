@@ -241,42 +241,27 @@ const chartOptions = computed(() => ({
 
         <div class='card-body'>
           <div
-            class='chart-container'
-            :style='{ height: `${CHART_HEIGTH}px` }'
+            v-if='isLoading'
+            class='d-flex align-items-center justify-content-center h-100'
+            :style='{ minHeight: `${CHART_HEIGTH}px` }'
           >
-            <div
-              v-if='isLoading'
-              class='d-flex align-items-center justify-content-center h-100'
-            >
-              <PlaceholderLoading />
-            </div>
-
-            <div
-              v-else-if='!isError'
-              class='w-100 h-100'
-            >
-              <VueApexCharts
-                :type='CHART_TYPE'
-                :height='CHART_HEIGTH'
-                :options='chartOptions'
-                :series='series'
-              />
-            </div>
-
-            <AlertWarning
-              v-else
-              title='Не удалось загрузить график'
-              description='Попробуйте обновить страницу'
+            <PlaceholderLoading />
+          </div>
+          <div v-else-if='!isError' class='w-full'>
+            <VueApexCharts
+              :type='CHART_TYPE'
+              :height='CHART_HEIGTH'
+              :options='chartOptions'
+              :series='series'
             />
           </div>
+          <AlertWarning
+            v-else
+            title='Не удалось загрузить график'
+            description='Попробуйте обновить страницу'
+          />
         </div>
       </div>
-
-      <AlertWarning
-        class='mt-3'
-        title='В разработке'
-        description='Не обращайте внимание'
-      />
     </div>
 
     <div class='col-sm-12 col-lg-3 col-xl-2'>

@@ -239,7 +239,11 @@ const chartOptions = computed(() => ({
           <h3 class='card-title ms-3'>Операции</h3>
         </div>
         <div class='card-body'>
-          <div v-if='isLoading' class='text-center w-full'>
+          <div
+            v-if='isLoading'
+            class='d-flex align-items-center justify-content-center h-100'
+            :style='{ minHeight: `${CHART_HEIGTH}px` }'
+          >
             <PlaceholderLoading />
           </div>
           <div v-else-if='!isError' class='w-full'>
@@ -257,12 +261,6 @@ const chartOptions = computed(() => ({
           />
         </div>
       </div>
-
-      <AlertWarning
-        class='mt-3'
-        title='В разработке'
-        description='Не обращайте внимание'
-      />
     </div>
 
     <div class='col-sm-12 col-lg-3 col-xl-2'>
