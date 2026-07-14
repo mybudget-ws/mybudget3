@@ -178,8 +178,8 @@ watch(
 }
 */
 
-.card {
-  overflow: hidden;
+tbody > tr:last-child {
+  border-bottom-color: rgb(0, 0, 0, 0);
 }
 
 .badges-list > .badge {
@@ -188,9 +188,5 @@ watch(
 
 .badge.cursor-pointer:hover {
   opacity: 0.8;
-}
-
-.dropdown > .dropdown-menu {
-  position: fixed !important;
 }
 </style>

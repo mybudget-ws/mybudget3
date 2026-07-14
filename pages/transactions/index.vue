@@ -717,13 +717,13 @@ watch(
               </table>
             </div>
 
-            <div class='card-footer bg-transparent'>
-              <i v-if='isEmpty' class='text-secondary'>
+            <div v-if='isEmpty' class='card-footer bg-transparent'>
+              <i class='text-secondary'>
                 Похоже таких операций ещё нет
               </i>
-
-              <button
-                v-else
+            </div>
+            <div v-else class='card-footer bg-transparent border-top'>
+              <button                
                 class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
                 :disabled='!hasMore || isLoadingMore'
                 @click='loadMore'

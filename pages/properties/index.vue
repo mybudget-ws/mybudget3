@@ -270,7 +270,7 @@ watchEffect(() => {
                 </tbody>
               </table>
 
-              <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable'>
+              <table v-if='hiddenItems.length > 0' class='table table-vcenter table-selectable border-top'>
                 <thead>
                   <tr>
                     <th>Архив ({{ hiddenItems.length }})</th>

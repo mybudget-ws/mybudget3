@@ -752,12 +752,4 @@ const chartOptions = computed(() => ({
   box-shadow: none !important;
   transform: none !important;
 }
-.card,
-.card-table,
-.card-header {
-  overflow: visible !important;
-}
-.dropdown-menu {
-  position: absolute !important;
-}
 </style>
