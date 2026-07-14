@@ -27,7 +27,7 @@ const appConfig = useAppConfig();
 const { token } = useAuth();
 
 const property = ref(null);
-const isLoading = ref(false);
+const isLoading = ref(true);
 const isQuiteLoading = ref(false);
 const isError = ref(false);
 const isShowPriceModal = ref(false);
@@ -265,8 +265,75 @@ const chartOptions = computed(() => ({
   />
 
   <div>
-    <div v-if='isLoading' class='card'>
-      <div class='card-body'>Загрузка...</div>
+    <div v-if='isLoading'>
+      <div class='card mb-4'>
+        <div class='card-body'>
+          <div
+            class='d-flex'
+            :class='isMobile
+              ? "flex-column align-items-start gap-3"
+              : "justify-content-between align-items-center"'
+          >
+            <!-- название -->
+            <div class='placeholder-glow d-flex flex-column gap-3 w-50'>
+              <div class='placeholder placeholder-lg col-6' />
+              <div class='placeholder placeholder col-3' />
+            </div>
+
+            <!-- показатели справа -->
+            <div
+              class='d-flex gap-3'
+              :class='isMobile
+                ? "flex-column align-items-start w-100"
+                : "align-items-center"'
+            >
+
+              <div
+                v-for='index in [1, 2, 3]'
+                :key='index'
+                class='d-flex align-items-center placeholder-glow'
+              >
+                <div class='avatar placeholder' />
+                <div class='ms-2'>
+                  <div
+                    class='placeholder placeholder-lg d-block mb-2'
+                    style='width: 80px'
+                  />
+                  <div
+                    class='placeholder placeholder-sm d-block'
+                    style='width: 60px'
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- график -->
+          <div class='placeholder-glow mt-4'>
+            <div
+              class='placeholder w-100'
+              style='height: 300px'
+            />
+          </div>
+        </div>
+      </div>
+
+      <div v-for='index in [1, 2]' :key='index' class='card mb-4 placeholder-glow'>
+        <div class='card-header'>
+          <div class='placeholder placeholder-lg col-3'/>
+        </div>
+
+        <div
+          v-for='i in 2'
+          :key='i'
+          class='card-header'
+        >
+          <div class='d-flex justify-content-between align-items-center w-100'>
+            <div class='placeholder placeholder-sm col-2' />
+            <div class='placeholder placeholder-sm col-1' />
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-else-if='isError' class='alert alert-danger'>
