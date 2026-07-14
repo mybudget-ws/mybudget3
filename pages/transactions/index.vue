@@ -507,9 +507,7 @@ watch(
             >
               <div class='d-flex w-100'>
                 <div class='flex-grow-1 min-w-0'>
-                  <div class='mb-1'>
-                    {{ formatDate(item.dateAt) }}
-                  </div>
+                  <div>{{ formatDate(item.dateAt) }}</div>
 
                   <Amount
                     class='d-block mt-1 fs-3'
