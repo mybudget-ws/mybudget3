@@ -287,56 +287,56 @@ const chartOptions = computed(() => ({
             </div>
 
             <!-- показатели справа -->
-<div
-  class='d-flex gap-3'
-  :class='isMobile
-    ? "flex-column align-items-start w-100"
-    : "align-items-center"'
->
-  <div class='d-flex align-items-center'>
-    <div class='avatar placeholder'/>
+            <div
+              class='d-flex gap-3'
+              :class='isMobile
+                ? "flex-column align-items-start w-100"
+                : "align-items-center"'
+            >
+              <div class='d-flex align-items-center'>
+                <div class='avatar placeholder'/>
 
-    <div class='ms-2'>
-      <div
-        class='placeholder d-block mb-2'
-        style='width: 80px'
-      />
-      <div
-        class='placeholder d-block'
-        style='width: 60px'
-      />
-    </div>
-  </div>
+                <div class='ms-2'>
+                  <div
+                    class='placeholder d-block mb-2'
+                    style='width: 80px'
+                  />
+                  <div
+                    class='placeholder d-block'
+                    style='width: 60px'
+                  />
+                </div>
+              </div>
 
-  <div class='d-flex align-items-center'>
-    <div class='avatar placeholder'/>
+              <div class='d-flex align-items-center'>
+                <div class='avatar placeholder'/>
 
-    <div class='ms-2'>
-      <div
-        class='placeholder d-block mb-2'
-        style='width: 80px'
-      />
-      <div
-        class='placeholder d-block'
-        style='width: 60px'
-      />
-    </div>
-  </div>
+                <div class='ms-2'>
+                  <div
+                    class='placeholder d-block mb-2'
+                    style='width: 80px'
+                  />
+                  <div
+                    class='placeholder d-block'
+                    style='width: 60px'
+                  />
+                </div>
+              </div>
 
-  <div class='d-flex align-items-center'>
-            <div class='avatar placeholder'/>
-            <div class='ms-2'>
-              <div
-                class='placeholder d-block mb-2'
-                style='width: 80px'
-              />
-              <div
-                class='placeholder d-block'
-                style='width: 60px'
-              />
+              <div class='d-flex align-items-center'>
+                <div class='avatar placeholder'/>
+                <div class='ms-2'>
+                  <div
+                    class='placeholder d-block mb-2'
+                    style='width: 80px'
+                  />
+                  <div
+                    class='placeholder d-block'
+                    style='width: 60px'
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
           </div>
 
           <!-- график -->
