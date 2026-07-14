@@ -174,7 +174,7 @@ const onTransactionSaved = async () => {
   await load(true);
 };
 
-//onMounted(load);
+onMounted(load);
 
 const chartOptions = computed(() => ({
   chart: {
@@ -275,15 +275,9 @@ const chartOptions = computed(() => ({
               : "justify-content-between align-items-center"'
           >
             <!-- название -->
-            <div class='placeholder-glow'>
-              <div
-                class='placeholder d-block mb-2'
-                style='width: 120px'
-              />
-              <div
-                class='placeholder d-block'
-                style='width: 100px'
-              />
+            <div class='placeholder-glow d-flex flex-column gap-3 w-50'>
+              <div class='placeholder placeholder-lg col-6' />
+              <div class='placeholder placeholder col-3' />
             </div>
 
             <!-- показатели справа -->
@@ -293,45 +287,20 @@ const chartOptions = computed(() => ({
                 ? "flex-column align-items-start w-100"
                 : "align-items-center"'
             >
-              <div class='d-flex align-items-center'>
-                <div class='avatar placeholder'/>
 
+              <div
+                v-for='index in [1, 2, 3]'
+                :key='index'
+                class='d-flex align-items-center placeholder-glow'
+              >
+                <div class='avatar placeholder' />
                 <div class='ms-2'>
                   <div
-                    class='placeholder d-block mb-2'
+                    class='placeholder placeholder-lg d-block mb-2'
                     style='width: 80px'
                   />
                   <div
-                    class='placeholder d-block'
-                    style='width: 60px'
-                  />
-                </div>
-              </div>
-
-              <div class='d-flex align-items-center'>
-                <div class='avatar placeholder'/>
-
-                <div class='ms-2'>
-                  <div
-                    class='placeholder d-block mb-2'
-                    style='width: 80px'
-                  />
-                  <div
-                    class='placeholder d-block'
-                    style='width: 60px'
-                  />
-                </div>
-              </div>
-
-              <div class='d-flex align-items-center'>
-                <div class='avatar placeholder'/>
-                <div class='ms-2'>
-                  <div
-                    class='placeholder d-block mb-2'
-                    style='width: 80px'
-                  />
-                  <div
-                    class='placeholder d-block'
+                    class='placeholder placeholder-sm d-block'
                     style='width: 60px'
                   />
                 </div>
@@ -349,38 +318,19 @@ const chartOptions = computed(() => ({
         </div>
       </div>
 
-      <!-- История цены -->
-      <div class='card mb-4'>
+      <div v-for='index in [1, 2]' :key='index' class='card mb-4 placeholder-glow'>
         <div class='card-header'>
-          <div class='placeholder col-2' style='width: 100px'/>
+          <div class='placeholder placeholder-lg col-3'/>
         </div>
 
         <div
-          v-for='i in 3'
+          v-for='i in 2'
           :key='i'
           class='card-header'
         >
           <div class='d-flex justify-content-between align-items-center w-100'>
-            <div class='placeholder col-1' style='width: 80px'/>
-            <div class='placeholder col-1' style='width: 80px'/>
-          </div>
-        </div>
-      </div>
-
-      <!-- Операции -->
-      <div class='card'>
-        <div class='card-header'>
-          <div class='placeholder col-2' style='width: 100px'/>
-        </div>
-
-        <div
-          v-for='i in 5'
-          :key='i'
-          class='card-header'
-        >
-          <div class='d-flex justify-content-between align-items-center w-100'>
-            <div class='placeholder col-1' style='width: 80px'/>
-            <div class='placeholder col-1' style='width: 80px'/>
+            <div class='placeholder placeholder-sm col-2' />
+            <div class='placeholder placeholder-sm col-1' />
           </div>
         </div>
       </div>
