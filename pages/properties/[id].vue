@@ -617,31 +617,28 @@ const chartOptions = computed(() => ({
 
       <div class='card'>
         <div class='card-table'>
-          <div class='card-header pe-0'>
-            <div class='row w-full align-items-center'>
-              <div class='col'>
-                <h2 :class='isMobile ? "mb-2" : "mb-0"'>
-                  Операции
-                </h2>
-              </div>
-              <div class='col-md-auto col-sm-12'>
-                <div class='ms-auto d-flex gap-2'>
-                  <button
-                    class='btn btn-outline-green'
-                    type='button'
-                    @click='openCreateTransaction(KIND_INCOME)'
-                  >
-                    <IconArrowUp stroke-width='2' />
-                  </button>
+          <div class='card-header pe-2'>
+            <div class='d-flex justify-content-between align-items-center w-100'>
+              <h2 class='mb-0'>
+                Операции
+              </h2>
 
-                  <button
-                    class='btn btn-primary'
-                    type='button'
-                    @click='openCreateTransaction(KIND_EXPENSE)'
-                  >
-                    <IconArrowDown stroke-width='2' />
-                  </button>
-                </div>
+              <div class='d-flex gap-2'>
+                <button
+                  class='btn btn-outline-green'
+                  type='button'
+                  @click='openCreateTransaction(KIND_INCOME)'
+                >
+                  <IconArrowUp stroke-width='2' />
+                </button>
+
+                <button
+                  class='btn btn-primary'
+                  type='button'
+                  @click='openCreateTransaction(KIND_EXPENSE)'
+                >
+                  <IconArrowDown stroke-width='2' />
+                </button>
               </div>
             </div>
           </div>
