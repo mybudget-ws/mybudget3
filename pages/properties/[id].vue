@@ -11,7 +11,7 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
-import { formatDate, formatDateFull } from '~/lib/helper_date';
+import { formatDate } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS  } from '~/lib/consts';
 import { useDevice } from '~/composables/use_device';
@@ -617,120 +617,43 @@ const chartOptions = computed(() => ({
 
       <div class='card'>
         <div class='card-table'>
-          <div class='card-header pe-2'>
-            <div class='d-flex justify-content-between align-items-center w-100'>
-              <h2 class='mb-0'>
-                Операции
-              </h2>
+          <div class='card-header pe-0'>
+            <div class='row w-full align-items-center'>
+              <div class='col'>
+                <h2 class='mb-0'>Операции</h2>
+              </div>
+              <div class='col-auto'>
+                <div class='d-flex gap-2'>
+                  <button
+                    class='btn btn-outline-green'
+                    type='button'
+                    @click='openCreateTransaction(KIND_INCOME)'
+                  >
+                    <IconArrowUp stroke-width='2' />
+                  </button>
 
-              <div class='d-flex gap-2'>
-                <button
-                  class='btn btn-outline-green'
-                  type='button'
-                  @click='openCreateTransaction(KIND_INCOME)'
-                >
-                  <IconArrowUp stroke-width='2' />
-                </button>
-
-                <button
-                  class='btn btn-primary'
-                  type='button'
-                  @click='openCreateTransaction(KIND_EXPENSE)'
-                >
-                  <IconArrowDown stroke-width='2' />
-                </button>
+                  <button
+                    class='btn btn-primary'
+                    type='button'
+                    @click='openCreateTransaction(KIND_EXPENSE)'
+                  >
+                    <IconArrowDown stroke-width='2' />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
           <div v-if='!isLoading && isMobile'>
-            <div
+            <TransactionItem
               v-for='(item, index) in property?.transactions || []'
               :key='item.id'
-              class='card-header'
-              :class='{ "border-bottom-0": index === property?.transactions.length - 1 }'
-            >
-              <div class='d-flex w-100'>
-
-                <div class='flex-grow-1 min-w-0'>
-
-                  <div class='text-secondary'>
-                    {{ formatDate(item.dateAt) }}
-                  </div>
-
-                  <div class='mt-1'>
-                    <Amount
-                      :value='item.amount'
-                      :currency='item.account?.currency?.name'
-                      :is-color='true'
-                      copyable
-                    />
-                  </div>
-
-                  <div class='badges-list mt-2'>
-                    <BadgeAccount
-                      :name='item.account?.name'
-                      class='no-hover'
-                    />
-
-                    <BadgeProject
-                      v-if='item.project'
-                      :name='item.project.name'
-                      class='no-hover'
-                    />
-
-                    <BadgeProperty
-                      v-if='item.property'
-                      :name='item.property.name'
-                      class='no-hover'
-                    />
-
-                    <BadgeCategory
-                      v-for='cat in item.categories'
-                      :key='cat.id'
-                      :name='cat.name'
-                      class='no-hover'
-                    />
-                  </div>
-
-                  <div
-                    v-if='item.description'
-                    class='text-secondary small mt-1 text-truncate'
-                  >
-                    {{ item.description }}
-                  </div>
-                </div>
-
-                <div class='ms-auto d-flex align-items-center'>
-                  <div class='dropdown'>
-                    <button
-                      type='button'
-                      class='btn-action border-0 bg-transparent'
-                      data-bs-toggle='dropdown'
-                      data-bs-display='static'
-                    >
-                      <IconDotsVertical size='20' stroke-width='1' />
-                    </button>
-
-                    <div class='dropdown-menu dropdown-menu-end'>
-                      <button
-                        class='dropdown-item'
-                        @click='onEditTransaction(item)'
-                      >
-                        Редактировать
-                      </button>
-
-                      <button
-                        class='dropdown-item text-danger'
-                        @click='onDeleteTransaction(item)'
-                      >
-                        Удалить
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              :transaction='item'
+              :is-mobile='true'
+              :is-last='index === property?.transactions.length - 1'
+              @edit='onEditTransaction'
+              @delete='onDeleteTransaction'
+            />
             <div
               v-if='!property?.transactions?.length'
               class='text-secondary text-center mt-3'
@@ -754,70 +677,13 @@ const chartOptions = computed(() => ({
                 </thead>
 
                 <tbody class='table-tbody'>
-                  <tr
+                  <TransactionItem
                     v-for='transaction in property?.transactions || []'
                     :key='transaction.id'
-                  >
-                    <td :title='formatDateFull(transaction.dateAt)'>
-                      {{ formatDate(transaction.dateAt) }}
-                    </td>
-                    <td class='text-nowrap text-end'>
-                      <Amount
-                        :value='transaction.amount'
-                        :currency='transaction.account?.currency?.name'
-                        is-color
-                        copyable
-                      />
-                    </td>
-                    <td>
-                      <BadgeAccount
-                        :name='transaction.account?.name'
-                        class='no-hover'
-                      />
-                    </td>
-                    <td>
-                      <div class='badges-list'>
-                        <BadgeProject
-                          v-if='transaction.project'
-                          :name='transaction.project.name'
-                          class='no-hover'
-                        />
-
-                        <BadgeProperty
-                          v-if='transaction.property'
-                          :name='transaction.property.name'
-                          class='no-hover'
-                        />
-
-                        <BadgeCategory
-                          v-for='cat in transaction.categories'
-                          :key='cat.id'
-                          :name='cat.name'
-                          class='no-hover'
-                        />
-                      </div>
-                    </td>
-                    <td class='text-secondary'>
-                      {{ transaction.description }}
-                    </td>
-                    <td>
-                      <div class='btn-actions'>
-                        <button
-                          class='btn btn-action'
-                          @click='onEditTransaction(transaction)'
-                        >
-                          <IconPencil size='20' stroke-width='1.5' />
-                        </button>
-
-                        <button
-                          class='btn btn-action'
-                          @click='onDeleteTransaction(transaction)'
-                        >
-                          <IconTrash size='20' stroke-width='1.5' />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                    :transaction='transaction'
+                    @edit='onEditTransaction'
+                    @delete='onDeleteTransaction'
+                  />
                 </tbody>
               </table>
             </div>
