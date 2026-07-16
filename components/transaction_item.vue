@@ -3,11 +3,12 @@ import {
   IconDotsVertical,
   IconPencil,
   IconTrash,
+  IconCopy,
 } from '@tabler/icons-vue';
 
 import { formatDate, formatDateFull } from '~/lib/helper_date';
 
-const props = defineProps({
+defineProps({
   transaction: {
     type: Object,
     required: true,
@@ -20,15 +21,32 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showCopy: {
+    type: Boolean,
+    default: false,
+  },
+  showTransfer: {
+    type: Boolean,
+    default: false,
+  },
+  clickable: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits([
+defineEmits([
   'edit',
   'delete',
+  'copy',
+  'account-click',
+  'project-click',
+  'property-click',
+  'category-click',
 ]);
 </script>
 
-<template>
+<template v-if='showTransfer && transaction.isTransfer'>
   <div
     v-if='isMobile'
     class='card-header'
@@ -44,7 +62,7 @@ const emit = defineEmits([
           <Amount
             :value='transaction.amount'
             :currency='transaction.account?.currency?.name'
-            :is-color='true'
+            :is-color='showTransfer ? !transaction.isTransfer : true'
             copyable
           />
         </div>
@@ -52,26 +70,30 @@ const emit = defineEmits([
         <div class='badges-list mt-2'>
           <BadgeAccount
             :name='transaction.account?.name'
-            class='no-hover'
+            :class='{ "no-hover": !clickable }'
+            @click='clickable && $emit("account-click", transaction.account.id)'
           />
 
           <BadgeProject
             v-if='transaction.project'
             :name='transaction.project.name'
-            class='no-hover'
+            :class='{ "no-hover": !clickable }'
+            @click='clickable && $emit("project-click", transaction.project.id)'
           />
 
           <BadgeProperty
             v-if='transaction.property'
             :name='transaction.property.name'
-            class='no-hover'
+            :class='{ "no-hover": !clickable }'
+            @click='clickable && $emit("property-click", transaction.property.id)'
           />
 
           <BadgeCategory
             v-for='cat in transaction.categories'
             :key='cat.id'
             :name='cat.name'
-            class='no-hover'
+            :class='{ "no-hover": !clickable }'
+            @click='clickable && $emit("category-click", cat.id)'
           />
         </div>
 
@@ -104,7 +126,13 @@ const emit = defineEmits([
             >
               Редактировать
             </button>
-
+            <button
+              v-if='showCopy'
+              class='dropdown-item'
+              @click='$emit("copy", transaction)'
+            >
+              Повторить
+            </button>
             <button
               class='dropdown-item text-danger'
               @click='$emit("delete", transaction)'
@@ -134,7 +162,8 @@ const emit = defineEmits([
     <td>
       <BadgeAccount
         :name='transaction.account?.name'
-        class='no-hover'
+        :class='{ "no-hover": !clickable }'
+        @click='clickable && $emit("account-click", transaction.account.id)'
       />
     </td>
 
@@ -143,20 +172,23 @@ const emit = defineEmits([
         <BadgeProject
           v-if='transaction.project'
           :name='transaction.project.name'
-          class='no-hover'
+          :class='{ "no-hover": !clickable }'
+          @click='clickable && $emit("project-click", transaction.project.id)'
         />
 
         <BadgeProperty
           v-if='transaction.property'
           :name='transaction.property.name'
-          class='no-hover'
+          :class='{ "no-hover": !clickable }'
+          @click='clickable && $emit("property-click", transaction.property.id)'
         />
 
         <BadgeCategory
           v-for='cat in transaction.categories'
           :key='cat.id'
           :name='cat.name'
-          class='no-hover'
+          :class='{ "no-hover": !clickable }'
+          @click='clickable && $emit("category-click", cat.id)'
         />
       </div>
     </td>
@@ -172,6 +204,18 @@ const emit = defineEmits([
           @click='$emit("edit", transaction)'
         >
           <IconPencil
+            size='20'
+            stroke-width='1.5'
+          />
+        </button>
+
+        <button
+          v-if='showCopy'
+          v-tooltip:bottom='"Повторить операцию"'
+          class='btn btn-action'
+          @click='$emit("copy", transaction)'
+        >
+          <IconCopy
             size='20'
             stroke-width='1.5'
           />
