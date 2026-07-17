@@ -649,7 +649,7 @@ const chartOptions = computed(() => ({
               v-for='(item, index) in property?.transactions || []'
               :key='item.id'
               :transaction='item'
-              :is-mobile='true'
+              is-mobile
               :is-last='index === property?.transactions.length - 1'
               @edit='onEditTransaction'
               @delete='onDeleteTransaction'

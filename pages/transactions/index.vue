@@ -3,18 +3,11 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
-  IconCopy,
-  IconPencil,
-  IconTrash,
-  IconArrowNarrowLeft,
-  IconArrowNarrowRight,
   IconSearch,
-  IconDotsVertical,
   IconFilter,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
-import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
@@ -504,9 +497,9 @@ watch(
               :key='item.id'
               :transaction='item'
               is-mobile
+              is-show-copy
+              is-clickable
               :is-last='index === transactions.length - 1'
-              :clickable='true'
-              :show-copy='true'
               @edit='openEdit'
               @copy='openCopy'
               @delete='destroy'
@@ -557,8 +550,8 @@ watch(
                     v-for='item in transactions'
                     :key='item.id'
                     :transaction='item'
-                    :clickable='true'
-                    :show-copy='true'
+                    is-clickable
+                    is-show-copy
                     @edit='openEdit'
                     @copy='openCopy'
                     @delete='destroy'
