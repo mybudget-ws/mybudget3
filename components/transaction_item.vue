@@ -68,7 +68,7 @@ defineEmits([
         <div class='badges-list mt-2'>
           <BadgeAccount
             :name='transaction.account.name'
-            :class='{ "no-hover": !isClickable }'
+            :is-clickable='isClickable'
             @click='isClickable && $emit("account-click", transaction.account.id)'
           />
 
@@ -98,7 +98,7 @@ defineEmits([
           <BadgeProperty
             v-if='transaction.property'
             :name='transaction.property.name'
-            :class='{ "no-hover": !isClickable }'
+            :is-clickable='isClickable'
             @click='isClickable && $emit("property-click", transaction.property.id)'
           />
 
@@ -106,7 +106,7 @@ defineEmits([
             v-for='cat in transaction.categories'
             :key='cat.id'
             :name='cat.name'
-            :class='{ "no-hover": !isClickable }'
+            :is-clickable='isClickable'
             @click='isClickable && $emit("category-click", cat.id)'
           />
         </div>
@@ -176,7 +176,7 @@ defineEmits([
     <td>
       <BadgeAccount
         :name='transaction.account.name'
-        :class='{ "no-hover": !isClickable }'
+        :is-clickable='isClickable'
         @click='isClickable && $emit("account-click", transaction.account.id)'
       />
     </td>
@@ -201,14 +201,14 @@ defineEmits([
         <BadgeProject
           v-if='transaction.project'
           :name='transaction.project.name'
-          :class='{ "no-hover": !isClickable }'
+          :is-clickable='isClickable'
           @click='isClickable && $emit("project-click", transaction.project.id)'
         />
 
         <BadgeProperty
           v-if='transaction.property'
           :name='transaction.property.name'
-          :class='{ "no-hover": !isClickable }'
+          :is-clickable='isClickable'
           @click='isClickable && $emit("property-click", transaction.property.id)'
         />
 
@@ -216,7 +216,7 @@ defineEmits([
           v-for='cat in transaction.categories'
           :key='cat.id'
           :name='cat.name'
-          :class='{ "no-hover": !isClickable }'
+          :is-clickable='isClickable'
           @click='isClickable && $emit("category-click", cat.id)'
         />
       </div>
@@ -263,18 +263,3 @@ defineEmits([
     </td>
   </tr>
 </template>
-
-<style scoped>
-.badge.no-hover {
-  cursor: default !important;
-  pointer-events: none;
-}
-
-.badge.no-hover:hover {
-  background: inherit !important;
-  color: inherit !important;
-  filter: none !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-</style>
