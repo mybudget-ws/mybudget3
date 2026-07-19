@@ -36,7 +36,48 @@ const props = defineProps({
     default: undefined,
   },
 });
+const dateButtons = computed(() => {
+  const today = new Date();
 
+  const format = (date) => {
+    return date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+    });
+  };
+
+  const createDate = (daysAgo) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - daysAgo);
+    return date;
+  };
+
+  return [
+    {
+      key: 'today',
+      label: 'Сегодня',
+      date: createDate(0),
+    },
+    {
+      key: 'yesterday',
+      label: 'Вчера',
+      date: createDate(1),
+    },
+    ...[2, 3, 4].map((daysAgo) => {
+      const date = createDate(daysAgo);
+
+      return {
+        key: `date-${daysAgo}`,
+        label: format(date),
+        date,
+      };
+    }),
+  ];
+});
+
+const selectDate = (item) => {
+  date.value = item.date;
+};
 const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
@@ -220,6 +261,22 @@ const onSubmit = async () => {
               v-model='date'
               :disabled='isSubmitting'
             />
+            <div class='card-actions mt-2'>
+              <nav class='nav nav-segmented' role='tablist'>
+                <button
+                  v-for='item in dateButtons'
+                  :key='item.key'
+                  class='nav-link date-button'
+                  :class='{
+                    active: date.toDateString() === item.date.toDateString()
+                  }'
+                  type='button'
+                  @click='selectDate(item)'
+                >
+                  {{ item.label }}
+                </button>
+              </nav>
+            </div>
           </div>
         </div>
         <div class='mb-3'>
@@ -285,3 +342,17 @@ const onSubmit = async () => {
     </form>
   </ModalBase>
 </template>
+
+<style scoped>
+.date-button {
+  height: 20px !important;
+  min-height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 20px;
+}
+.card-actions {
+  padding-left: 0px;
+}
+
+</style>
