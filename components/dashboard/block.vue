@@ -1,7 +1,11 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
 import { CHART_COLORS } from '~/lib/consts';
-import { IconChartBar } from '@tabler/icons-vue';
+import {
+  IconChartBar,
+  IconChartPie2,
+  IconChartPie3,
+} from '@tabler/icons-vue';
 
 // const appConfig = useAppConfig()
 // const labelColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
@@ -36,10 +40,30 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  emptyIconColor: {
+    type: String,
+    default: 'text-green',
+  },
+  emptyIcon: {
+    type: String,
+    default: 'chart',
+  },
 });
 
 const categories = computed(() => props.chartData?.categories || []);
 const series = computed(() => props.chartData?.series || []);
+
+const emptyIconComponent = computed(() => {
+  if (props.emptyIcon === 'pie') {
+    return IconChartPie2;
+  }
+
+  if (props.emptyIcon === 'pie3') {
+    return IconChartPie3;
+  }
+
+  return IconChartBar;
+});
 
 const hasChartData = computed(() => {
   if (!series.value.length) return false;
@@ -157,8 +181,9 @@ const chartOptions = computed(() => ({
         class='d-flex flex-column align-items-center justify-content-center'
         :style='{ height: `${CHART_HEIGHT}px` }'
       >
-        <IconChartBar
-          class='text-green mb-3'
+        <component
+          :is='emptyIconComponent'
+          :class='[emptyIconColor, "mb-3"]'
           :size='44'
           stroke-width='1.5'
         />

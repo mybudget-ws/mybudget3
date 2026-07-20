@@ -309,6 +309,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
+        :chart-data='dashboard.expensesChart'
+        empty-text='Расходов в этом месяце пока нет'
+        empty-icon-color='text-red'
         :to='{
           path: "/transactions",
           query: {
@@ -316,7 +319,6 @@ watch(token, (val) => {
           },
         }'
         :is-loading='isInitialLoading'
-        :chart-data='dashboard.expensesChart'
       >
         <div v-if='!isLoading && isMobile'>
           <div
@@ -425,6 +427,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Счета'
+        empty-text='У вас пока нет счетов'
+        empty-icon='pie'
+        empty-icon-color='text-blue'
         :to='{
           path: "/accounts",
         }'
@@ -535,6 +540,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Все активы'
+        empty-text='У вас пока нет активов'
+        empty-icon='pie3'
+        empty-icon-color='text-blue'
         chart-type='donut'
         :is-loading='isInitialLoading'
         :chart-data='dashboard.assetsChart'
