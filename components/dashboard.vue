@@ -190,6 +190,7 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Доходы'
+        empty-text='Доходов в этом месяце пока нет'
         :to='{
           path: "/transactions",
           query: {
