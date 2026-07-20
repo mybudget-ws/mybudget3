@@ -9,7 +9,7 @@ import { useDevice } from '~/composables/use_device';
 const route = useRoute();
 const { token } = useAuth();
 const {
-  CHART_HEIGTH,
+  CHART_HEIGHT,
   CHART_LABEL_COLOR,
   PERIODS,
   period,
@@ -97,7 +97,7 @@ const chartOptions = computed(() => ({
   chart: {
     type: CHART_TYPE,
     fontFamily: 'inherit',
-    height: CHART_HEIGTH,
+    height: CHART_HEIGHT,
     parentHeightOffset: 0,
     toolbar: { show: false, },
     animations: { enabled: false },
@@ -244,14 +244,14 @@ const chartOptions = computed(() => ({
           <div
             v-if='isLoading'
             class='d-flex align-items-center justify-content-center h-100'
-            :style='{ minHeight: `${CHART_HEIGTH}px` }'
+            :style='{ minHeight: `${CHART_HEIGHT}px` }'
           >
             <PlaceholderLoading />
           </div>
           <div v-else-if='!isError' class='w-full'>
             <VueApexCharts
               :type='CHART_TYPE'
-              :height='CHART_HEIGTH'
+              :height='CHART_HEIGHT'
               :options='chartOptions'
               :series='series'
             />

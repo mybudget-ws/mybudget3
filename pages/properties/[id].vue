@@ -38,7 +38,7 @@ const currentKind = ref(KIND_EXPENSE);
 const isShowAllPrices = ref(false);
 
 const DEFAULT_PRICE_ITEMS = 3;
-const CHART_HEIGTH = 300;
+const CHART_HEIGHT = 300;
 // Убрать в будущем дублирование с report/index.vue
 const CHART_TYPE = 'line';
 
@@ -180,7 +180,7 @@ const chartOptions = computed(() => ({
   chart: {
     type: CHART_TYPE,
     fontFamily: 'inherit',
-    height: CHART_HEIGTH,
+    height: CHART_HEIGHT,
     parentHeightOffset: 0,
     toolbar: { show: false, },
     animations: { enabled: false },
@@ -427,7 +427,7 @@ const chartOptions = computed(() => ({
             <VueApexCharts
               v-if='!isLoading && series.length'
               :type='CHART_TYPE'
-              :height='CHART_HEIGTH'
+              :height='CHART_HEIGHT'
               :options='chartOptions'
               :series='series'
             />
