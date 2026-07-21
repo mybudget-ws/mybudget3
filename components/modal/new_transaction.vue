@@ -2,8 +2,10 @@
 import api from '~/lib/api';
 import { evaluate } from 'mathjs';
 import { nextTick } from 'vue';
+import { useDevice } from '~/composables/use_device';
 
 const { token } = useAuth();
+const { isMobile } = useDevice();
 
 const amountInputRef = ref(null);
 const isLoaded = ref(false);
@@ -239,7 +241,7 @@ const onSubmit = async () => {
       </div>
 
       <div class='modal-body'>
-        <div class='row mb-3'>
+        <div class='row' :class='{ "mb-3": isMobile }'>
           <div class='col-12 col-md-6 mb-3 mb-md-0'>
             <Label required>Величина</Label>
             <div class='input-group input-group-flat'>
