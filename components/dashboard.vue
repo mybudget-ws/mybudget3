@@ -427,7 +427,7 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Счета'
-        empty-text='У вас пока нет счетов'
+        empty-text='Нет операций, или баланс счетов отрицательный'
         empty-icon='pie'
         empty-icon-color='text-blue'
         :to='{
@@ -501,10 +501,11 @@ watch(token, (val) => {
             <tbody>
               <tr>
                 <td class='text-secondary'><b>Всего</b></td>
-                <td class='text-end text-success no-button-padding'>
+                <td class='text-end no-button-padding'>
                   <Amount
                     :value='totalAccountsBalanceBase'
                     :currency='currencyBaseName'
+                    is-color
                     copyable
                   />
                 </td>
@@ -542,7 +543,7 @@ watch(token, (val) => {
         title='Все активы'
         empty-text='У вас пока нет активов'
         empty-icon='pie3'
-        empty-icon-color='text-blue'
+        empty-icon-color='text-purple'
         chart-type='donut'
         :is-loading='isInitialLoading'
         :chart-data='dashboard.assetsChart'
