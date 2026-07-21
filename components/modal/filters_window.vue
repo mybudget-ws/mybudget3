@@ -1,4 +1,15 @@
 <script setup>
+defineProps({
+  isLoaded: {
+    type: Boolean,
+    default: false,
+  },
+  transactionEventTicks: {
+    type: Number,
+    default: 0,
+  },
+});
+
 const emit = defineEmits([
   'close',
   'kinds-change',
@@ -12,25 +23,20 @@ const emit = defineEmits([
 <template>
   <ModalBase @close='emit("close")'>
     <div class='modal-header'>
-      <h5 class='modal-title'>
-        Фильтры
-      </h5>
-
-      <button
-        class='btn-close'
-        type='button'
-        @click='emit("close")'
-      />
+      <h5 class='modal-title'>Фильтры</h5>
+      <button class='btn-close' type='button' @click='emit("close")' />
     </div>
 
     <div class='modal-body'>
       <div class='row'>
         <div class='col-12'>
           <FilterKinds
+            :is-loading='!isLoaded'
             @update:items='emit("kinds-change", $event)'
           />
 
           <FilterAccounts
+            :reload='transactionEventTicks'
             @update:items='emit("accounts-change", $event)'
           />
 
