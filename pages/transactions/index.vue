@@ -353,7 +353,7 @@ watch(
     @saved='onSaved'
     @close='isShowModalAccount = false'
   />
-  <ModalTransactionFilters
+  <ModalFiltersWindow
     v-if='isShowMobileFilters'
     :is-loaded='isLoaded'
     :transaction-event-ticks='transactionEventTicks'

@@ -164,7 +164,7 @@ const chartOptions = computed(() => ({
 </script>
 
 <template>
-  <ModalReportsFilters
+  <ModalFiltersWindow
     v-if='isShowMobileFilters'
     @close='isShowMobileFilters = false'
     @kinds-change='onKindsChange'

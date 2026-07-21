@@ -13,7 +13,7 @@ const emit = defineEmits([
   <ModalBase @close='emit("close")'>
     <div class='modal-header'>
       <h5 class='modal-title'>
-        Фильтры отчетов
+        Фильтры
       </h5>
 
       <button
