@@ -261,19 +261,19 @@ const onSubmit = async () => {
               v-model='date'
               :disabled='isSubmitting'
             />
-            <div class='card-actions mt-2'>
-              <nav class='nav nav-segmented' role='tablist'>
+            <div class='mt-1'>
+              <nav class='nav nav-segmented w-100' role='tablist'>
                 <button
-                  v-for='item in dateButtons'
-                  :key='item.key'
+                  v-for='v in dateButtons'
+                  :key='v.key'
                   class='nav-link date-button'
                   :class='{
-                    active: date.toDateString() === item.date.toDateString()
+                    active: date.toDateString() === v.date.toDateString()
                   }'
                   type='button'
-                  @click='selectDate(item)'
+                  @click='selectDate(v)'
                 >
-                  {{ item.label }}
+                  {{ v.label }}
                 </button>
               </nav>
             </div>
