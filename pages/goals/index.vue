@@ -421,13 +421,13 @@ watchEffect(() => {
             v-if='isShowFooter'
             class='card-footer d-flex align-items-center border-top-0'
           >
-            <i v-if='isEmpty' class='text-secondary'>
+            <div v-if='isEmpty' class='text-secondary'>
               Похоже таких целей ещё нет
-            </i>
-            <i v-if='isError' class='text-danger'>
+            </div>
+            <div v-if='isError' class='text-danger'>
               Ошибка: не удалось загрузить цели.
               Попробуйте повторить операцию, или обратитесь в поддержку.
-            </i>
+            </div>
           </div>
         </div>
       </div>

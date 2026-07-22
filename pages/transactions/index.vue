@@ -565,9 +565,9 @@ watch(
             </div>
 
             <div v-if='isEmpty' class='card-footer bg-transparent'>
-              <i class='text-secondary'>
+              <div class='text-secondary'>
                 Похоже таких операций ещё нет
-              </i>
+              </div>
             </div>
             <div v-else class='card-footer bg-transparent border-top'>
               <button                
