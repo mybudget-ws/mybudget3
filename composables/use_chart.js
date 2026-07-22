@@ -5,7 +5,7 @@ export const useChart = () => {
   const router = useRouter();
   const appConfig = useAppConfig();
 
-  const CHART_HEIGTH = 500;
+  const CHART_HEIGHT = 500;
   const CHART_LABEL_COLOR = appConfig.theme.dark ? '#e2e8f0' : '#334155';
 
   const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {
@@ -86,7 +86,7 @@ export const useChart = () => {
   });
 
   return {
-    CHART_HEIGTH,
+    CHART_HEIGHT,
     CHART_LABEL_COLOR,
     PERIODS,
     period,

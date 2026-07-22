@@ -1,10 +1,15 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
 import { CHART_COLORS } from '~/lib/consts';
+import {
+  IconChartBar,
+  IconChartPie2,
+  IconChartPie3,
+} from '@tabler/icons-vue';
 
 // const appConfig = useAppConfig()
 // const labelColor = appConfig.theme.dark ? '#e2e8f0' : '#334155';
-const CHART_HEIGTH = 200;
+const CHART_HEIGHT = 200;
 
 const props = defineProps({
   title: {
@@ -31,15 +36,51 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  emptyText: {
+    type: String,
+    default: '',
+  },
+  emptyIconColor: {
+    type: String,
+    default: 'text-green',
+  },
+  emptyIcon: {
+    type: String,
+    default: 'chart',
+  },
 });
 
 const categories = computed(() => props.chartData?.categories || []);
 const series = computed(() => props.chartData?.series || []);
 
+const emptyIconComponent = computed(() => {
+  if (props.emptyIcon === 'pie') {
+    return IconChartPie2;
+  }
+
+  if (props.emptyIcon === 'pie3') {
+    return IconChartPie3;
+  }
+
+  return IconChartBar;
+});
+
+const hasChartData = computed(() => {
+  if (!series.value.length) return false;
+
+  return series.value.some((item) => {
+    if (Array.isArray(item.data)) {
+      return item.data.some((value) => Number(value) !== 0);
+    }
+
+    return Number(item) !== 0;
+  });
+});
+
 const chartOptions = computed(() => ({
   chart: {
     type: props.chartType,
-    height: CHART_HEIGTH,
+    height: CHART_HEIGHT,
     parentHeightOffset: 0,
     toolbar: { show: false, },
     animations: { enabled: false },
@@ -115,17 +156,44 @@ const chartOptions = computed(() => ({
       </div>
     </div>
 
-    <div class='p-3 d-flex border-bottom'>
-      <div v-if='isLoading' class='text-center w-full'>
+    <div class='p-3 border-bottom'>
+      <div
+        v-if='isLoading'
+        class='text-center w-100'
+      >
         <PlaceholderLoading />
       </div>
-      <div v-else class='w-full'>
+
+      <div
+        v-else-if='hasChartData'
+        class='w-100'
+      >
         <VueApexCharts
           :type='props.chartType'
-          :height='CHART_HEIGTH'
+          :height='CHART_HEIGHT'
           :options='chartOptions'
           :series='series'
         />
+      </div>
+
+      <div
+        v-else
+        class='d-flex flex-column align-items-center justify-content-center'
+        :style='{ height: `${CHART_HEIGHT}px` }'
+      >
+        <component
+          :is='emptyIconComponent'
+          :class='[emptyIconColor, "mb-3"]'
+          :size='44'
+          stroke-width='1.5'
+        />
+
+        <div
+          v-if='props.emptyText'
+          class='text-secondary text-center'
+        >
+          {{ props.emptyText }}
+        </div>
       </div>
     </div>
 

@@ -190,6 +190,7 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Доходы'
+        empty-text='Доходов в этом месяце пока нет'
         :to='{
           path: "/transactions",
           query: {
@@ -308,6 +309,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
+        :chart-data='dashboard.expensesChart'
+        empty-text='Расходов в этом месяце пока нет'
+        empty-icon-color='text-red'
         :to='{
           path: "/transactions",
           query: {
@@ -315,7 +319,6 @@ watch(token, (val) => {
           },
         }'
         :is-loading='isInitialLoading'
-        :chart-data='dashboard.expensesChart'
       >
         <div v-if='!isLoading && isMobile'>
           <div
@@ -424,6 +427,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Счета'
+        empty-text='Нет операций, или баланс счетов отрицательный'
+        empty-icon='pie'
+        empty-icon-color='text-blue'
         :to='{
           path: "/accounts",
         }'
@@ -495,10 +501,11 @@ watch(token, (val) => {
             <tbody>
               <tr>
                 <td class='text-secondary'><b>Всего</b></td>
-                <td class='text-end text-success no-button-padding'>
+                <td class='text-end no-button-padding'>
                   <Amount
                     :value='totalAccountsBalanceBase'
                     :currency='currencyBaseName'
+                    is-color
                     copyable
                   />
                 </td>
@@ -534,6 +541,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Все активы'
+        empty-text='У вас пока нет активов'
+        empty-icon='pie3'
+        empty-icon-color='text-purple'
         chart-type='donut'
         :is-loading='isInitialLoading'
         :chart-data='dashboard.assetsChart'
