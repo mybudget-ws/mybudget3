@@ -190,7 +190,7 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Доходы'
-        :is-empty='dashboard.incomes.length === 0'
+        :is-empty='(dashboard.incomes?.length ?? 0) === 0'
         empty-text='Доходов ещё нет'
         :to='{
           path: "/transactions",
@@ -310,7 +310,7 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
-        :is-empty='dashboard.expenses.length === 0'
+        :is-empty='(dashboard.expenses?.length ?? 0) === 0'
         :chart-data='dashboard.expensesChart'
         empty-text='Расходов ещё нет'
         empty-icon-color='text-red'
