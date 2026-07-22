@@ -3,18 +3,11 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconArrowsRightLeft,
-  IconCopy,
-  IconPencil,
-  IconTrash,
-  IconArrowNarrowLeft,
-  IconArrowNarrowRight,
   IconSearch,
-  IconDotsVertical,
   IconFilter,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
-import { formatDate, formatDateFull } from '~/lib/helper_date';
 import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
@@ -499,102 +492,22 @@ watch(
           </div>
 
           <div v-if='!isLoading && isMobile'>
-            <div
+            <TransactionItem
               v-for='(item, index) in transactions'
               :key='item.id'
-              class='card-header'
-              :class='{ "border-bottom-1": index === transactions.length - 1 }'
-            >
-              <div class='d-flex w-100'>
-                <div class='flex-grow-1 min-w-0'>
-                  <div>{{ formatDate(item.dateAt) }}</div>
-
-                  <Amount
-                    class='d-block mt-1 fs-3'
-                    :value='item.amount'
-                    :currency='item.account.currency.name'
-                    :is-color='!item.isTransfer'
-                  />
-
-                  <div class='badges-list mt-2'>
-                    <BadgeAccount
-                      :name='item.account.name'
-                      @click='onAccountClick(item.account.id)'
-                    />
-
-                    <template v-if='item.isTransfer'>
-                      <span
-                        v-if='item.amount > 0'
-                        class='badge bg-green-lt text-green-lt-fg'
-                      >
-                        <IconArrowNarrowLeft size='14' />
-                      </span>
-
-                      <span
-                        v-if='item.amount < 0'
-                        class='badge bg-red-lt text-red-lt-fg'
-                      >
-                        <IconArrowNarrowRight size='14' />
-                      </span>
-                    </template>
-
-                    <BadgeProject
-                      v-if='item.project'
-                      :name='item.project.name'
-                      @click='onProjectClick(item.project.id)'
-                    />
-                    <BadgeProperty
-                      v-if='item.property'
-                      :name='item.property.name'
-                      @click='onPropertyClick(item.property.id)'
-                    />
-                    <BadgeCategory
-                      v-for='cat in item.categories'
-                      :key='cat.id'
-                      :name='cat.name'
-                      @click='onCategoryClick(cat.id)'
-                    />
-                  </div>
-
-                  <div
-                    v-if='item.description'
-                    class='text-secondary mt-1 text-truncate'
-                  >
-                    {{ item.description }}
-                  </div>
-
-                </div>
-
-                <div class='ms-2 d-flex align-items-center'>
-                  <div class='dropdown'>
-                    <a
-                      href='#'
-                      class='btn-action'
-                      data-bs-toggle='dropdown'
-                      @click.prevent
-                    >
-                      <IconDotsVertical size='20' stroke-width='1' />
-                    </a>
-
-                    <div class='dropdown-menu dropdown-menu-end'>
-                      <button class='dropdown-item' @click='openEdit(item)'>
-                        Редактировать
-                      </button>
-
-                      <button class='dropdown-item' @click='openCopy(item)'>
-                        Повторить
-                      </button>
-
-                      <button class='dropdown-item text-danger' @click='destroy(item)'>
-                        Удалить
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
+              :transaction='item'
+              is-mobile
+              is-show-copy
+              is-clickable
+              :is-last='index === transactions.length - 1'
+              @edit='openEdit'
+              @copy='openCopy'
+              @delete='destroy'
+              @account-click='onAccountClick'
+              @project-click='onProjectClick'
+              @property-click='onPropertyClick'
+              @category-click='onCategoryClick'
+            />
             <div v-if='isEmpty' class='text-secondary text-center mt-3'>
               Похоже таких операций ещё нет
             </div>
@@ -633,84 +546,20 @@ watch(
                   </tr>
                 </thead>
                 <tbody class='table-tbody'>
-                  <tr v-for='item in transactions' :key='item.id'>
-                    <td :title='formatDateFull(item.dateAt)'>
-                      {{ formatDate(item.dateAt) }}
-                    </td>
-                    <td class='text-nowrap text-end'>
-                      <Amount
-                        :value='item.amount'
-                        :currency='item.account.currency.name'
-                        :is-color='!item.isTransfer'
-                        copyable
-                      />
-                    </td>
-                    <td class='text-secondary'>
-                      <BadgeAccount
-                        :name='item.account.name'
-                        @click='onAccountClick(item.account.id)'
-                      />
-                    </td>
-                    <td>
-                      <div class='badges-list'>
-                        <template v-if='item.isTransfer'>
-                          <span
-                            v-if='item.amount > 0'
-                            class='badge bg-green-lt text-green-lt-fg'
-                          >
-                            <IconArrowNarrowLeft size='16' />
-                          </span>
-                          <span
-                            v-if='item.amount < 0'
-                            class='badge bg-red-lt text-red-lt-fg'
-                          >
-                            <IconArrowNarrowRight size='16' />
-                          </span>
-                        </template>
-                        <BadgeProject
-                          v-if='item.project'
-                          :name='item.project.name'
-                          @click='onProjectClick(item.project.id)'
-                        />
-                        <BadgeProperty
-                          v-if='item.property'
-                          :name='item.property.name'
-                          @click='onPropertyClick(item.property.id)'
-                        />
-                        <BadgeCategory
-                          v-for='cat in item.categories'
-                          :key='cat.id'
-                          :name='cat.name'
-                          @click='onCategoryClick(cat.id)'
-                        />
-                      </div>
-                    </td>
-                    <td class='text-secondary'>{{ item.description }}</td>
-                    <td>
-                      <div class='btn-actions'>
-                        <button
-                          type='button'
-                          class='btn btn-action'
-                          @click='openEdit(item)'
-                        >
-                          <IconPencil size='20' stroke-width='1' />
-                        </button>
-                        <button
-                          v-tooltip:bottom='"Повторить операцию"'
-                          type='button'
-                          class='btn btn-action'
-                          @click='openCopy(item)'
-                        >
-                          <IconCopy size='20' stroke-width='1' />
-                        </button>
-                        <button
-                          type='button'
-                          class='btn btn-action' @click='destroy(item)'>
-                          <IconTrash size='20' stroke-width='1' />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  <TransactionItem
+                    v-for='item in transactions'
+                    :key='item.id'
+                    :transaction='item'
+                    is-clickable
+                    is-show-copy
+                    @edit='openEdit'
+                    @copy='openCopy'
+                    @delete='destroy'
+                    @account-click='onAccountClick'
+                    @project-click='onProjectClick'
+                    @property-click='onPropertyClick'
+                    @category-click='onCategoryClick'
+                  />
                 </tbody>
               </table>
             </div>
