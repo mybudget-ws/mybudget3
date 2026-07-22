@@ -190,7 +190,8 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Доходы'
-        empty-text='Доходов в этом месяце пока нет'
+        :is-empty='dashboard.incomes.length === 0'
+        empty-text='Доходов ещё нет'
         :to='{
           path: "/transactions",
           query: {
@@ -309,8 +310,9 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
+        :is-empty='dashboard.expenses.length === 0'
         :chart-data='dashboard.expensesChart'
-        empty-text='Расходов в этом месяце пока нет'
+        empty-text='Расходов ещё нет'
         empty-icon-color='text-red'
         :to='{
           path: "/transactions",

@@ -48,6 +48,14 @@ const props = defineProps({
     type: String,
     default: 'chart',
   },
+  showFooterWhenEmpty: {
+    type: Boolean,
+    default: false,
+  },
+  isEmpty: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const categories = computed(() => props.chartData?.categories || []);
@@ -199,5 +207,13 @@ const chartOptions = computed(() => ({
 
     <PlaceholderLoadingFilters v-if='isLoading' />
     <slot v-else />
+    <div
+      v-if='!isLoading && isEmpty'
+      class='card-footer bg-transparent'
+    >
+      <div class='text-secondary'>
+        {{ emptyText }}
+      </div>
+    </div>
   </div>
 </template>
