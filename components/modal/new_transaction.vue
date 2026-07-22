@@ -2,8 +2,10 @@
 import api from '~/lib/api';
 import { evaluate } from 'mathjs';
 import { nextTick } from 'vue';
+import { useDevice } from '~/composables/use_device';
 
 const { token } = useAuth();
+const { isMobile } = useDevice();
 
 const amountInputRef = ref(null);
 const isLoaded = ref(false);
@@ -36,7 +38,48 @@ const props = defineProps({
     default: undefined,
   },
 });
+const dateButtons = computed(() => {
+  const today = new Date();
 
+  const format = (date) => {
+    return date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+    });
+  };
+
+  const createDate = (daysAgo) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - daysAgo);
+    return date;
+  };
+
+  return [
+    {
+      key: 'today',
+      label: 'Сегодня',
+      date: createDate(0),
+    },
+    {
+      key: 'yesterday',
+      label: 'Вчера',
+      date: createDate(1),
+    },
+    ...[2, 3, 4].map((daysAgo) => {
+      const date = createDate(daysAgo);
+
+      return {
+        key: `date-${daysAgo}`,
+        label: format(date),
+        date,
+      };
+    }),
+  ];
+});
+
+const selectDate = (item) => {
+  date.value = item.date;
+};
 const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
@@ -198,7 +241,7 @@ const onSubmit = async () => {
       </div>
 
       <div class='modal-body'>
-        <div class='row mb-3'>
+        <div class='row' :class='{ "mb-3": isMobile }'>
           <div class='col-12 col-md-6 mb-3 mb-md-0'>
             <Label required>Величина</Label>
             <div class='input-group input-group-flat'>
@@ -220,6 +263,22 @@ const onSubmit = async () => {
               v-model='date'
               :disabled='isSubmitting'
             />
+            <div class='mt-1'>
+              <nav class='nav nav-segmented w-100' role='tablist'>
+                <button
+                  v-for='v in dateButtons'
+                  :key='v.key'
+                  class='nav-link date-button'
+                  :class='{
+                    active: date.toDateString() === v.date.toDateString()
+                  }'
+                  type='button'
+                  @click='selectDate(v)'
+                >
+                  {{ v.label }}
+                </button>
+              </nav>
+            </div>
           </div>
         </div>
         <div class='mb-3'>
@@ -285,3 +344,17 @@ const onSubmit = async () => {
     </form>
   </ModalBase>
 </template>
+
+<style scoped>
+.date-button {
+  height: 20px !important;
+  min-height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 20px;
+}
+.card-actions {
+  padding-left: 0px;
+}
+
+</style>
