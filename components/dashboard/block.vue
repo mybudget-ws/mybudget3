@@ -38,7 +38,7 @@ const props = defineProps({
   },
   emptyText: {
     type: String,
-    default: '',
+    required: true,
   },
   emptyIconColor: {
     type: String,
@@ -48,13 +48,13 @@ const props = defineProps({
     type: String,
     default: 'chart',
   },
-  showFooterWhenEmpty: {
+  isEmptyFooter: {
     type: Boolean,
     default: false,
   },
-  isEmpty: {
-    type: Boolean,
-    default: false,
+  emptyFooterText: {
+    type: String,
+    default: '',
   },
 });
 
@@ -177,7 +177,7 @@ const chartOptions = computed(() => ({
         class='w-100'
       >
         <VueApexCharts
-          :type='props.chartType'
+          :type='chartType'
           :height='CHART_HEIGHT'
           :options='chartOptions'
           :series='series'
@@ -195,12 +195,8 @@ const chartOptions = computed(() => ({
           :size='44'
           stroke-width='1.5'
         />
-
-        <div
-          v-if='props.emptyText'
-          class='text-secondary text-center'
-        >
-          {{ props.emptyText }}
+        <div class='text-secondary text-center'>
+          {{ emptyText }}
         </div>
       </div>
     </div>
@@ -208,11 +204,11 @@ const chartOptions = computed(() => ({
     <PlaceholderLoadingFilters v-if='isLoading' />
     <slot v-else />
     <div
-      v-if='!isLoading && isEmpty'
+      v-if='!isLoading && isEmptyFooter'
       class='card-footer bg-transparent'
     >
       <div class='text-secondary'>
-        {{ emptyText }}
+        {{ emptyFooterText }}
       </div>
     </div>
   </div>
