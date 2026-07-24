@@ -191,6 +191,8 @@ watch(token, (val) => {
       <DashboardBlock
         title='Доходы'
         empty-text='Доходов в этом месяце пока нет'
+        empty-footer-text='Доходов ещё нет'
+        :is-empty-footer='dashboard.incomes.length === 0'
         :to='{
           path: "/transactions",
           query: {
@@ -309,9 +311,10 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
-        :chart-data='dashboard.expensesChart'
-        empty-text='Расходов в этом месяце пока нет'
         empty-icon-color='text-red'
+        empty-text='Расходов в этом месяце пока нет'
+        empty-footer-text='Расходов ещё нет'
+        :is-empty-footer='dashboard.expenses.length === 0'
         :to='{
           path: "/transactions",
           query: {
@@ -319,6 +322,7 @@ watch(token, (val) => {
           },
         }'
         :is-loading='isInitialLoading'
+        :chart-data='dashboard.expensesChart'
       >
         <div v-if='!isLoading && isMobile'>
           <div
