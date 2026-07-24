@@ -192,7 +192,7 @@ watch(token, (val) => {
         title='Доходы'
         empty-text='Доходов в этом месяце пока нет'
         empty-footer-text='Доходов ещё нет'
-        :is-empty-footer='(dashboard.incomes?.length ?? 0) === 0'
+        :is-empty-footer='dashboard.incomes.length === 0'
         :to='{
           path: "/transactions",
           query: {
@@ -314,7 +314,7 @@ watch(token, (val) => {
         empty-icon-color='text-red'
         empty-text='Расходов в этом месяце пока нет'
         empty-footer-text='Расходов ещё нет'
-        :is-empty-footer='(dashboard.expenses?.length ?? 0) === 0'
+        :is-empty-footer='dashboard.expenses.length === 0'
         :to='{
           path: "/transactions",
           query: {
