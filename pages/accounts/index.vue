@@ -386,13 +386,13 @@ watchEffect(() => {
             </div>
           </div>
           <div v-if='isEmpty || isError' class='card-footer d-flex align-items-center border-top-0'>
-            <i v-if='isEmpty' class='text-secondary'>
+            <p v-if='isEmpty' class='text-secondary'>
               Похоже таких счетов ещё нет
-            </i>
-            <i v-if='isError' class='text-danger'>
+            </p>
+            <p v-if='isError' class='text-danger'>
               Ошибка: не удалось загрузить счета.
               Попробуйте повторить операцию, или обратитесь в поддержку.
-            </i>
+            </p>
           </div>
         </div>
       </div>
