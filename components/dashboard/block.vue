@@ -164,7 +164,7 @@ const chartOptions = computed(() => ({
       </div>
     </div>
 
-    <div class='p-3 border-bottom'>
+    <div class='p-3'>
       <div
         v-if='isLoading'
         class='text-center w-100'
@@ -205,7 +205,7 @@ const chartOptions = computed(() => ({
     <slot v-else />
     <div
       v-if='!isLoading && isEmptyFooter'
-      class='card-footer bg-transparent'
+      class='card-footer bg-transparent text-center'
     >
       <div class='text-secondary'>
         {{ emptyFooterText }}
