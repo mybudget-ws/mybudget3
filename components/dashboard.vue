@@ -212,12 +212,8 @@ watch(token, (val) => {
           >
             <div class='flex-fill'>
 
-              <div class='card-title'>
+              <div class='text-secondary'>
                 {{ formatDate(item.dateAt) }}
-              </div>
-
-              <div class='text-secondary mt-1'>
-                {{ item.account.name }}
               </div>
 
               <div class='mt-1'>
@@ -228,6 +224,10 @@ watch(token, (val) => {
                   copyable
                 />
               </div>
+
+              <span class='badge mt-2'>
+                {{ item.account.name }}
+              </span>
 
               <div class='badges-list mt-2'>
                 <BadgeCategory
@@ -333,14 +333,10 @@ watch(token, (val) => {
           >
             <div class='flex-fill'>
 
-              <div class='card-title'>
+              <div class='text-secondary'>
                 {{ formatDate(item.dateAt) }}
               </div>
-
-              <div class='text-secondary mt-1'>
-                {{ item.account.name }}
-              </div>
-
+              
               <div class='mt-1'>
                 <Amount
                   :value='item.amount'
@@ -349,6 +345,10 @@ watch(token, (val) => {
                   copyable
                 />
               </div>
+
+              <span class='badge mt-2'>
+                {{ item.account.name }}
+              </span>
 
               <div class='badges-list mt-2'>
                 <BadgeCategory
@@ -466,7 +466,7 @@ watch(token, (val) => {
             :class='{ "border-bottom-0": index === accounts.length - 1 }'
           >
             <div class='flex-fill'>
-              <div class='card-title'>
+              <div class='text-secondary'>
                 {{ item.name }}
               </div>
               <div class='mt-1'>
@@ -578,7 +578,7 @@ watch(token, (val) => {
           >
             <div class='flex-fill'>
 
-              <div class='card-title'>
+              <div class='text-secondary'>
                 {{ item.name }}
                 <span
                   v-if='item.tag'
