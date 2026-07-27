@@ -6507,9 +6507,9 @@ serialize-javascript@^6.0.1:
     randombytes "^2.1.0"
 
 seroval@^1.4.0:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/seroval/-/seroval-1.4.2.tgz#0718ce33f0363407eee7c78272c24bc48ec940c8"
-  integrity sha512-N3HEHRCZYn3cQbsC4B5ldj9j+tHdf4JZoYPlcI4rRYu0Xy4qN8MQf1Z08EibzB0WpgRG5BGK08FTrmM66eSzKQ==
+  version "1.5.6"
+  resolved "https://registry.yarnpkg.com/seroval/-/seroval-1.5.6.tgz#68d4f6a05c3bde25daaaea6b7220146ff42353ca"
+  integrity sha512-rVQVWjjSvlINzaQPZH5JFqsqEsIWdTxY3iJZCnTL/5gQbXIRooVZKI60tVCkOVfzcRPejboxO2t0P89dg5mQaA==
 
 serve-placeholder@^2.0.2:
   version "2.0.2"
@@ -7512,7 +7512,6 @@ why-is-node-running@^2.3.0:
 word-wrap@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.5.tgz#d2c45c6dd4fbce621a66f136cbe328afd0410b34"
-
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
