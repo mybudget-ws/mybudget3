@@ -99,8 +99,15 @@ const chartOptions = computed(() => ({
     fontFamily: 'inherit',
     height: CHART_HEIGHT,
     parentHeightOffset: 0,
-    toolbar: { show: false, },
-    animations: { enabled: false },
+    toolbar: {
+      show: false,
+    },
+    zoom: {
+      enabled: false,
+    },
+    animations: {
+      enabled: false,
+    },
   },
   colors: CHART_COLORS,
   tooltip: { theme: 'dark' },
@@ -119,15 +126,29 @@ const chartOptions = computed(() => ({
     strokeDashArray: 4,
   },
   xaxis: {
-    labels: {
-      padding: 0,
-      style: {
-        colors: CHART_LABEL_COLOR,
-      }
-    },
-    tooltip: { enabled: false },
     type: 'datetime',
     categories: [...categories.value],
+
+    labels: {
+      padding: 0,
+      rotate: 0,
+      hideOverlappingLabels: true,
+      style: {
+        colors: CHART_LABEL_COLOR,
+      },
+    },
+
+    tooltip: {
+      enabled: false,
+    },
+
+    axisBorder: {
+      show: false,
+    },
+
+    axisTicks: {
+      show: false,
+    },
   },
   yaxis: {
     labels: {
