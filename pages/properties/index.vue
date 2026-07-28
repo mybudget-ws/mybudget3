@@ -165,7 +165,7 @@ watchEffect(() => {
                     :currency='item.currency.name'
                   />
                 </div>
-              </div>    
+              </div>
 
               <div class='card-actions'>
                 <div class='dropdown'>
@@ -194,7 +194,7 @@ watchEffect(() => {
                 </div>
               </div>
             </div>
-            
+
             <div
               v-if='hiddenItems.length > 0'
               class='border-top-0'
@@ -209,8 +209,8 @@ watchEffect(() => {
               />
             </div>
           </div>
-          
-          <div v-else class='advanced-table'>
+
+          <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>
                 <thead>
