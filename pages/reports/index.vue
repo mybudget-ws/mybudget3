@@ -124,8 +124,6 @@ const chartOptions = computed(() => ({
     categories: [...categories.value],
     labels: {
       padding: 0,
-      rotate: 0,
-      hideOverlappingLabels: true,
       style: { colors: CHART_LABEL_COLOR },
     },
     tooltip: { enabled: false },
