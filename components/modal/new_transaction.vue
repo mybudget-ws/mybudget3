@@ -349,13 +349,8 @@ const onSubmit = async () => {
 <style scoped>
 .date-button {
   height: 20px !important;
-  min-height: 20px;
   padding: 0 8px;
   font-size: 11px;
   line-height: 20px;
 }
-.card-actions {
-  padding-left: 0px;
-}
-
 </style>
