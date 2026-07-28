@@ -129,8 +129,6 @@ const chartOptions = computed(() => ({
       style: { colors: CHART_LABEL_COLOR },
     },
     tooltip: { enabled: false },
-    axisBorder: { show: false },
-    axisTicks: { show: false },
   },
   yaxis: {
     labels: {
