@@ -238,6 +238,17 @@ watch(token, (val) => {
                   />
                 </div>
               </div>
+
+              <div class='card-actions'>
+                <button
+                  v-tooltip:bottom='"Повторить операцию"'
+                  type='button'
+                  class='btn btn-action'
+                  @click='openCopy(item)'
+                >
+                  <IconCopy size='18' stroke-width='1' />
+                </button>
+              </div>
             </div>
           </MobileExpandable>
         </div>
@@ -327,7 +338,6 @@ watch(token, (val) => {
                 <div class='text-secondary'>
                   {{ formatDate(item.dateAt) }}
                 </div>
-
                 <div class='mt-1'>
                   <Amount
                     :value='item.amount'
@@ -336,11 +346,9 @@ watch(token, (val) => {
                     copyable
                   />
                 </div>
-
                 <span class='badge mt-2'>
                   {{ item.account.name }}
                 </span>
-
                 <div class='badges-list mt-2'>
                   <BadgeCategory
                     v-for='cat in item.categories'
@@ -349,6 +357,17 @@ watch(token, (val) => {
                     :is-clickable='false'
                   />
                 </div>
+              </div>
+              
+              <div class='card-actions'>
+                <button
+                  v-tooltip:bottom='"Повторить операцию"'
+                  type='button'
+                  class='btn btn-action'
+                  @click='openCopy(item)'
+                >
+                  <IconCopy size='18' stroke-width='1' />
+                </button>
               </div>
             </div>
           </MobileExpandable>
