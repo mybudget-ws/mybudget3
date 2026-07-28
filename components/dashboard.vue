@@ -226,10 +226,11 @@ watch(token, (val) => {
                     copyable
                   />
                 </div>
-                <span class='badge mt-2'>
-                  {{ item.account.name }}
-                </span>
-                <div class='badges-list mt-2'>
+                <div class='badges-list mt-1'>
+                  <BadgeAccount
+                    :name='item.account.name'
+                    :is-clickable='false'
+                  />
                   <BadgeCategory
                     v-for='cat in item.categories'
                     :key='cat.id'
@@ -346,10 +347,11 @@ watch(token, (val) => {
                     copyable
                   />
                 </div>
-                <span class='badge mt-2'>
-                  {{ item.account.name }}
-                </span>
-                <div class='badges-list mt-2'>
+                <div class='badges-list mt-1'>
+                  <BadgeAccount
+                    :name='item.account.name'
+                    :is-clickable='false'
+                  />
                   <BadgeCategory
                     v-for='cat in item.categories'
                     :key='cat.id'

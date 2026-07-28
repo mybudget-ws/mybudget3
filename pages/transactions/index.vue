@@ -531,7 +531,7 @@ watch(
               </template>
             </button>
           </div>
-            
+
           <div v-if='!isLoading && !isMobile' class='advanced-table'>
             <div class='table-responsive'>
               <table class='table table-vcenter table-selectable'>

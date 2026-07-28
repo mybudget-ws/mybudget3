@@ -65,7 +65,7 @@ defineEmits([
           />
         </div>
 
-        <div class='badges-list mt-2'>
+        <div class='badges-list mt-1'>
           <BadgeAccount
             :name='transaction.account.name'
             :is-clickable='isClickable'
