@@ -59,7 +59,6 @@ const dateButtons = computed(() => {
   ];
 });
 
-
 const props = defineProps({
   initialAccountId: {
     type: Number,

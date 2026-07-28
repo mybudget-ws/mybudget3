@@ -38,6 +38,7 @@ const props = defineProps({
     default: undefined,
   },
 });
+
 const dateButtons = computed(() => {
   const today = new Date();
 
