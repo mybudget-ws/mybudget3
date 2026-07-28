@@ -28,6 +28,7 @@ const isOpen = ref(props.defaultOpen);
     <button
       type='button'
       class='btn btn-link w-100 text-decoration-none text-secondary d-flex align-items-center justify-content-between'
+      :aria-expanded='isOpen'
       @click='isOpen = !isOpen'
     >
       <span>{{ title }} ({{ count }})</span>
