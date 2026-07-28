@@ -203,8 +203,9 @@ watch(token, (val) => {
         :colors='["#0ca678"]'
         :chart-data='dashboard.incomesChart'
       >
-        <div v-if='!isLoading && isMobile'>
+        <div v-if='isMobile'>
           <MobileExpandable
+            title='Последние операции'
             :count='dashboard.incomes.length'
           >
             <div
@@ -256,7 +257,6 @@ watch(token, (val) => {
             </div>
           </MobileExpandable>
         </div>
-
 
         <div v-else class='card-table table-responsive'>
           <table class='table table-sm table-vcenter'>
@@ -328,8 +328,9 @@ watch(token, (val) => {
         :is-loading='isInitialLoading'
         :chart-data='dashboard.expensesChart'
       >
-        <div v-if='!isLoading && isMobile'>
+        <div v-if='isMobile'>
           <MobileExpandable
+            title='Последние операции'
             :count='dashboard.expenses.length'
           >
             <div

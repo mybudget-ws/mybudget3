@@ -203,6 +203,7 @@ const chartOptions = computed(() => ({
 
     <PlaceholderLoadingFilters v-if='isLoading' />
     <slot v-else />
+    
     <div
       v-if='!isLoading && isEmptyFooter'
       class='card-footer bg-transparent text-center'
