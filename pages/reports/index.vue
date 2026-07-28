@@ -99,7 +99,8 @@ const chartOptions = computed(() => ({
     fontFamily: 'inherit',
     height: CHART_HEIGHT,
     parentHeightOffset: 0,
-    toolbar: { show: false, },
+    toolbar: { show: false },
+    zoom: { enabled: false },
     animations: { enabled: false },
   },
   colors: CHART_COLORS,
@@ -119,22 +120,18 @@ const chartOptions = computed(() => ({
     strokeDashArray: 4,
   },
   xaxis: {
-    labels: {
-      padding: 0,
-      style: {
-        colors: CHART_LABEL_COLOR,
-      }
-    },
-    tooltip: { enabled: false },
     type: 'datetime',
     categories: [...categories.value],
+    labels: {
+      padding: 0,
+      style: { colors: CHART_LABEL_COLOR },
+    },
+    tooltip: { enabled: false },
   },
   yaxis: {
     labels: {
       padding: 4,
-      style: {
-        colors: CHART_LABEL_COLOR,
-      },
+      style: { colors: CHART_LABEL_COLOR },
       formatter: (val) => {
         return new Intl.NumberFormat('ru-RU', {
           maximumFractionDigits: 0,
