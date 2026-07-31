@@ -39,48 +39,7 @@ const props = defineProps({
   },
 });
 
-const dateButtons = computed(() => {
-  const today = new Date();
 
-  const format = (date) => {
-    return date.toLocaleDateString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-    });
-  };
-
-  const createDate = (daysAgo) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - daysAgo);
-    return date;
-  };
-
-  return [
-    {
-      key: 'today',
-      label: 'Сегодня',
-      date: createDate(0),
-    },
-    {
-      key: 'yesterday',
-      label: 'Вчера',
-      date: createDate(1),
-    },
-    ...[2, 3, 4].map((daysAgo) => {
-      const date = createDate(daysAgo);
-
-      return {
-        key: `date-${daysAgo}`,
-        label: format(date),
-        date,
-      };
-    }),
-  ];
-});
-
-const selectDate = (item) => {
-  date.value = item.date;
-};
 const emit = defineEmits(['saved', 'close', 'accountNew']);
 
 const isEdit = computed(() => !!props.item && !props.isCopy);
@@ -265,20 +224,7 @@ const onSubmit = async () => {
               :disabled='isSubmitting'
             />
             <div class='mt-1'>
-              <nav class='nav nav-segmented w-100' role='tablist'>
-                <button
-                  v-for='v in dateButtons'
-                  :key='v.key'
-                  class='nav-link date-button'
-                  :class='{
-                    active: date.toDateString() === v.date.toDateString()
-                  }'
-                  type='button'
-                  @click='selectDate(v)'
-                >
-                  {{ v.label }}
-                </button>
-              </nav>
+              <DateButtons v-model='date' />
             </div>
           </div>
         </div>
