@@ -103,6 +103,7 @@ watch(
             </div>
           </div>
         </div>
+
         <div
           v-if='isSignedIn'
           id='navbar-menu'
@@ -157,13 +158,9 @@ watch(
       </div>
     </header>
 
-    <div class='page-wrapper'>
-      <div class='page-body'>
-        <div class='container-xxl'>
-          <NuxtPage />
-        </div>
-      </div>
-    </div>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
 
     <Footer />
   </div>
