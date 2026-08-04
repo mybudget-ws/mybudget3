@@ -61,9 +61,8 @@ const buttons = [
 
 <style scoped>
 .date-button {
-  height: 20px !important;
+  height: 24px !important;
   padding: 0 8px;
-  font-size: 11px;
-  line-height: 20px;
+  font-size: 12px;
 }
 </style>
