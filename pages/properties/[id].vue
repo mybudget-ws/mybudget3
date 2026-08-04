@@ -97,6 +97,7 @@ const prices = computed(() => {
 
   return pricesWithChange.value.slice(0, DEFAULT_PRICE_ITEMS);
 });
+
 const load = async (isQuite = false) => {
   isError.value = false;
   if (isQuite) {
