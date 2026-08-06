@@ -12,7 +12,19 @@ import {
 const CHART_HEIGHT = 200;
 
 const props = defineProps({
+  currency: {
+    type: String,
+    default: '',
+  },
   title: {
+    type: String,
+    default: '',
+  },
+  headerValue: {
+    type: [String, Number],
+    default: null,
+  },
+  headerValueClass: {
     type: String,
     default: '',
   },
@@ -161,6 +173,17 @@ const chartOptions = computed(() => ({
         class='card-title'
       >
         {{ props.title }}
+      </div>
+
+      <div
+        v-if='props.headerValue !== null'
+        class='ms-auto fw-medium'
+        :class='props.headerValueClass'
+      >
+        <Amount
+          :value='props.headerValue'
+          :currency='props.currency'
+        />
       </div>
     </div>
 
