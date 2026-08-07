@@ -113,7 +113,7 @@ defineEmits([
 
         <div
           v-if='transaction.description'
-          class='text-secondary small mt-1 text-truncate'
+          class='text-secondary small mt-1 text-break'
         >
           {{ transaction.description }}
         </div>
