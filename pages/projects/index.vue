@@ -22,6 +22,7 @@ const currentItem = ref(null);
 const visibleItems = computed(() => items.value.filter(v => !v.isHidden));
 const hiddenItems = computed(() => items.value.filter(v => v.isHidden));
 const { isMobile } = useDevice();
+const appConfig = useAppConfig();
 const isArchiveOpen = ref(false);
 
 const isEmpty = computed(() => {
@@ -56,6 +57,12 @@ const load = async (isQuite = false) => {
 const displayCurrency = ({ balances }) => {
   return balances[0]?.currencyBase?.name ?? '';
 };
+
+const linkColorClass = computed(() => {
+  return appConfig.theme.dark ?
+    'link-light' :
+    'link-dark';
+});
 
 const sumBalance = ({ balances }) => {
   if (balances.length === 0) return 0.0;
@@ -138,8 +145,8 @@ watchEffect(() => {
               class='card-header'
               :class='{ "border-bottom-0": index === visibleItems.length - 1 }'
             >
-              <div class='d-flex flex-grow-1 align-items-center'>
-                <div class='col'>
+              <div class='d-flex flex-column flex-grow-1'>
+                <div class='d-flex align-items-center mb-1'>
                   <NuxtLink
                     :to='`/projects/${item.id}`'
                     class='card-title'
@@ -147,21 +154,21 @@ watchEffect(() => {
                   >
                     {{ item.name }}
                   </NuxtLink>
+                </div>
 
-                  <div class='card-subtitle text-secondary'>
-                    <span
-                      :class='{
-                        "text-success": sumBalance(item) > 0,
-                        "text-danger": sumBalance(item) < 0
-                      }'
-                    >
-                      <Amount
-                        :value='sumBalance(item)'
-                        :currency='displayCurrency(item)'
-                        copyable
-                      />
-                    </span>
-                  </div>
+                <div class='card-subtitle text-secondary'>
+                  <span
+                    :class='{
+                      "text-success": sumBalance(item) > 0,
+                      "text-danger": sumBalance(item) < 0
+                    }'
+                  >
+                    <Amount
+                      :value='sumBalance(item)'
+                      :currency='displayCurrency(item)'
+                      copyable
+                    />
+                  </span>
                 </div>
               </div>
 
@@ -223,6 +230,7 @@ watchEffect(() => {
                       <NuxtLink
                         :to='`/projects/${item.id}`'
                         class='fw-medium'
+                        :class='linkColorClass'
                       >
                         {{ item.name }}
                       </NuxtLink>
