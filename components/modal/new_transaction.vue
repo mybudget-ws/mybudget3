@@ -153,7 +153,7 @@ watch(
   ([id, item]) => {
     if (item?.project?.id) {
       currentProjectId.value = item.project.id;
-    } else if (id) {
+    } else if (id && !isEdit.value) {
       currentProjectId.value = id;
     }
   },
