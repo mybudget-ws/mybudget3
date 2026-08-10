@@ -140,9 +140,13 @@ watchEffect(() => {
             >
               <div class='d-flex flex-grow-1 align-items-center'>
                 <div class='col'>
-                  <div class='card-title mb-0'>
+                  <NuxtLink
+                    :to='`/projects/${item.id}`'
+                    class='card-title'
+                    :class='linkColorClass'
+                  >
                     {{ item.name }}
-                  </div>
+                  </NuxtLink>
 
                   <div class='card-subtitle text-secondary'>
                     <span
@@ -216,7 +220,12 @@ watchEffect(() => {
                 <tbody class='table-tbody'>
                   <tr v-for='item in visibleItems' :key='item.id'>
                     <td>
-                      {{ item.name }}
+                      <NuxtLink
+                        :to='`/projects/${item.id}`'
+                        class='fw-medium'
+                      >
+                        {{ item.name }}
+                      </NuxtLink>
                     </td>
                     <td class='text-nowrap text-end'>
                       <span
