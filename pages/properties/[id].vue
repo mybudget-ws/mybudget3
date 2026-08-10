@@ -13,7 +13,7 @@ import {
 import api from '~/lib/api';
 import { formatDate } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
-import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS  } from '~/lib/consts';
+import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS } from '~/lib/consts';
 import { useDevice } from '~/composables/use_device';
 
 const { isMobile } = useDevice();

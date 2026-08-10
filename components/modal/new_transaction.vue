@@ -37,6 +37,10 @@ const props = defineProps({
     type: Number,
     default: undefined,
   },
+  projectId: {
+    type: Number,
+    default: undefined,
+  }
 });
 
 
@@ -139,6 +143,18 @@ watch(
       currentPropertyId.value = item.property.id;
     } else if (id) {
       currentPropertyId.value = id;
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => [props.projectId, props.item],
+  ([id, item]) => {
+    if (item?.project?.id) {
+      currentProjectId.value = item.project.id;
+    } else if (id && !isEdit.value) {
+      currentProjectId.value = id;
     }
   },
   { immediate: true }
