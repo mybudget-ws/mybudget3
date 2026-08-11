@@ -7,7 +7,6 @@ const amountFrom = ref(undefined);
 const amountTo = ref(undefined);
 const description = ref('');
 const date = ref(new Date());
-const isLoaded = ref(false);
 const isSubmitting = ref(false);
 const currentAccountFrom = ref(undefined);
 const currentAccountTo = ref(undefined);
@@ -21,6 +20,19 @@ const props = defineProps({
     type: Number,
     default: undefined,
   },
+});
+
+const isAccountFromLoaded = ref(false);
+const isAccountToLoaded = ref(false);
+
+const isAccountsLoaded = computed(() => {
+  return isAccountFromLoaded.value && isAccountToLoaded.value;
+});
+
+const isAccountEmpty = computed(() => {
+  if (!isAccountsLoaded.value) return false;
+
+  return !currentAccountFrom.value || !currentAccountTo.value;
 });
 
 const emit = defineEmits(['saved', 'close', 'accountNew']);
@@ -57,11 +69,6 @@ const currentCurrencyNameFrom = computed(() => {
 const currentCurrencyNameTo = computed(() => {
   const account = currentAccountTo.value;
   return account?.currency?.name || '';
-});
-
-const isAccountEmpty = computed(() => {
-  if (!isLoaded.value) return false;
-  return !currentAccountFrom.value || !currentAccountTo.value;
 });
 
 const isSubmitDisabled = computed(() => {
@@ -130,7 +137,7 @@ watch(amountFrom, (newValue) => {
               radio-group-name='accountFrom'
               :initial-selected-id='props.initialAccountId'
               @toggle-account='toggleAccountFromCallback'
-              @loaded='isLoaded = true'
+              @loaded='isAccountFromLoaded = true'
             />
           </div>
           <div class='col-12 col-md-6'>
@@ -138,6 +145,7 @@ watch(amountFrom, (newValue) => {
               label='Куда'
               radio-group-name='accountTo'
               @toggle-account='toggleAccountToCallback'
+              @loaded='isAccountToLoaded = true'
             />
           </div>
         </div>
