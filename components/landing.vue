@@ -21,16 +21,6 @@ import {
       <div class='hero-glow'/>
 
       <div class='hero-content'>
-        <div class='hero-badges'>
-          <span class='badge bg-orange text-orange-fg'>
-            Версия III
-          </span>
-
-          <span class='badge bg-green text-green-fg'>
-            В разработке
-          </span>
-        </div>
-
         <h1 class='hero-title'>
           Домашняя бухгалтерия
           <span>для полного контроля финансов</span>
@@ -38,7 +28,7 @@ import {
 
         <p class='hero-description'>
           Доходы, расходы, счета, имущество, финансовые цели,
-          проекты и аналитика — в одном месте.
+          проекты и&nbsp;аналитика — в одном месте.
         </p>
 
         <div class='hero-actions'>
@@ -1015,13 +1005,6 @@ import {
   z-index: 1;
   max-width: 900px;
   margin: 0 auto;
-}
-
-.hero-badges {
-  display: flex;
-  justify-content: center;
-  gap: .5rem;
-  margin-bottom: 1.5rem;
 }
 
 .hero-title {
@@ -2055,15 +2038,6 @@ import {
     width: 500px;
     height: 500px;
     filter: blur(70px);
-  }
-
-  .hero-badges {
-    gap: .4rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .hero-badges .badge {
-    font-size: .65rem;
   }
 
   .hero-title {
