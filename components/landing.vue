@@ -481,7 +481,7 @@ import {
               </div>
 
               <span class='badge bg-primary-lt'>
-                4 счета
+                3 счета
               </span>
             </div>
 
