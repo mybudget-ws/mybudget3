@@ -79,7 +79,7 @@ const destroy = async ({ id, isTransactionPresent }) => {
     alert('Нельзя удалить имущество, пока с ним связаны операции. Сначала удалите все связанные операции.');
   } else if (confirm('Вы уверены, что хотите удалить имущество, операция необратима?')) {
     isQuiteLoading.value = true;
-    await api.destroyProject(token.value, id);
+    await api.destroyProperty(token.value, id);
     await load(true);
   }
 };
