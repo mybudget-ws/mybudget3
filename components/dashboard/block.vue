@@ -12,9 +12,17 @@ import {
 const CHART_HEIGHT = 200;
 
 const props = defineProps({
+  currency: {
+    type: String,
+    default: '',
+  },
   title: {
     type: String,
     default: '',
+  },
+  headerValue: {
+    type: [String, Number],
+    default: null,
   },
   to: {
     type: [String, Object],
@@ -153,14 +161,25 @@ const chartOptions = computed(() => ({
         :to='props.to'
         class='card-title fw-medium text-reset'
       >
-        {{ props.title }}
+        {{ title }}
       </NuxtLink>
 
       <div
         v-else
         class='card-title'
       >
-        {{ props.title }}
+        {{ title }}
+      </div>
+
+      <div
+        v-if='headerValue !== null && !isLoading'
+        class='ms-auto fw-medium'
+      >
+        <Amount
+          :value='headerValue'
+          :currency='currency'
+          is-color
+        />
       </div>
     </div>
 

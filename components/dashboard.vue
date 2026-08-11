@@ -111,6 +111,16 @@ const totalAssetsAmountBase = computed(() => {
   }, 0) || 0
 });
 
+const totalIncome = computed(() => {
+  return dashboard.value.incomesChart?.series[0]?.data
+    .reduce((sum, value) => sum + Number(value), 0) || 0;
+});
+
+const totalExpense = computed(() => {
+  return -(dashboard.value.expensesChart?.series[0]?.data
+    .reduce((sum, value) => sum + Number(value), 0) || 0);
+});
+
 watch(token, (val) => {
   if (val) load();
 }, { immediate: true });
@@ -190,6 +200,8 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Доходы'
+        :header-value='totalIncome'
+        :currency='currencyBaseName'
         empty-text='Доходов в этом месяце пока нет'
         empty-footer-text='Доходов ещё нет'
         :is-empty-footer='!isLoading && dashboard.incomes.length === 0'
@@ -311,6 +323,8 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Расходы'
+        :header-value='totalExpense'
+        :currency='currencyBaseName'
         empty-icon-color='text-red'
         empty-text='Расходов в этом месяце пока нет'
         empty-footer-text='Расходов ещё нет'
