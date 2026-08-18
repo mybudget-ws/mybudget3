@@ -37,7 +37,7 @@ const editingTransaction = ref(null);
 const currentKind = ref(KIND_EXPENSE);
 const isShowAllPrices = ref(false);
 
-const PER_PAGE = 5;
+const PER_PAGE = 50;
 const transactions = ref([]);
 const transactionPage = ref(1);
 const hasMoreTransactions = ref(true);
