@@ -27,6 +27,14 @@ definePageMeta({
 
 const project = ref(null);
 const transactions = ref([]);
+const PER_PAGE = 50;
+
+const hasMore = ref(true);
+const page = ref(1);
+const isLoadingMore = ref(false);
+
+const transactionPage = ref(1);
+const hasMoreTransactions = ref(true);
 
 const isLoading = ref(true);
 const isQuiteLoading = ref(false);
@@ -160,22 +168,48 @@ const loadProject = async (projectId) => {
   project.value = result;
 };
 
-const loadTransactions = async (projectId) => {
+const loadTransactions = async (projectId, page = 1, append = false) => {
   try {
     const result = await api.transactions(token.value, {
-      page: 1,
-      perPage: 100,
+      page,
+      perPage: PER_PAGE,
       filters: {
         projectIds: [projectId],
       },
     });
 
-    console.log('PROJECT TRANSACTIONS:', result);
+    const items = result || [];
 
-    transactions.value = result || [];
+    if (append) {
+      transactions.value = [...transactions.value, ...items];
+    } else {
+      transactions.value = items;
+    }
+
+    hasMore.value = items.length === PER_PAGE;
   } catch (error) {
     console.error('PROJECT TRANSACTIONS ERROR:', error);
-    transactions.value = [];
+
+    if (!append) {
+      transactions.value = [];
+    }
+  }
+};
+
+const loadMoreTransactions = async () => {
+  if (isLoadingMore.value || !hasMore.value || !project.value) {
+    return;
+  }
+
+  isLoadingMore.value = true;
+  page.value += 1;
+
+  try {
+    const projectId = Number(route.params.id);
+
+    await loadTransactions(projectId, page.value, true);
+  } finally {
+    isLoadingMore.value = false;
   }
 };
 
@@ -211,9 +245,10 @@ const load = async (isQuite = false) => {
       throw new Error('Некорректный ID проекта');
     }
 
+    page.value = 1;
     await Promise.all([
       loadProject(projectId),
-      loadTransactions(projectId),
+      loadTransactions(projectId, 1, false),
       loadChart(projectId),
     ]);
   } catch (error) {
@@ -241,6 +276,10 @@ const onEditTransaction = (transaction) => {
 
 const onTransactionSaved = async () => {
   isShowTransactionModal.value = false;
+
+  transactionPage.value = 1;
+  hasMoreTransactions.value = true;
+
   await load(true);
 };
 
@@ -251,6 +290,10 @@ const onDeleteTransaction = async (transaction) => {
 
   try {
     await api.destroyTransaction(token.value, transaction.id);
+
+    transactionPage.value = 1;
+    hasMoreTransactions.value = true;
+
     await load(true);
   } catch (error) {
     console.error('Failed to delete transaction:', error);
@@ -515,6 +558,24 @@ onMounted(load);
           >
             Похоже, операций ещё нет
           </div>
+          <button
+            v-else
+            class='btn btn-outline-secondary w-100 border-0'
+            :disabled='!hasMore || isLoadingMore'
+            @click='loadMoreTransactions'
+          >
+            <template v-if='isLoadingMore'>
+              Загрузка...
+            </template>
+
+            <template v-else-if='hasMore'>
+              Загрузить ещё
+            </template>
+
+            <template v-else>
+              Операций больше нет
+            </template>
+          </button>
         </div>
 
         <div v-if='!isLoading && !isMobile' class='advanced-table'>
@@ -565,6 +626,25 @@ onMounted(load);
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div class='card-footer bg-transparent border-top'>
+            <button
+              class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
+              :disabled='!hasMore || isLoadingMore'
+              @click='loadMoreTransactions'
+            >
+              <template v-if='isLoadingMore'>
+                Загрузка...
+              </template>
+
+              <template v-else-if='hasMore'>
+                Загрузить ещё
+              </template>
+
+              <template v-else>
+                Операций больше нет
+              </template>
+            </button>
           </div>
         </div>
       </div>
