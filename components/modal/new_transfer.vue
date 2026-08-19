@@ -1,6 +1,8 @@
 <script setup>
 import api from '~/lib/api';
+import { useDevice } from '~/composables/use_device';
 
+const { isMobile } = useDevice();
 const { token } = useAuth();
 
 const amountFrom = ref(undefined);
@@ -42,6 +44,8 @@ const isAmountFromError = computed(() => amountFromError.value !== '');
 const isAmountToError = computed(() => amountToError.value !== '');
 
 const focusAmountFrom = () => {
+  if (isMobile.value) return;
+
   nextTick(() => {
     if (amountFromRef.value?.focus) amountFromRef.value.focus();
   });
