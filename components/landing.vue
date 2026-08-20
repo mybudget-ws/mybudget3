@@ -1,11 +1,11 @@
 <script setup>
 import {
-  IconArrowsExchange,
+  IconReceipt,
+  IconChartHistogram,
   IconWallet,
-  IconBuilding,
-  IconTarget,
-  IconBriefcase,
-  IconChartLine,
+  IconTargetArrow,
+  IconBulb,
+  IconKey,
   IconArrowDownRight,
   IconHome,
   IconCar,
@@ -73,12 +73,12 @@ import {
               </div>
 
               <div class='preview-nav-item active'>
-                <IconChartLine :size='16' />
+                <IconChartHistogram :size='16' />
                 <span>Обзор</span>
               </div>
 
               <div class='preview-nav-item'>
-                <IconArrowsExchange :size='16' />
+                <IconReceipt :size='16' />
                 <span>Операции</span>
               </div>
 
@@ -88,7 +88,7 @@ import {
               </div>
 
               <div class='preview-nav-item'>
-                <IconTarget :size='16' />
+                <IconTargetArrow :size='16' />
                 <span>Цели</span>
               </div>
             </div>
@@ -269,7 +269,7 @@ import {
         <div class='features-grid'>
           <div class='feature-card'>
             <div class='feature-icon'>
-              <IconArrowsExchange :size='24' />
+              <IconReceipt :size='24' />
             </div>
 
             <h3>Операции</h3>
@@ -295,7 +295,7 @@ import {
 
           <div class='feature-card'>
             <div class='feature-icon'>
-              <IconBuilding :size='24' />
+              <IconKey :size='24' />
             </div>
 
             <h3>Имущество</h3>
@@ -308,7 +308,7 @@ import {
 
           <div class='feature-card'>
             <div class='feature-icon'>
-              <IconTarget :size='24' />
+              <IconTargetArrow :size='24' />
             </div>
 
             <h3>Цели</h3>
@@ -321,7 +321,7 @@ import {
 
           <div class='feature-card'>
             <div class='feature-icon'>
-              <IconBriefcase :size='24' />
+              <IconBulb :size='24' />
             </div>
 
             <h3>Проекты</h3>
@@ -334,7 +334,7 @@ import {
 
           <div class='feature-card'>
             <div class='feature-icon'>
-              <IconChartLine :size='24' />
+              <IconChartHistogram :size='24' />
             </div>
 
             <h3>Аналитика</h3>
@@ -351,7 +351,7 @@ import {
         <div class='section-layout'>
           <div class='section-copy'>
             <div class='section-icon'>
-              <IconArrowsExchange :size='24' />
+              <IconReceipt :size='24' />
             </div>
 
             <span class='section-eyebrow'>
@@ -567,7 +567,7 @@ import {
         <div class='section-layout'>
           <div class='section-copy'>
             <div class='section-icon'>
-              <IconBuilding :size='24' />
+              <IconKey :size='24' />
             </div>
 
             <span class='section-eyebrow'>
@@ -675,7 +675,7 @@ import {
 
           <div class='section-copy'>
             <div class='section-icon'>
-              <IconTarget :size='24' />
+              <IconTargetArrow :size='24' />
             </div>
 
             <span class='section-eyebrow'>
@@ -708,7 +708,7 @@ import {
         <div class='section-layout'>
           <div class='section-copy'>
             <div class='section-icon'>
-              <IconBriefcase :size='24' />
+              <IconBulb :size='24' />
             </div>
 
             <span class='section-eyebrow'>
@@ -795,7 +795,7 @@ import {
       <section class='analytics-section section-secondary'>
         <div class='section-heading'>
           <div class='section-icon centered'>
-            <IconChartLine :size='24' />
+            <IconChartHistogram :size='24' />
           </div>
 
           <span class='section-eyebrow'>
