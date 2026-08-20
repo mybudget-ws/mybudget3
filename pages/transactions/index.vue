@@ -508,7 +508,7 @@ watch(
               @property-click='onPropertyClick'
               @category-click='onCategoryClick'
             />
-            <div v-if='isEmpty' class='text-secondary text-center mt-3'>
+            <div v-if='isEmpty' class='text-secondary text-center mt-3 mb-3'>
               Похоже таких операций ещё нет
             </div>
 
