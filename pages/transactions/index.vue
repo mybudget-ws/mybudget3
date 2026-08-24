@@ -146,7 +146,54 @@ const openCreate = (kind) => {
   isShowModal.value = true;
 };
 
+const openCreateMobile = (kind) => {
+  const backUrl = router.resolve({
+    path: route.path,
+    query: route.query,
+  }).href;
+
+  router.push({
+    path: '/transactions/new_transaction_mobile',
+    query: {
+      kind,
+      back_url: backUrl,
+    },
+  });
+};
+
+const openCreateTransferMobile = () => {
+  const backUrl = router.resolve({
+    path: route.path,
+    query: route.query,
+  }).href;
+
+  router.push({
+    path: '/transactions/new_transfer_mobile',
+    query: {
+      back_url: backUrl,
+    },
+  });
+};
+
 const openEdit = (item) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        id: item.id,
+        kind: item.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   currentItem.value = { ...item };
   currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
   isCopyItem.value = false;
@@ -154,6 +201,24 @@ const openEdit = (item) => {
 };
 
 const openCopy = (item) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        copy_id: item.id,
+        kind: item.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   currentItem.value = { ...item, id: undefined };
   currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
   isCopyItem.value = true;
@@ -161,6 +226,11 @@ const openCopy = (item) => {
 };
 
 const openCreateTransfer = () => {
+  if (isMobile.value) {
+    openCreateTransferMobile();
+    return;
+  }
+
   isShowModalTransfer.value = true;
 };
 
@@ -405,7 +475,7 @@ watch(
                       <button
                         class='btn btn-outline-green'
                         type='button'
-                        @click='openCreate(KIND_INCOME)'
+                        @click='isMobile ? openCreateMobile(KIND_INCOME) : openCreate(KIND_INCOME)'
                       >
                         <IconArrowUp stroke-width='2' />
                       </button>
@@ -419,7 +489,7 @@ watch(
                       <button
                         class='btn btn-primary'
                         type='button'
-                        @click='openCreate(KIND_EXPENSE)'
+                        @click='isMobile ? openCreateMobile(KIND_EXPENSE) : openCreate(KIND_EXPENSE)'
                       >
                         <IconArrowDown stroke-width='2' />
                       </button>
