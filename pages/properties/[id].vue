@@ -148,8 +148,10 @@ const loadTransactions = async (append = false) => {
     }
 
     hasMoreTransactions.value = items.length === PER_PAGE;
+    return true;
   } catch (e) {
     console.error(e);
+    return false;
   } finally {
     isLoadingMoreTransactions.value = false;
   }
@@ -158,9 +160,12 @@ const loadTransactions = async (append = false) => {
 const loadMoreTransactions = async () => {
   if (!hasMoreTransactions.value || isLoadingMoreTransactions.value) return;
 
-  transactionPage.value += 1;
+  const nextPage = transactionPage.value + 1;
+  transactionPage.value = nextPage;
 
-  await loadTransactions(true);
+  if (!await loadTransactions(true) && transactionPage.value === nextPage) {
+    transactionPage.value -= 1;
+  }
 };
 
 const onCreatePrice = () => {
