@@ -74,8 +74,10 @@ const toggleHidden = async ({ id }) => {
   await load(true);
 };
 
-const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить имущество?')) {
+const destroy = async ({ id, isTransactionPresent }) => {
+  if (isTransactionPresent) {
+    alert('Нельзя удалить имущество, пока с ним связаны операции. Сначала удалите все связанные операции.');
+  } else if (confirm('Вы уверены, что хотите удалить имущество, операция необратима?')) {
     isQuiteLoading.value = true;
     await api.destroyProperty(token.value, id);
     await load(true);

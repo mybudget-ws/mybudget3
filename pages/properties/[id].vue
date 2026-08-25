@@ -37,6 +37,12 @@ const editingTransaction = ref(null);
 const currentKind = ref(KIND_EXPENSE);
 const isShowAllPrices = ref(false);
 
+const PER_PAGE = 50;
+const transactions = ref([]);
+const transactionPage = ref(1);
+const hasMoreTransactions = ref(true);
+const isLoadingMoreTransactions = ref(false);
+
 const DEFAULT_PRICE_ITEMS = 3;
 const CHART_HEIGHT = 300;
 // Убрать в будущем дублирование с report/index.vue
@@ -97,6 +103,7 @@ const prices = computed(() => {
 
   return pricesWithChange.value.slice(0, DEFAULT_PRICE_ITEMS);
 });
+
 const load = async (isQuite = false) => {
   isError.value = false;
   if (isQuite) {
@@ -116,6 +123,44 @@ const load = async (isQuite = false) => {
     isLoading.value = false;
     isQuiteLoading.value = false;
   }
+};
+
+const loadTransactions = async (append = false) => {
+  if (append && isLoadingMoreTransactions.value) return;
+
+  if (append) {
+    isLoadingMoreTransactions.value = true;
+  }
+
+  try {
+    const items = await api.transactions(token.value, {
+      page: transactionPage.value,
+      perPage: PER_PAGE,
+      filters: {
+        propertyIds: [property.value.id],
+      },
+    });
+
+    if (append) {
+      transactions.value = [...transactions.value, ...items];
+    } else {
+      transactions.value = items;
+    }
+
+    hasMoreTransactions.value = items.length === PER_PAGE;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    isLoadingMoreTransactions.value = false;
+  }
+};
+
+const loadMoreTransactions = async () => {
+  if (!hasMoreTransactions.value || isLoadingMoreTransactions.value) return;
+
+  transactionPage.value += 1;
+
+  await loadTransactions(true);
 };
 
 const onCreatePrice = () => {
@@ -160,9 +205,15 @@ const onEditTransaction = (transaction) => {
 
 const onDeleteTransaction = async (transaction) => {
   if (!confirm('Удалить операцию?')) return;
+
   try {
     await api.destroyTransaction(token.value, transaction.id);
+
+    transactionPage.value = 1;
+    hasMoreTransactions.value = true;
+
     await load(true);
+    await loadTransactions();
   } catch (error) {
     console.error('Failed to delete transaction:', error);
     alert('Не удалось удалить операцию. Попробуйте еще раз.');
@@ -171,10 +222,21 @@ const onDeleteTransaction = async (transaction) => {
 
 const onTransactionSaved = async () => {
   isShowTransactionModal.value = false;
+
+  transactionPage.value = 1;
+  hasMoreTransactions.value = true;
+
   await load(true);
+  await loadTransactions();
 };
 
-onMounted(load);
+onMounted(async () => {
+  await load();
+
+  if (property.value) {
+    await loadTransactions();
+  }
+});
 
 const chartOptions = computed(() => ({
   chart: {
@@ -647,20 +709,40 @@ const chartOptions = computed(() => ({
 
           <div v-if='!isLoading && isMobile'>
             <TransactionItem
-              v-for='(item, index) in property?.transactions || []'
+              v-for='(item, index) in transactions'
               :key='item.id'
               :transaction='item'
               is-mobile
-              :is-last='index === property?.transactions.length - 1'
+              :is-last='index === transactions.length - 1'
               @edit='onEditTransaction'
               @delete='onDeleteTransaction'
             />
+
             <div
-              v-if='!property?.transactions?.length'
+              v-if='!transactions.length'
               class='text-secondary text-center mt-3'
             >
               Похоже, операций ещё нет
             </div>
+
+            <button
+              v-if='transactions.length'
+              class='btn btn-outline-secondary w-100 border-0'
+              :disabled='!hasMoreTransactions || isLoadingMoreTransactions'
+              @click='loadMoreTransactions'
+            >
+              <template v-if='isLoadingMoreTransactions'>
+                Загрузка...
+              </template>
+
+              <template v-else-if='hasMoreTransactions'>
+                Загрузить ещё
+              </template>
+
+              <template v-else>
+                Операций больше нет
+              </template>
+            </button>
           </div>
 
           <div v-if='!isLoading && !isMobile' class='advanced-table'>
@@ -679,7 +761,7 @@ const chartOptions = computed(() => ({
 
                 <tbody class='table-tbody'>
                   <TransactionItem
-                    v-for='transaction in property?.transactions || []'
+                    v-for='transaction in transactions'
                     :key='transaction.id'
                     :transaction='transaction'
                     @edit='onEditTransaction'
@@ -688,6 +770,37 @@ const chartOptions = computed(() => ({
                 </tbody>
               </table>
             </div>
+          </div>
+          <div
+            v-if='!transactions.length'
+            class='card-footer bg-transparent'
+          >
+            <div class='text-secondary'>
+              Похоже, операций ещё нет
+            </div>
+          </div>
+
+          <div
+            v-else
+            class='card-footer bg-transparent border-top'
+          >
+            <button
+              class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
+              :disabled='!hasMoreTransactions || isLoadingMoreTransactions'
+              @click='loadMoreTransactions'
+            >
+              <template v-if='isLoadingMoreTransactions'>
+                Загрузка...
+              </template>
+
+              <template v-else-if='hasMoreTransactions'>
+                Загрузить ещё
+              </template>
+
+              <template v-else>
+                Операций больше нет
+              </template>
+            </button>
           </div>
         </div>
       </div>

@@ -88,8 +88,10 @@ const toggleHidden = async ({ id }) => {
   await load(true);
 };
 
-const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить счёт, операция необратима?')) {
+const destroy = async ({ id, isTransactionPresent }) => {
+  if (isTransactionPresent) {
+    alert('Нельзя удалить счёт, пока с ним связаны операции. Сначала удалите все связанные операции.');
+  } else if (confirm('Вы уверены, что хотите удалить счёт, операция необратима?')) {
     isQuiteLoading.value = true;
     await api.destroyAccount(token.value, id);
     await load(true);

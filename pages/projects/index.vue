@@ -75,8 +75,10 @@ const toggleHidden = async ({ id }) => {
   await load(true);
 };
 
-const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить проект, операция необратима?')) {
+const destroy = async ({ id, isTransactionPresent }) => {
+  if (isTransactionPresent) {
+    alert('Нельзя удалить проект, пока с ним связаны операции. Сначала удалите все связанные операции.');
+  } else if (confirm('Вы уверены, что хотите удалить проект, операция необратима?')) {
     isQuiteLoading.value = true;
     await api.destroyProject(token.value, id);
     await load(true);
