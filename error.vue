@@ -6,32 +6,26 @@ const props = defineProps({
   }
 });
 
+const PAGE_NOT_FOUND_STATUS = 404;
+
 const goHome = async () => {
   await clearError({ redirect: '/' });
 };
 
 const title = computed(() => {
-  if (props.error?.statusCode === 404) {
+  if (props.error?.statusCode === PAGE_NOT_FOUND_STATUS) {
     return 'Страница не найдена';
-  }
-
-  if (props.error?.statusCode === 500) {
-    return 'Внутренняя ошибка сервера';
   }
 
   return 'Произошла ошибка';
 });
 
 const description = computed(() => {
-  if (props.error?.statusCode === 404) {
-    return 'Такой страницы не существует или она была перемещена.';
+  if (props.error?.statusCode === PAGE_NOT_FOUND_STATUS) {
+    return 'Такой страницы не существует, или она была перемещена';
   }
 
-  if (props.error?.statusCode === 500) {
-    return 'На сервере произошла ошибка. Попробуйте повторить попытку позже.';
-  }
-
-  return props.error?.statusMessage;
+  return 'Попробуйте повторить попытку позже';
 });
 </script>
 
