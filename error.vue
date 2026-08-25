@@ -1,6 +1,9 @@
 <script setup>
 const props = defineProps({
-  error: Object,
+  error: {
+    type: Object,
+    default: undefined,
+  }
 });
 
 const goHome = async () => {
@@ -51,7 +54,7 @@ const description = computed(() => {
         <div class='empty-action'>
           <button
             type='button'
-            class='btn btn-primary'
+            class='btn btn-primary btn-indigo'
             @click='goHome'
           >
             На главную
