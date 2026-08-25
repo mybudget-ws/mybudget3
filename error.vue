@@ -37,9 +37,9 @@ const description = computed(() => {
           {{ error.statusCode }}
         </div>
 
-        <p class='empty-title'>
+        <h1 class='empty-title'>
           {{ title }}
-        </p>
+        </h1>
 
         <p class='empty-subtitle text-secondary'>
           {{ description }}
