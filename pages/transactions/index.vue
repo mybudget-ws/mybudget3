@@ -596,6 +596,7 @@ watch(
       v-show='!isMobile'
       class='col-sm-12 col-lg-3 col-xl-2'
     >
+      <FilterPeriod />
       <FilterKinds :is-loading='!isLoaded' @update:items='onKindsChange' />
       <FilterAccounts :reload='transactionEventTicks' @update:items='onAccountsChange' />
       <FilterCategories @update:items='onCategoriesChange' />
