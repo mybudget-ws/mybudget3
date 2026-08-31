@@ -229,7 +229,7 @@ const chartOptions = computed(() => ({
         <div class='card-header'>
           <h3 class='card-title'>Баланс</h3>
           <NuxtLink
-            to='/reports/transactions'
+            :to='{ path: "/reports/transactions", query: { ...route.query, period } }'
             class='card-title text-secondary ms-3'
           >
             Операции
