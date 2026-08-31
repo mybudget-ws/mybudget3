@@ -356,7 +356,10 @@ const reset = () => {
         </div>
       </div>
 
-      <div class='pb-2'>
+      <div
+        v-if='selectedQuickFilters.size || fromDate || toDate'
+        class='pb-2'
+      >
         <button
           type='button'
           class='btn btn-action btn-sm text-secondary w-100'
