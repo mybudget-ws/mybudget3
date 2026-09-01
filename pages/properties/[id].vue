@@ -23,6 +23,7 @@ definePageMeta({
 });
 
 const route = useRoute();
+const router = useRouter();
 const appConfig = useAppConfig();
 const { token } = useAuth();
 
@@ -195,18 +196,55 @@ const onPriceSaved = async () => {
 };
 
 const openCreateTransaction = (kind) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        kind,
+        property_id: property.value.id,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   currentKind.value = kind;
   editingTransaction.value = null;
   isShowTransactionModal.value = true;
 };
 
 const onEditTransaction = (transaction) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        id: transaction.id,
+        kind: transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   editingTransaction.value = transaction;
   currentKind.value =
     transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
 
   isShowTransactionModal.value = true;
 };
+
 
 const onDeleteTransaction = async (transaction) => {
   if (!confirm('Удалить операцию?')) return;
@@ -718,6 +756,7 @@ const chartOptions = computed(() => ({
               :key='item.id'
               :transaction='item'
               is-mobile
+              is-show-copy
               :is-last='index === transactions.length - 1'
               @edit='onEditTransaction'
               @delete='onDeleteTransaction'
@@ -777,7 +816,7 @@ const chartOptions = computed(() => ({
             </div>
           </div>
           <div
-            v-if='!transactions.length'
+            v-if='!transactions.length && !isMobile'
             class='card-footer bg-transparent'
           >
             <div class='text-secondary'>
@@ -786,7 +825,7 @@ const chartOptions = computed(() => ({
           </div>
 
           <div
-            v-else
+            v-else-if='!isMobile'
             class='card-footer bg-transparent border-top'
           >
             <button
