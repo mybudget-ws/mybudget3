@@ -756,7 +756,6 @@ const chartOptions = computed(() => ({
               :key='item.id'
               :transaction='item'
               is-mobile
-              is-show-copy
               :is-last='index === transactions.length - 1'
               @edit='onEditTransaction'
               @delete='onDeleteTransaction'

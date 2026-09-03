@@ -5,6 +5,11 @@ const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
 
+const accountIdParam = computed(() => {
+  const id = Number(route.query.account_id);
+  return Number.isInteger(id) && id > 0 ? id : undefined;
+});
+
 const amountFrom = ref(undefined);
 const amountTo = ref(undefined);
 const description = ref('');
@@ -23,7 +28,13 @@ const isAccountFromLoaded = ref(false);
 const isAccountToLoaded = ref(false);
 
 const backUrl = computed(() => {
-  return route.query.back_url?.toString() || '/transactions';
+  const value = route.query.back_url?.toString();
+
+  if (!value || !value.startsWith('/') || value.startsWith('//')) {
+    return '/transactions';
+  }
+
+  return value;
 });
 
 const isAccountsLoaded = computed(() => {
@@ -83,17 +94,15 @@ const onSubmit = async () => {
     amountTo.value?.replace(/,/g, '.')
   );
 
-  if (amountSrc <= 0 || amountDst <= 0) {
-    if (amountSrc <= 0) {
-      amountFromError.value = 'Значение должно быть больше 0';
+  if (!Number.isFinite(amountSrc) || amountSrc <= 0) {
+  amountFromError.value = 'Значение должно быть больше 0';
+  return;
     }
 
-    if (amountDst <= 0) {
+    if (!Number.isFinite(amountDst) || amountDst <= 0) {
       amountToError.value = 'Значение должно быть больше 0';
+      return;
     }
-
-    return;
-  }
 
   if (
     currentAccountFrom.value?.id ===
@@ -107,22 +116,25 @@ const onSubmit = async () => {
 
   isSubmitting.value = true;
 
-  const transferData = {
-    amountSrc: amountFrom.value.replace(/,/g, '.'),
-    amountDst: amountTo.value.replace(/,/g, '.'),
-    date: date.value,
-    accountIdSrc: currentAccountFrom.value.id,
-    accountIdDst: currentAccountTo.value.id,
-    description: description.value,
-  };
-
   try {
+    const transferData = {
+      amountSrc,
+      amountDst,
+      date: date.value,
+      accountIdSrc: currentAccountFrom.value.id,
+      accountIdDst: currentAccountTo.value.id,
+      description: description.value,
+    };
+
     await api.createTransactionTransfer(
       token.value,
       transferData
     );
 
     await router.push(backUrl.value);
+  } catch (error) {
+    console.error('Failed to save transfer:', error);
+    alert('Не удалось сохранить перевод. Попробуйте еще раз.');
   } finally {
     isSubmitting.value = false;
   }
@@ -162,6 +174,7 @@ watch(amountFrom, (newValue) => {
               <FormAccounts
                 label='Откуда'
                 radio-group-name='accountFrom'
+                :ids='accountIdParam ? [accountIdParam] : []'
                 @toggle-account='toggleAccountFromCallback'
                 @loaded='isAccountFromLoaded = true'
               />

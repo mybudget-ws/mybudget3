@@ -21,6 +21,10 @@ const currentAccountIds = ref([]);
 const currentCategoryIds = ref([]);
 const currentProjectId = ref(undefined);
 const currentPropertyId = ref(undefined);
+const propertyIdParam = computed(() => {
+  const id = Number(route.query.property_id);
+  return Number.isInteger(id) && id > 0 ? id : undefined;
+});
 const transactionId = computed(() => {
   const id = Number(route.query.id);
 
@@ -59,7 +63,7 @@ const loadItem = async () => {
 
   currentCategoryIds.value = item.categories?.map(category => category.id) || [];
   currentProjectId.value = item.project?.id;
-  currentPropertyId.value = item.property?.id;
+  currentPropertyId.value = item.property?.id ?? propertyIdParam.value;
 };
 
 const kind = computed(() => {
@@ -67,7 +71,13 @@ const kind = computed(() => {
 });
 
 const backUrl = computed(() => {
-  return route.query.back_url?.toString() || '/transactions';
+  const value = route.query.back_url?.toString();
+
+  if (!value || !value.startsWith('/') || value.startsWith('//')) {
+    return '/transactions';
+  }
+
+  return value;
 });
 
 const isAccountEmpty = computed(() => {
@@ -143,8 +153,8 @@ const onClose = () => {
 const onSubmit = async () => {
   if (isSubmitting.value || !token.value) return;
 
-  if (!evaluatedAmount.value && calculationError.value) {
-    alert(calculationError.value);
+  if (!Number.isFinite(evaluatedAmount.value)) {
+    alert(calculationError.value || 'Введите корректную величину');
     return;
   }
 
