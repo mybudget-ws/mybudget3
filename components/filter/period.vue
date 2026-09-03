@@ -1,6 +1,5 @@
 <script setup>
 import {
-  IconCalendar,
   IconChevronLeft,
   IconChevronRight,
 } from '@tabler/icons-vue';
@@ -18,9 +17,10 @@ const quickFilters = [
   { id: 'yesterday', name: 'Вчера' },
   { id: 'week', name: 'Текущая неделя' },
   { id: 'month', name: 'Текущий месяц' },
+  { id: 'custom', name: 'Свой интервал' },
 ];
 
-const selectedQuickFilters = ref(new Set());
+const selectedQuickFilter = ref(null);
 
 const monthNames = [
   'Январь',
@@ -145,7 +145,7 @@ const selectDate = (day) => {
       toDate.value = null;
     }
 
-    activeDatepicker.value = null;
+    activeDatepicker.value = 'to';
 
     return;
   }
@@ -163,33 +163,26 @@ const selectDate = (day) => {
   }
 };
 
-const formatDate = (date) => {
-  if (!date) return '';
+const selectQuickFilter = (id) => {
+  selectedQuickFilter.value = id;
 
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
+  if (id === 'custom') {
+    activeDatepicker.value = 'from';
 
-  return `${day}.${month}.${year}`;
-};
-
-const openDatepicker = (type) => {
-  activeDatepicker.value =
-    activeDatepicker.value === type ? null : type;
-
-  if (activeDatepicker.value === type) {
-    const date = type === 'from'
-      ? fromDate.value
-      : toDate.value;
-
-    if (date) {
+    if (fromDate.value) {
       currentMonth.value = new Date(
-        date.getFullYear(),
-        date.getMonth(),
+        fromDate.value.getFullYear(),
+        fromDate.value.getMonth(),
         1
       );
     }
+
+    return;
   }
+
+  activeDatepicker.value = null;
+  fromDate.value = null;
+  toDate.value = null;
 };
 
 const previousMonth = () => {
@@ -208,16 +201,8 @@ const nextMonth = () => {
   );
 };
 
-const toggleQuickFilter = (id) => {
-  if (selectedQuickFilters.value.has(id)) {
-    selectedQuickFilters.value.delete(id);
-  } else {
-    selectedQuickFilters.value.add(id);
-  }
-};
-
 const reset = () => {
-  selectedQuickFilters.value = new Set();
+  selectedQuickFilter.value = null;
   fromDate.value = null;
   toDate.value = null;
   activeDatepicker.value = null;
@@ -238,9 +223,10 @@ const reset = () => {
         <label class='form-check'>
           <input
             class='form-check-input'
-            type='checkbox'
-            :checked='selectedQuickFilters.has(item.id)'
-            @change='toggleQuickFilter(item.id)'
+            type='radio'
+            name='date-filter'
+            :checked='selectedQuickFilter === item.id'
+            @change='selectQuickFilter(item.id)'
           >
 
           <span class='form-check-label'>
@@ -249,48 +235,8 @@ const reset = () => {
         </label>
       </div>
 
-      <div class='mt-2 mb-2'>
-        <div class='mb-2'>
-          <div class='input-icon'>
-            <span class='input-icon-addon'>
-              <IconCalendar
-                size='20'
-                stroke-width='1'
-              />
-            </span>
-
-            <input
-              class='form-control'
-              placeholder='От'
-              :value='formatDate(fromDate)'
-              readonly
-              @click='openDatepicker("from")'
-            >
-          </div>
-        </div>
-
-        <div>
-          <div class='input-icon'>
-            <span class='input-icon-addon'>
-              <IconCalendar
-                size='20'
-                stroke-width='1'
-              />
-            </span>
-
-            <input
-              class='form-control'
-              placeholder='До'
-              :value='formatDate(toDate)'
-              readonly
-              @click='openDatepicker("to")'
-            >
-          </div>
-        </div>
-      </div>
-
       <div
-        v-if='activeDatepicker'
+        v-if='selectedQuickFilter === "custom"'
         class='datepicker'
       >
         <div class='datepicker-header'>
@@ -357,7 +303,7 @@ const reset = () => {
       </div>
 
       <div
-        v-if='selectedQuickFilters.size || fromDate || toDate'
+        v-if='selectedQuickFilter === "custom"'
         class='pb-2'
       >
         <button
@@ -374,7 +320,7 @@ const reset = () => {
 
 <style scoped>
 .datepicker {
-  margin: 0 -0.25rem 0.5rem;
+  margin: 0.5rem -0.25rem 0.5rem;
   padding: 0.5rem;
 }
 
