@@ -10,6 +10,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  mobileDragHandle: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const route = useRoute();
@@ -21,6 +25,9 @@ const emit = defineEmits([
   'update:items',
   'drag-start',
   'drag-end',
+  'pointerdown',
+  'pointermove',
+  'pointerup',
 ]);
 
 const {
@@ -80,9 +87,13 @@ const onSaved = async () => {
         <div class='subheader mb-3 d-flex align-items-center'>
           <span
             class='filter-drag-handle me-1'
-            draggable='true'
-            @dragstart='emit("drag-start", $event)'
-            @dragend='emit("drag-end")'
+            :class='{ "filter-drag-handle-mobile": props.mobileDragHandle }'
+            :draggable='!props.mobileDragHandle'
+            @dragstart='!props.mobileDragHandle && emit("drag-start", $event)'
+            @dragend='!props.mobileDragHandle && emit("drag-end")'
+            @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
+            @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
+            @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
           >
             <IconGripVertical
               size='18'
@@ -140,6 +151,15 @@ const onSaved = async () => {
   }
 
   .filter-drag-handle:active {
+    cursor: grabbing;
+  }
+  
+  .filter-drag-handle-mobile {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .filter-drag-handle-mobile:active {
     cursor: grabbing;
   }
 </style>
