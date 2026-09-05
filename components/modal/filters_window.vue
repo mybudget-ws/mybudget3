@@ -30,6 +30,11 @@ const emit = defineEmits([
     <div class='modal-body'>
       <div class='row'>
         <div class='col-12'>
+          <FilterPeriod
+            :is-loading='!isLoaded'
+            @update:items='emit("period-change", $event)'
+          />
+
           <FilterKinds
             :is-loading='!isLoaded'
             @update:items='emit("kinds-change", $event)'
