@@ -1,13 +1,20 @@
 <script setup>
 import api from '~/lib/api';
-import { IconPlus } from '@tabler/icons-vue';
+import {
+  IconGripVertical,
+  IconPlus,
+} from '@tabler/icons-vue';
 
 const route = useRoute();
 const router = useRouter();
 
 const { token } = useAuth();
 
-const emit = defineEmits(['update:items']);
+const emit = defineEmits([
+  'update:items',
+  'drag-start',
+  'drag-end',
+]);
 
 const {
   isLoading,
@@ -46,12 +53,26 @@ const onSaved = async () => {
     @saved='onSaved'
     @close='isShowModal = false'
   />
+
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
-    <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
+    <div v-else class='card-body pt-3 pe-2 pb-0 ps-3'>
       <div class='d-flex align-items-center justify-content-between mb-2'>
-        <div class='subheader'>Категории</div>
+        <div class='subheader mb-3 d-flex align-items-center'>
+          <span
+            class='filter-drag-handle me-1'
+            draggable='true'
+            @dragstart='emit("drag-start", $event)'
+            @dragend='emit("drag-end")'
+          >
+            <IconGripVertical
+              size='18'
+              stroke-width='2'
+            />
+          </span>
+          Категории
+        </div>
         <button
           class='btn btn-action'
           title='Создать категорию'
@@ -60,6 +81,7 @@ const onSaved = async () => {
           <IconPlus size='20' stroke-width='1' />
         </button>
       </div>
+
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check' :title='item.name'>
           <input
@@ -73,6 +95,7 @@ const onSaved = async () => {
           </span>
         </label>
       </div>
+
       <div v-if='canToggleShowAll' class='pb-2'>
         <button
           class='btn btn-action btn-sm text-secondary w-100'
@@ -86,3 +109,14 @@ const onSaved = async () => {
   </div>
 </template>
 
+<style scoped>
+  .filter-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    cursor: grab;
+  }
+
+  .filter-drag-handle:active {
+    cursor: grabbing;
+  }
+</style>

@@ -2,6 +2,7 @@
 import {
   IconChevronLeft,
   IconChevronRight,
+  IconGripVertical,
 } from '@tabler/icons-vue';
 
 const activeDatepicker = ref(null);
@@ -46,6 +47,11 @@ const weekDays = [
   'Сб',
   'Вс',
 ];
+
+const emit = defineEmits([
+  'drag-start',
+  'drag-end',
+]);
 
 const currentMonthName = computed(() => {
   return monthNames[currentMonth.value.getMonth()];
@@ -212,7 +218,18 @@ const reset = () => {
 <template>
   <div class='card mb-3'>
     <div class='card-body pt-3 pe-2 pb-1 ps-3'>
-      <div class='subheader mb-3'>
+      <div class='subheader mb-3 d-flex align-items-center'>
+        <span
+          class='filter-drag-handle me-1'
+          draggable='true'
+          @dragstart='emit("drag-start", $event)'
+          @dragend='emit("drag-end")'
+        >
+          <IconGripVertical
+            size='18'
+            stroke-width='2'
+          />
+        </span>
         Дата
       </div>
 
@@ -394,4 +411,15 @@ const reset = () => {
   color: var(--tblr-primary);
   font-weight: 600;
 }
+
+.filter-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  cursor: grab;
+}
+
+.filter-drag-handle:active {
+  cursor: grabbing;
+}
 </style>
+
