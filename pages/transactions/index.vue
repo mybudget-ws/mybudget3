@@ -155,6 +155,7 @@ const openCreateMobile = (kind) => {
   router.push({
     path: '/transactions/new_transaction_mobile',
     query: {
+      ...route.query,
       kind,
       back_url: backUrl,
     },
@@ -170,6 +171,7 @@ const openCreateTransferMobile = () => {
   router.push({
     path: '/transactions/new_transfer_mobile',
     query: {
+      ...route.query,
       back_url: backUrl,
     },
   });
