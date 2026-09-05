@@ -52,7 +52,7 @@ const isAmountFromError = computed(() => amountFromError.value !== '');
 const isAmountToError = computed(() => amountToError.value !== '');
 
 const isSubmitDisabled = computed(() => {
-  return !token.value || isAccountEmpty.value;
+  return !token.value || !isAccountsLoaded.value || isAccountEmpty.value;
 });
 
 const currentCurrencyNameFrom = computed(() => {

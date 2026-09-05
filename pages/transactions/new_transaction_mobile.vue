@@ -40,6 +40,10 @@ const copyId = computed(() => {
 const isEdit = computed(() => !!transactionId.value);
 const isCopy = computed(() => !!copyId.value);
 
+if (!isEdit.value && !isCopy.value) {
+  currentPropertyId.value = propertyIdParam.value;
+}
+
 const loadItem = async () => {
   const id = transactionId.value || copyId.value;
 
