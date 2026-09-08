@@ -312,7 +312,7 @@ watch(
       </div>
     </div>
 
-    <div class='position-sticky bottom-0 bg-body py-3'>
+    <div class='position-sticky bottom-0 bg-body py-3' style='z-index: 2;'>
       <div class='container-xl'>
         <div class='d-flex gap-2'>
           <button
