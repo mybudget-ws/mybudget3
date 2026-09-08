@@ -603,7 +603,7 @@ onMounted(load);
                     Описание
                   </th>
 
-                  <th class='w-1' />
+                  <th class='w-1'/>
                 </tr>
               </thead>
 
@@ -615,37 +615,41 @@ onMounted(load);
                   @edit='onEditTransaction'
                   @delete='onDeleteTransaction'
                 />
-
-                <tr v-if='!transactions.length'>
-                  <td
-                    colspan='6'
-                    class='text-center text-secondary py-5'
-                  >
-                    Похоже, операций ещё нет
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
-          <div class='card-footer bg-transparent border-top'>
-            <button
-              class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
-              :disabled='!hasMore || isLoadingMore'
-              @click='loadMoreTransactions'
-            >
-              <template v-if='isLoadingMore'>
-                Загрузка...
-              </template>
+        </div>
 
-              <template v-else-if='hasMore'>
-                Загрузить ещё
-              </template>
-
-              <template v-else>
-                Операций больше нет
-              </template>
-            </button>
+        <div
+          v-if='!transactions.length'
+          class='card-footer bg-transparent border-0'
+        >
+          <div class='text-secondary'>
+            Похоже, операций ещё нет
           </div>
+        </div>
+
+        <div
+          v-else
+          class='card-footer bg-transparent border-top'
+        >
+          <button
+            class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
+            :disabled='!hasMore || isLoadingMore'
+            @click='loadMoreTransactions'
+          >
+            <template v-if='isLoadingMore'>
+              Загрузка...
+            </template>
+
+            <template v-else-if='hasMore'>
+              Загрузить ещё
+            </template>
+
+            <template v-else>
+              Операций больше нет
+            </template>
+          </button>
         </div>
       </div>
     </div>
