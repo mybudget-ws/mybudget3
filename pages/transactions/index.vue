@@ -189,6 +189,9 @@ const openEdit = (item) => {
       query: {
         id: item.id,
         kind: item.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        categories: item.categories?.map(category => category.id).join(',') || undefined,
+        project_id: item.project?.id || undefined,
+        property_id: item.property?.id || undefined,
         back_url: backUrl,
       },
     });
@@ -208,12 +211,14 @@ const openCopy = (item) => {
       path: route.path,
       query: route.query,
     }).href;
-
     router.push({
       path: '/transactions/new_transaction_mobile',
       query: {
         copy_id: item.id,
         kind: item.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        categories: item.categories?.map(category => category.id).join(',') || undefined,
+        project_id: item.project?.id || undefined,
+        property_id: item.property?.id || undefined,
         back_url: backUrl,
       },
     });

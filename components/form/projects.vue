@@ -76,6 +76,14 @@ watch(() => route, (newRoute) => {
 watch(selectedId, (newId) => {
   emit('toggleProject', newId);
 });
+watch(
+  () => props.id,
+  (newId) => {
+    if (newId !== undefined) {
+      selectedId.value = newId;
+    }
+  },
+);
 </script>
 
 <template>

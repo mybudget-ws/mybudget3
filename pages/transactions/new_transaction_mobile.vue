@@ -21,8 +21,25 @@ const currentAccountIds = ref([]);
 const currentCategoryIds = ref([]);
 const currentProjectId = ref(undefined);
 const currentPropertyId = ref(undefined);
+
 const propertyIdParam = computed(() => {
   const id = Number(route.query.property_id);
+  return Number.isInteger(id) && id > 0 ? id : undefined;
+});
+const categoryIdsParam = computed(() => {
+  const value = route.query.categories?.toString();
+
+  if (!value) return [];
+
+  return value
+    .split(',')
+    .map(Number)
+    .filter(id => Number.isInteger(id) && id > 0);
+});
+
+const projectIdParam = computed(() => {
+  const id = Number(route.query.project_id);
+
   return Number.isInteger(id) && id > 0 ? id : undefined;
 });
 const transactionId = computed(() => {
@@ -41,6 +58,8 @@ const isEdit = computed(() => !!transactionId.value);
 const isCopy = computed(() => !!copyId.value);
 
 if (!isEdit.value && !isCopy.value) {
+  currentCategoryIds.value = categoryIdsParam.value;
+  currentProjectId.value = projectIdParam.value;
   currentPropertyId.value = propertyIdParam.value;
 }
 
@@ -65,9 +84,9 @@ const loadItem = async () => {
     ? [item.account.id]
     : [];
 
-  currentCategoryIds.value = item.categories?.map(category => category.id) || [];
-  currentProjectId.value = item.project?.id;
-  currentPropertyId.value = item.property?.id ?? propertyIdParam.value;
+  currentCategoryIds.value = categoryIdsParam.value;
+  currentProjectId.value = projectIdParam.value;
+  currentPropertyId.value = propertyIdParam.value;
 };
 
 const kind = computed(() => {
