@@ -231,6 +231,9 @@ const onEditTransaction = (transaction) => {
       query: {
         id: transaction.id,
         kind: transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        categories: transaction.categories?.map(category => category.id).join(',') || undefined,
+        project_id: transaction.project?.id || undefined,
+        property_id: transaction.property?.id || undefined,
         back_url: backUrl,
       },
     });
