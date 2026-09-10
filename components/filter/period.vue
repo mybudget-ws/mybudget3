@@ -173,6 +173,11 @@ const selectDate = (day) => {
 };
 
 const selectQuickFilter = (id) => {
+  if (selectedQuickFilter.value === id) {
+    reset();
+    return;
+  }
+
   selectedQuickFilter.value = id;
 
   if (id === 'custom') {
@@ -254,8 +259,7 @@ const props = defineProps({
         <label class='form-check'>
           <input
             class='form-check-input'
-            type='radio'
-            name='date-filter'
+            type='checkbox'
             :checked='selectedQuickFilter === item.id'
             @change='selectQuickFilter(item.id)'
           >

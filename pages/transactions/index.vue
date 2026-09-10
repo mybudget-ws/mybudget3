@@ -120,6 +120,16 @@ const onFilterDragStart = (filter, event) => {
 
   event.dataTransfer.effectAllowed = 'move';
   event.dataTransfer.setData('text/plain', filter);
+
+  const filterItem = event.currentTarget.closest('.filter-item');
+
+  if (filterItem) {
+    event.dataTransfer.setDragImage(
+      filterItem,
+      event.clientX - filterItem.getBoundingClientRect().left,
+      event.clientY - filterItem.getBoundingClientRect().top
+    );
+  }
 };
 
 const onFilterDragOver = (filter) => {
@@ -674,6 +684,7 @@ onMounted(() => {
         <div
           v-for='filter in filterOrder'
           :key='filter'
+          class='filter-item'
           :class='{ "filter-item-dragging": draggedFilter === filter }'
           @dragover.prevent='onFilterDragOver(filter)'
         >
