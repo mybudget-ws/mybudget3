@@ -615,7 +615,7 @@ watch(token, (val) => {
           </div>
         </div>
 
-        <div v-else class='card-table table-responsive'>
+        <div v-else class='card-table table-responsive border-bottom'>
           <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
