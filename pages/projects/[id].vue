@@ -18,6 +18,7 @@ import {
 
 const appConfig = useAppConfig();
 const route = useRoute();
+const router = useRouter();
 const { token } = useAuth();
 const { isMobile } = useDevice();
 
@@ -261,12 +262,51 @@ const load = async (isQuite = false) => {
 };
 
 const openCreateTransaction = (kind) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        kind,
+        project_id: project.value.id,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   currentKind.value = kind;
   editingTransaction.value = null;
   isShowTransactionModal.value = true;
 };
 
 const onEditTransaction = (transaction) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        id: transaction.id,
+        kind: transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        categories: transaction.categories?.map(category => category.id).join(',') || undefined,
+        project_id: transaction.project?.id || undefined,
+        property_id: transaction.property?.id || undefined,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   editingTransaction.value = transaction;
   currentKind.value =
     transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
