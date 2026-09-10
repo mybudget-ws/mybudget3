@@ -1,13 +1,30 @@
 <script setup>
 import api from '~/lib/api';
-import { IconPlus } from '@tabler/icons-vue';
+import {
+  IconGripVertical,
+  IconPlus,
+} from '@tabler/icons-vue';
 
 const route = useRoute();
 const router = useRouter();
 
 const { token } = useAuth();
 
-const emit = defineEmits(['update:items']);
+const props = defineProps({
+  mobileDragHandle: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const emit = defineEmits([
+  'update:items',
+  'drag-start',
+  'drag-end',
+  'pointerdown',
+  'pointermove',
+  'pointerup',
+]);
 
 const {
   isLoading,
@@ -48,7 +65,24 @@ const onSaved = async () => {
 
     <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
       <div class='d-flex align-items-center justify-content-between mb-2'>
-        <div class='subheader'>Проекты</div>
+        <div class='subheader d-flex align-items-center'>
+          <span
+            class='filter-drag-handle me-1'
+            :class='{ "filter-drag-handle-mobile": props.mobileDragHandle }'
+            :draggable='!props.mobileDragHandle'
+            @dragstart='!props.mobileDragHandle && emit("drag-start", $event)'
+            @dragend='!props.mobileDragHandle && emit("drag-end")'
+            @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
+            @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
+            @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
+          >
+            <IconGripVertical
+              size='18'
+              stroke-width='2'
+            />
+          </span>
+          Проекты
+        </div>
         <button
           class='btn btn-action'
           title='Создать проект'
@@ -57,6 +91,7 @@ const onSaved = async () => {
           <IconPlus size='20' stroke-width='1'/>
         </button>
       </div>
+
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check'>
           <input
@@ -74,3 +109,23 @@ const onSaved = async () => {
   </div>
 </template>
 
+<style scoped>
+  .filter-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    cursor: grab;
+  }
+
+  .filter-drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .filter-drag-handle-mobile {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .filter-drag-handle-mobile:active {
+    cursor: grabbing;
+  }
+</style>
