@@ -7,6 +7,9 @@ const { token } = useAuth();
 const projectName = ref('');
 const projectPosition = ref(DEFAULT_POSITION);
 const isSubmitting = ref(false);
+const projectBudget = ref(null);
+const projectBudgetCurrency = ref(null);
+const currencies = ref([]);
 
 const props = defineProps({
   item: {
@@ -17,7 +20,6 @@ const props = defineProps({
 
 const emit = defineEmits(['saved', 'close']);
 const isEdit = computed(() => !!props.item);
-
 const onSubmit = async () => {
   if (!token.value) return;
 
@@ -28,11 +30,19 @@ const onSubmit = async () => {
         id: props.item.id,
         name: projectName.value,
         position: parseInt(projectPosition.value),
+        budget: projectBudget.value === '' ? null : parseFloat(projectBudget.value),
+        budgetCurrencyId: projectBudgetCurrency.value
+          ? parseInt(projectBudgetCurrency.value)
+          : null,
       });
     } else {
       await api.createProject(token.value, {
         name: projectName.value,
         position: parseInt(projectPosition.value),
+        budget: projectBudget.value === '' ? null : parseFloat(projectBudget.value),
+        budgetCurrencyId: projectBudgetCurrency.value
+          ? parseInt(projectBudgetCurrency.value)
+          : null,
       });
     }
 
@@ -42,11 +52,23 @@ const onSubmit = async () => {
   }
 };
 
+onMounted(async () => {
+  currencies.value = await api.currencies();
+
+  if (!isEdit.value && !projectBudgetCurrency.value) {
+    projectBudgetCurrency.value = currencies.value.find(
+      currency => currency.name === 'RUB'
+    )?.id ?? null;
+  }
+});
+
 watch(
   () => props.item,
   (val) => {
     projectName.value = val?.name ?? '';
     projectPosition.value = val?.position ?? DEFAULT_POSITION;
+    projectBudget.value = val?.budget ?? null;
+    projectBudgetCurrency.value = val?.budgetCurrency?.id ?? null;
   },
   { immediate: true }
 )
@@ -85,6 +107,37 @@ watch(
               placeholder='1'
               :disabled='isSubmitting'
             />
+          </div>
+        </div>
+        <div class='row'>
+          <div class='col-md-12 col-lg-6 mb-3'>
+            <Label>Бюджет</Label>
+            <div class='input-group input-group-flat'>
+              <Input
+                v-model='projectBudget'
+                type='text'
+                placeholder='10.2 + 3 * 6'
+                :disabled='isSubmitting'
+              />
+            </div>
+          </div>
+
+          <div class='col-md-12 col-lg-6 mb-3'>
+            <Label>Валюта бюджета</Label>
+            <select
+              v-model='projectBudgetCurrency'
+              class='form-select'
+              :disabled='isSubmitting'
+            >
+              <option disabled value=''>Выберите валюту</option>
+              <option
+                v-for='currency in currencies'
+                :key='currency.id'
+                :value='currency.id'
+              >
+                {{ currency.displayName }} — {{ currency.description }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
