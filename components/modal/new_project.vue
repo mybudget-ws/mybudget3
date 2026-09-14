@@ -1,4 +1,5 @@
 <script setup>
+import { evaluate } from 'mathjs';
 import api from '~/lib/api';
 
 const DEFAULT_POSITION = 1;
@@ -8,6 +9,8 @@ const projectName = ref('');
 const projectPosition = ref(DEFAULT_POSITION);
 const isSubmitting = ref(false);
 const projectBudget = ref(null);
+const evaluatedBudget = ref(undefined);
+const calculationError = ref('');
 const projectBudgetCurrency = ref(null);
 const currencies = ref([]);
 
@@ -20,17 +23,23 @@ const props = defineProps({
 
 const emit = defineEmits(['saved', 'close']);
 const isEdit = computed(() => !!props.item);
+
 const onSubmit = async () => {
   if (!token.value) return;
 
-  isSubmitting.value = true
+  if (calculationError.value) {
+    alert(calculationError.value);
+    return;
+  }
+
+  isSubmitting.value = true;
   try {
     if (isEdit.value) {
       await api.updateProject(token.value, {
         id: props.item.id,
         name: projectName.value,
         position: parseInt(projectPosition.value),
-        budget: projectBudget.value === '' ? null : parseFloat(projectBudget.value),
+        budget: evaluatedBudget.value ?? null,
         budgetCurrencyId: projectBudgetCurrency.value
           ? parseInt(projectBudgetCurrency.value)
           : null,
@@ -39,7 +48,7 @@ const onSubmit = async () => {
       await api.createProject(token.value, {
         name: projectName.value,
         position: parseInt(projectPosition.value),
-        budget: projectBudget.value === '' ? null : parseFloat(projectBudget.value),
+        budget: evaluatedBudget.value ?? null,
         budgetCurrencyId: projectBudgetCurrency.value
           ? parseInt(projectBudgetCurrency.value)
           : null,
@@ -71,7 +80,30 @@ watch(
     projectBudgetCurrency.value = val?.budgetCurrency?.id ?? null;
   },
   { immediate: true }
-)
+);
+
+watch(projectBudget, (newExpression) => {
+  if (!newExpression || newExpression.trim() === '') {
+    evaluatedBudget.value = undefined;
+    calculationError.value = '';
+    return;
+  }
+
+  try {
+    const result = evaluate(
+      newExpression
+        .replace(/\s+/g, '')
+        .replace(/,/g, '.')
+    );
+
+    evaluatedBudget.value = Number.isFinite(result) ? result : undefined;
+    calculationError.value = '';
+  } catch (error) {
+    console.warn('Invalid expression:', error.message);
+    evaluatedBudget.value = undefined;
+    calculationError.value = 'Неверное выражение';
+  }
+});
 </script>
 
 <template>
