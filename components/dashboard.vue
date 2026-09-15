@@ -17,7 +17,8 @@ const isLoading = ref(true);
 const isError = ref(false);
 const isInitialLoading = ref(true);
 const dashboard = ref({});
-
+const route = useRoute();
+const router = useRouter();
 const KIND_EXPENSE = 'expense';
 const KIND_INCOME = 'income';
 
@@ -29,6 +30,18 @@ const currentItem = ref(null);
 const selectedTransferAccountId = ref(null);
 
 const openCreate = (kind) => {
+  if (isMobile.value) {
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        kind,
+        back_url: route.fullPath,
+      },
+    });
+
+    return;
+  }
+
   currentItem.value = null;
   currentKind.value = kind;
   isCopyItem.value = false;
@@ -36,6 +49,20 @@ const openCreate = (kind) => {
 };
 
 const openCreateTransfer = (accountId = NaN) => {
+  if (isMobile.value) {
+    router.push({
+      path: '/transactions/new_transfer_mobile',
+      query: {
+        ...(Number.isInteger(accountId) && accountId > 0
+          ? { account_id: accountId }
+          : {}),
+        back_url: route.fullPath,
+      },
+    });
+
+    return;
+  }
+
   selectedTransferAccountId.value = accountId;
   isShowModalTransfer.value = true;
 };
@@ -80,7 +107,21 @@ const accounts = computed(() => {
   return dashboard.value.accounts;
 });
 
+
 const openCopy = (item) => {
+  if (isMobile.value) {
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        copy_id: item.id,
+        kind: item.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        back_url: route.fullPath,
+      },
+    });
+
+    return;
+  }
+
   currentItem.value = { ...item, id: undefined };
   currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
   isCopyItem.value = true;
