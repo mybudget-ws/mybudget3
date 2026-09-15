@@ -158,9 +158,9 @@ watchEffect(() => {
                   </NuxtLink>
                 </div>
 
-                <div v-if='item.budget != null' class='card-subtitle'>
-                  <span class='text-secondary me-1'>Бюджет:</span>
-                  <span class='text-success'>
+                <div v-if='item.budget != null' class=' mb-1'>
+                  <span class='me-1'>Бюджет:</span>
+                  <span>
                     <Amount
                       :value='item.budget'
                       :currency='item.budgetCurrency?.name'
@@ -250,7 +250,7 @@ watchEffect(() => {
                       </NuxtLink>
                     </td>
                     <td class='text-nowrap text-end'>
-                      <span v-if='item.budget != null' class='text-success'>
+                      <span v-if='item.budget != null'>
                         <Amount
                           :value='item.budget'
                           :currency='item.budgetCurrency?.name'
