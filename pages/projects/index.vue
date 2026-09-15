@@ -158,7 +158,7 @@ watchEffect(() => {
                   </NuxtLink>
                 </div>
 
-                <div v-if='item.budget != null' class=' mb-1'>
+                <div v-if='item.budget != null' class='mb-1'>
                   <span class='me-1'>Бюджет:</span>
                   <span>
                     <Amount
