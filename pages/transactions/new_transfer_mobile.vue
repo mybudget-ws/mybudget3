@@ -118,8 +118,8 @@ const onSubmit = async () => {
 
   try {
     const transferData = {
-      amountSrc,
-      amountDst,
+      amountSrc: amountSrc.toString(),
+      amountDst: amountDst.toString(),
       date: date.value,
       accountIdSrc: currentAccountFrom.value.id,
       accountIdDst: currentAccountTo.value.id,
