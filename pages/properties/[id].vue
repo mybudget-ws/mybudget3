@@ -819,7 +819,7 @@ const chartOptions = computed(() => ({
           </div>
           <div
             v-if='!transactions.length && !isMobile'
-            class='card-footer bg-transparent'
+            class='card-footer bg-transparent border-0'
           >
             <div class='text-secondary'>
               Похоже, операций ещё нет
