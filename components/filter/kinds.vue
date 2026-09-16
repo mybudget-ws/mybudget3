@@ -87,6 +87,7 @@ watch(selectedItems, (val) => {
           <IconGripVertical
             size='18'
             stroke-width='2'
+            class='opacity-40'
           />
         </span>
         Тип операций

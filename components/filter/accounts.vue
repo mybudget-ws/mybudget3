@@ -98,6 +98,7 @@ const onSaved = async () => {
             <IconGripVertical
               size='18'
               stroke-width='2'
+              class='opacity-40'
             />
           </span>
           Счета
