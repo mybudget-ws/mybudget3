@@ -18,6 +18,7 @@ import {
 
 const appConfig = useAppConfig();
 const route = useRoute();
+const router = useRouter();
 const { token } = useAuth();
 const { isMobile } = useDevice();
 
@@ -261,12 +262,51 @@ const load = async (isQuite = false) => {
 };
 
 const openCreateTransaction = (kind) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        kind,
+        project_id: project.value.id,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   currentKind.value = kind;
   editingTransaction.value = null;
   isShowTransactionModal.value = true;
 };
 
 const onEditTransaction = (transaction) => {
+  if (isMobile.value) {
+    const backUrl = router.resolve({
+      path: route.path,
+      query: route.query,
+    }).href;
+
+    router.push({
+      path: '/transactions/new_transaction_mobile',
+      query: {
+        id: transaction.id,
+        kind: transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
+        categories: transaction.categories?.map(category => category.id).join(',') || undefined,
+        project_id: transaction.project?.id || undefined,
+        property_id: transaction.property?.id || undefined,
+        back_url: backUrl,
+      },
+    });
+
+    return;
+  }
+
   editingTransaction.value = transaction;
   currentKind.value =
     transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
@@ -603,7 +643,7 @@ onMounted(load);
                     Описание
                   </th>
 
-                  <th class='w-1' />
+                  <th class='w-1'/>
                 </tr>
               </thead>
 
@@ -615,37 +655,41 @@ onMounted(load);
                   @edit='onEditTransaction'
                   @delete='onDeleteTransaction'
                 />
-
-                <tr v-if='!transactions.length'>
-                  <td
-                    colspan='6'
-                    class='text-center text-secondary py-5'
-                  >
-                    Похоже, операций ещё нет
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
-          <div class='card-footer bg-transparent border-top'>
-            <button
-              class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
-              :disabled='!hasMore || isLoadingMore'
-              @click='loadMoreTransactions'
-            >
-              <template v-if='isLoadingMore'>
-                Загрузка...
-              </template>
+        </div>
 
-              <template v-else-if='hasMore'>
-                Загрузить ещё
-              </template>
-
-              <template v-else>
-                Операций больше нет
-              </template>
-            </button>
+        <div
+          v-if='!transactions.length'
+          class='card-footer bg-transparent border-0'
+        >
+          <div class='text-secondary'>
+            Похоже, операций ещё нет
           </div>
+        </div>
+
+        <div
+          v-else
+          class='card-footer bg-transparent border-top'
+        >
+          <button
+            class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
+            :disabled='!hasMore || isLoadingMore'
+            @click='loadMoreTransactions'
+          >
+            <template v-if='isLoadingMore'>
+              Загрузка...
+            </template>
+
+            <template v-else-if='hasMore'>
+              Загрузить ещё
+            </template>
+
+            <template v-else>
+              Операций больше нет
+            </template>
+          </button>
         </div>
       </div>
     </div>
