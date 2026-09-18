@@ -158,6 +158,17 @@ watchEffect(() => {
                   </NuxtLink>
                 </div>
 
+                <div v-if='item.budget != null' class='mb-1'>
+                  <span class='me-1'>Бюджет:</span>
+                  <span>
+                    <Amount
+                      :value='item.budget'
+                      :currency='item.budgetCurrency?.name'
+                      copyable
+                    />
+                  </span>
+                </div>
+
                 <div class='card-subtitle text-secondary'>
                   <span
                     :class='{
@@ -222,6 +233,7 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Название</th>
+                    <th class='text-end'>Бюджет</th>
                     <th class='text-end'>Баланс</th>
                     <th class='w-1'/>
                   </tr>
@@ -236,6 +248,15 @@ watchEffect(() => {
                       >
                         {{ item.name }}
                       </NuxtLink>
+                    </td>
+                    <td class='text-nowrap text-end'>
+                      <span v-if='item.budget != null'>
+                        <Amount
+                          :value='item.budget'
+                          :currency='item.budgetCurrency?.name'
+                          copyable
+                        />
+                      </span>
                     </td>
                     <td class='text-nowrap text-end'>
                       <span

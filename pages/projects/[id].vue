@@ -5,6 +5,7 @@ import {
   IconArrowUp,
   IconArrowDown,
   IconCoins,
+  IconMoneybag,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -60,6 +61,25 @@ const balance = computed(() => {
   }
 
   return project.value.totalIncome + project.value.totalExpense;
+});
+
+const budgetProgress = computed(() => {
+  if (!project.value?.budget || project.value.budget <= 0) {
+    return 0;
+  }
+
+  return Math.min(
+    Math.max((balance.value / project.value.budget) * 100, 0),
+    100
+  );
+});
+
+const isBudgetReached = computed(() => {
+  if (!project.value?.budget) {
+    return false;
+  }
+
+  return balance.value >= project.value.budget;
 });
 
 const categories = computed(() => {
@@ -470,8 +490,8 @@ onMounted(load);
         <div
           v-if='project'
           :class='isMobile
-            ? "d-flex flex-column gap-3 mt-2"
-            : "d-flex gap-4"'
+            ? "d-flex flex-column gap-3 mt-2 mb-3"
+            : "d-flex gap-4 mb-3"'
         >
           <div class='d-flex align-items-center gap-2'>
             <div class='bg-green-lt avatar shadow-none'>
@@ -517,12 +537,55 @@ onMounted(load);
             <div>
               <Amount
                 class='fw-medium'
+                :class='isBudgetReached ? "text-success" : "fw-medium"'
                 :value='balance'
                 copyable
               />
 
               <div class='text-secondary small'>
                 Баланс
+              </div>
+            </div>
+          </div>
+          <div
+            v-if='project.budget != null'
+            class='d-flex align-items-center gap-2'
+          >
+            <div class='bg-purple-lt avatar shadow-none'>
+              <IconMoneybag size='24' />
+            </div>
+
+            <div class='position-relative'>
+              <Amount
+                class='fw-medium'
+                :class='isBudgetReached ? "text-red" : ""'
+                :value='project.budget'
+                :currency='project.budgetCurrency?.name'
+                copyable
+              />
+
+              <div class='text-secondary small'>
+                Бюджет
+              </div>
+
+              <div
+                class='d-flex align-items-center gap-1 position-absolute'
+                style='top: 100%; left: 0'
+              >
+                <div class='progress progress-sm' style='width: 76px'>
+                  <div
+                    class='progress-bar'
+                    :class='isBudgetReached ? "bg-red" : "bg-primary"'
+                    :style='{ width: `${budgetProgress}%` }'
+                  />
+                </div>
+
+                <span
+                  class='small'
+                  :class='isBudgetReached ? "text-red" : "fw-medium"'
+                >
+                  {{ Math.round(budgetProgress) }}%
+                </span>
               </div>
             </div>
           </div>
