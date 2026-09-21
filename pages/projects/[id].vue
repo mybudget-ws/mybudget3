@@ -68,7 +68,20 @@ const isBudgetReached = computed(() => {
     return false;
   }
 
-  return balance.value >= project.value.budget;
+  return Math.abs(project.value.totalExpense || 0) >= project.value.budget;
+});
+
+const budgetRemainingPercent = computed(() => {
+  if (!project.value?.budget) {
+    return 100;
+  }
+
+  const expense = Math.abs(project.value.totalExpense || 0);
+
+  return Math.max(
+    0,
+    100 - (expense / project.value.budget) * 100
+  );
 });
 
 const categories = computed(() => {
@@ -564,8 +577,8 @@ onMounted(load);
                 <div class='progress progress-sm' style='width: 76px'>
                   <div
                     class='progress-bar'
-                    :class='isBudgetReached ? "bg-red" : "bg-primary"'
-                    :style='{ width: `${project.budgetUsagePercent}%` }'
+                    :class='isBudgetReached ? "bg-red" : "bg-purple"'
+                    :style='{ width: `${budgetRemainingPercent}%` }'
                   />
                 </div>
 
@@ -573,7 +586,7 @@ onMounted(load);
                   class='small'
                   :class='isBudgetReached ? "text-red" : "fw-medium"'
                 >
-                  {{ Math.round(project.budgetUsagePercent) }}%
+                  {{ Math.round(budgetRemainingPercent) }}%
                 </span>
               </div>
             </div>
