@@ -63,17 +63,6 @@ const balance = computed(() => {
   return project.value.totalIncome + project.value.totalExpense;
 });
 
-const budgetProgress = computed(() => {
-  if (!project.value?.budget || project.value.budget <= 0) {
-    return 0;
-  }
-
-  return Math.min(
-    Math.max((balance.value / project.value.budget) * 100, 0),
-    100
-  );
-});
-
 const isBudgetReached = computed(() => {
   if (!project.value?.budget) {
     return false;
@@ -576,7 +565,7 @@ onMounted(load);
                   <div
                     class='progress-bar'
                     :class='isBudgetReached ? "bg-red" : "bg-primary"'
-                    :style='{ width: `${budgetProgress}%` }'
+                    :style='{ width: `${project.budgetUsagePercent}%` }'
                   />
                 </div>
 
@@ -584,7 +573,7 @@ onMounted(load);
                   class='small'
                   :class='isBudgetReached ? "text-red" : "fw-medium"'
                 >
-                  {{ Math.round(budgetProgress) }}%
+                  {{ Math.round(project.budgetUsagePercent) }}%
                 </span>
               </div>
             </div>

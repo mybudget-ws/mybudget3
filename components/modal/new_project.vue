@@ -31,20 +31,16 @@ const onSubmit = async () => {
       await api.updateProject(token.value, {
         id: props.item.id,
         name: projectName.value,
-        position: parseInt(projectPosition.value),
-        budget: projectBudget.value || null,
-        budgetCurrencyId: projectBudgetCurrency.value
-          ? parseInt(projectBudgetCurrency.value)
-          : null,
+        position: projectPosition.value,
+        budget: projectBudget.value ? Number(projectBudget.value) : null,
+        budgetCurrencyId: projectBudgetCurrency.value,
       });
     } else {
       await api.createProject(token.value, {
         name: projectName.value,
-        position: parseInt(projectPosition.value),
-        budget: projectBudget.value || null,
-        budgetCurrencyId: projectBudgetCurrency.value
-          ? parseInt(projectBudgetCurrency.value)
-          : null,
+        position: projectPosition.value,
+        budget: projectBudget.value ? Number(projectBudget.value) : null,
+        budgetCurrencyId: projectBudgetCurrency.value,
       });
     }
 
