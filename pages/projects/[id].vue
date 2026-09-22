@@ -5,6 +5,7 @@ import {
   IconArrowUp,
   IconArrowDown,
   IconCoins,
+  IconMoneybag,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -60,6 +61,44 @@ const balance = computed(() => {
   }
 
   return project.value.totalIncome + project.value.totalExpense;
+});
+
+const budgetUsagePercentColor = computed(() => {
+  if (!project.value.budgetUsagePercent) return '';
+
+  const percent = Math.abs(project.value.budgetUsagePercent);
+  if (percent < 80) {
+    return 'text-purple';
+
+  } else if (percent < 100) {
+    return 'text-yellow';
+    
+  } else {
+    return 'text-red';
+  }
+});
+
+const budgetUsagePercentBackground = computed(() => {
+  if (!project.value.budgetUsagePercent) return '';
+
+  const percent = Math.abs(project.value.budgetUsagePercent);
+  if (percent < 80) {
+    return 'bg-purple';
+
+  } else if (percent < 100) {
+    return 'bg-yellow';
+    
+  } else {
+    return 'bg-red';
+  }
+});
+
+const budgetUsagePercent = computed(() => {
+  if (!project.value?.budgetUsagePercent) {
+    return 0;
+  }
+
+  return Math.abs(project.value.budgetUsagePercent);
 });
 
 const categories = computed(() => {
@@ -470,8 +509,8 @@ onMounted(load);
         <div
           v-if='project'
           :class='isMobile
-            ? "d-flex flex-column gap-3 mt-2"
-            : "d-flex gap-4"'
+            ? "d-flex flex-column gap-3 mt-2 mb-3"
+            : "d-flex gap-4 mb-3"'
         >
           <div class='d-flex align-items-center gap-2'>
             <div class='bg-green-lt avatar shadow-none'>
@@ -523,6 +562,48 @@ onMounted(load);
 
               <div class='text-secondary small'>
                 Баланс
+              </div>
+            </div>
+          </div>
+          <div
+            v-if='project.budget != null'
+            class='d-flex align-items-center gap-2'
+          >
+            <div class='bg-purple-lt avatar shadow-none'>
+              <IconMoneybag size='24' />
+            </div>
+
+            <div class='position-relative'>
+              <Amount
+                class='fw-medium'
+                :value='project.budget'
+                :currency='project.budgetCurrency?.name'
+                copyable
+              />
+
+              <div class='text-secondary small'>
+                Бюджет
+              </div>
+
+              <div
+                v-tooltip.bottom='`Израсходовано ${budgetUsagePercent}%&nbsp;бюджета`'
+                class='d-flex align-items-center gap-1 position-absolute'
+                style='top: 100%; left: 0'
+              >
+                <div class='progress progress-sm' style='width: 76px'>
+                  <div
+                    class='progress-bar'
+                    :class='budgetUsagePercentBackground'
+                    :style='{ width: `${Math.min(budgetUsagePercent, 100)}%` }'
+                  />
+                </div>
+
+                <span
+                  class='small'
+                  :class='budgetUsagePercentColor'
+                >
+                  {{ budgetUsagePercent }}%
+                </span>
               </div>
             </div>
           </div>
