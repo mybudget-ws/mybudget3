@@ -233,8 +233,8 @@ watchEffect(() => {
                 <thead>
                   <tr>
                     <th>Название</th>
-                    <th class='text-end'>Бюджет</th>
-                    <th class='text-end'>Баланс</th>
+                    <th class='w-1 text-nowrap text-end'>Бюджет</th>
+                    <th class='w-1 text-nowrap text-end'>Баланс</th>
                     <th class='w-1'/>
                   </tr>
                 </thead>
