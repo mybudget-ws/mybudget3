@@ -6,6 +6,11 @@ import {
   IconArrowDown,
   IconCoins,
   IconMoneybag,
+  IconPlus,
+  IconEdit,
+  IconTrash,
+  IconCheck,
+  IconX,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -47,6 +52,18 @@ const currentKind = ref(KIND_EXPENSE);
 const editingTransaction = ref(null);
 
 const chartData = ref(null);
+
+const isAddingProjectItem = ref(false);
+const newProjectItemName = ref('');
+const editingProjectItemId = ref(null);
+const editingProjectItemName = ref('');
+const isProjectItemSaving = ref(false);
+
+const projectItems = computed(() => {
+  return [...(project.value?.projectItems || [])].sort(
+    (a, b) => (a.position || 0) - (b.position || 0)
+  );
+});
 
 const CHART_HEIGHT = 300;
 const CHART_TYPE = 'line';
@@ -208,6 +225,168 @@ const loadProject = async (projectId) => {
   project.value = result;
 };
 
+const startCreateProjectItem = () => {
+  editingProjectItemId.value = null;
+  editingProjectItemName.value = '';
+  newProjectItemName.value = '';
+  isAddingProjectItem.value = true;
+};
+
+const cancelCreateProjectItem = () => {
+  isAddingProjectItem.value = false;
+  newProjectItemName.value = '';
+};
+
+const createProjectItem = async () => {
+  const name = newProjectItemName.value.trim();
+
+  if (!name || isProjectItemSaving.value || !project.value) {
+    return;
+  }
+
+  isProjectItemSaving.value = true;
+
+  try {
+    const result = await api.createProjectItem(token.value, {
+      projectId: project.value.id,
+      name,
+    });
+
+    if (result?.errors?.length) {
+      alert(result.errors.join('\n'));
+      return;
+    }
+
+    if (!result?.projectItem) {
+      alert('Не удалось создать элемент проекта.');
+      return;
+    }
+
+    const items = project.value.projectItems || [];
+    const position = items.reduce(
+      (max, item) => Math.max(max, item.position || 0),
+      0
+    ) + 1;
+
+    project.value.projectItems = [
+      ...items,
+      {
+        ...result.projectItem,
+        position,
+        isDone: false,
+      },
+    ];
+
+    isAddingProjectItem.value = false;
+    newProjectItemName.value = '';
+  } catch (error) {
+    alert(error?.message || 'Не удалось создать элемент проекта.');
+  } finally {
+    isProjectItemSaving.value = false;
+  }
+};
+
+const startEditProjectItem = (item) => {
+  isAddingProjectItem.value = false;
+  editingProjectItemId.value = item.id;
+  editingProjectItemName.value = item.name;
+};
+
+const cancelEditProjectItem = () => {
+  editingProjectItemId.value = null;
+  editingProjectItemName.value = '';
+};
+
+const saveProjectItem = async (item) => {
+  const name = editingProjectItemName.value.trim();
+
+  if (!name || isProjectItemSaving.value) {
+    return;
+  }
+
+  isProjectItemSaving.value = true;
+
+  try {
+    const result = await api.updateProjectItem(token.value, {
+      id: item.id,
+      name,
+    });
+
+    if (result?.errors?.length) {
+      alert(result.errors.join('\n'));
+      return;
+    }
+
+    Object.assign(item, result.projectItem);
+
+    editingProjectItemId.value = null;
+    editingProjectItemName.value = '';
+  } catch {
+    alert('Не удалось сохранить элемент проекта.');
+    } finally {
+      isProjectItemSaving.value = false;
+    }
+};
+
+const toggleProjectItem = async (item) => {
+  if (isProjectItemSaving.value) {
+    return;
+  }
+
+  const isDone = !item.isDone;
+
+  item.isDone = isDone;
+  isProjectItemSaving.value = true;
+
+  try {
+    const result = await api.updateProjectItem(token.value, {
+      id: item.id,
+      isDone,
+    });
+
+    if (result?.errors?.length) {
+      item.isDone = !isDone;
+      alert(result.errors.join('\n'));
+      return;
+    }
+
+    Object.assign(item, result.projectItem);
+  } catch {
+    item.isDone = !isDone;
+    alert('Не удалось обновить элемент проекта.');
+  } finally {
+      isProjectItemSaving.value = false;
+    }
+};
+
+const deleteProjectItem = async (item) => {
+  if (!confirm('Удалить элемент проекта?')) {
+    return;
+  }
+
+  if (isProjectItemSaving.value) {
+    return;
+  }
+
+  isProjectItemSaving.value = true;
+
+  try {
+    const result = await api.destroyProjectItem(token.value, item.id);
+
+    if (result?.errors?.length || result?.success === false) {
+      alert(result?.errors?.join('\n') || 'Не удалось удалить элемент проекта.');
+      return;
+    }
+
+    project.value.projectItems = project.value.projectItems.filter(
+      projectItem => projectItem.id !== item.id
+    );
+  } catch {
+    alert('Не удалось удалить элемент проекта.');
+  } finally {
+    isProjectItemSaving.value = false;
+  }
+};
 const loadTransactions = async (projectId, page = 1, append = false) => {
   try {
     const result = await api.transactions(token.value, {
@@ -450,7 +629,6 @@ onMounted(load);
         </div>
       </div>
     </div>
-
     <div class='card placeholder-glow'>
       <div class='card-header'>
         <div
@@ -629,6 +807,146 @@ onMounted(load);
         </div>
       </div>
     </div>
+
+    <div class='card mb-4'>
+  <div class='card-header'>
+    <div class='row w-full align-items-center'>
+      <div class='col'>
+        <h2 class='mb-0'>
+          Состав проекта
+        </h2>
+      </div>
+
+      <div class='col-auto'>
+        <button
+          class='btn btn-primary btn-sm'
+          type='button'
+          :disabled='isProjectItemSaving'
+          @click='startCreateProjectItem'
+        >
+          <IconPlus size='18' />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if='projectItems.length'>
+    <div
+      v-for='item in projectItems'
+      :key='item.id'
+      class='d-flex align-items-center gap-3 px-3 py-2 border-bottom'
+    >
+      <input
+        class='form-check-input m-0'
+        type='checkbox'
+        :checked='item.isDone'
+        :disabled='isProjectItemSaving'
+        @change='toggleProjectItem(item)'
+      >
+
+      <div class='flex-fill'>
+        <div v-if='editingProjectItemId === item.id' class='d-flex gap-2'>
+          <input
+            v-model='editingProjectItemName'
+            class='form-control form-control-sm'
+            type='text'
+            autofocus
+            @keyup.enter='saveProjectItem(item)'
+            @keyup.esc='cancelEditProjectItem'
+          >
+
+          <button
+            class='btn btn-action btn-sm'
+            type='button'
+            :disabled='isProjectItemSaving'
+            @click='saveProjectItem(item)'
+          >
+            <IconCheck size='18' />
+          </button>
+
+          <button
+            class='btn btn-action btn-sm'
+            type='button'
+            :disabled='isProjectItemSaving'
+            @click='cancelEditProjectItem'
+          >
+            <IconX size='18' />
+          </button>
+        </div>
+
+        <span
+          v-else
+          :class='item.isDone ? "text-secondary text-decoration-line-through" : ""'
+        >
+          {{ item.name }}
+        </span>
+      </div>
+
+      <div
+        v-if='editingProjectItemId !== item.id'
+        class='d-flex gap-1'
+      >
+        <button
+          class='btn btn-action btn-sm'
+          type='button'
+          :disabled='isProjectItemSaving'
+          @click='startEditProjectItem(item)'
+        >
+          <IconEdit size='18' />
+        </button>
+
+        <button
+          class='btn btn-action btn-sm text-danger'
+          type='button'
+          :disabled='isProjectItemSaving'
+          @click='deleteProjectItem(item)'
+        >
+          <IconTrash size='18' />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-else-if='!isAddingProjectItem'
+    class='card-body text-secondary'
+  >
+    Состав проекта пока пуст
+  </div>
+
+  <form
+    v-if='isAddingProjectItem'
+    class='card-footer bg-transparent'
+    @submit.prevent='createProjectItem'
+  >
+    <div class='d-flex gap-2'>
+      <input
+        v-model='newProjectItemName'
+        class='form-control'
+        type='text'
+        placeholder='Название элемента'
+        autofocus
+      >
+
+      <button
+        class='btn btn-primary'
+        type='submit'
+        :disabled='!newProjectItemName.trim() || isProjectItemSaving'
+      >
+        <IconCheck size='18' />
+      </button>
+
+      <button
+        class='btn btn-action'
+        type='button'
+        :disabled='isProjectItemSaving'
+        @click='cancelCreateProjectItem'
+      >
+        <IconX size='18' />
+      </button>
+    </div>
+  </form>
+</div>
 
     <div class='card'>
       <div class='card-table'>
