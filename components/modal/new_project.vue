@@ -114,7 +114,7 @@ watch(
               <Input
                 v-model='projectBudget'
                 type='text'
-                placeholder='опционально'
+                placeholder='Опционально'
                 :disabled='isSubmitting'
               />
             </div>
