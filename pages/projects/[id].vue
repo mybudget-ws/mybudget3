@@ -63,25 +63,42 @@ const balance = computed(() => {
   return project.value.totalIncome + project.value.totalExpense;
 });
 
-const isBudgetReached = computed(() => {
-  if (!project.value?.budget) {
-    return false;
-  }
+const budgetUsagePercentColor = computed(() => {
+  if (!project.value.budgetUsagePercent) return '';
 
-  return Math.abs(project.value.totalExpense || 0) >= project.value.budget;
+  const percent = Math.abs(project.value.budgetUsagePercent);
+  if (percent < 80) {
+    return 'text-purple';
+
+  } else if (percent < 100) {
+    return 'text-yellow';
+    
+  } else {
+    return 'text-red';
+  }
 });
 
-const budgetRemainingPercent = computed(() => {
-  if (!project.value?.budget) {
-    return 100;
+const budgetUsagePercentBackground = computed(() => {
+  if (!project.value.budgetUsagePercent) return '';
+
+  const percent = Math.abs(project.value.budgetUsagePercent);
+  if (percent < 80) {
+    return 'bg-purple';
+
+  } else if (percent < 100) {
+    return 'bg-yellow';
+    
+  } else {
+    return 'bg-red';
+  }
+});
+
+const budgetUsagePercent = computed(() => {
+  if (!project.value?.budgetUsagePercent) {
+    return 0;
   }
 
-  const expense = Math.abs(project.value.totalExpense || 0);
-
-  return Math.max(
-    0,
-    100 - (expense / project.value.budget) * 100
-  );
+  return Math.abs(project.value.budgetUsagePercent);
 });
 
 const categories = computed(() => {
@@ -539,7 +556,6 @@ onMounted(load);
             <div>
               <Amount
                 class='fw-medium'
-                :class='isBudgetReached ? "text-success" : "fw-medium"'
                 :value='balance'
                 copyable
               />
@@ -560,7 +576,6 @@ onMounted(load);
             <div class='position-relative'>
               <Amount
                 class='fw-medium'
-                :class='isBudgetReached ? "text-red" : ""'
                 :value='project.budget'
                 :currency='project.budgetCurrency?.name'
                 copyable
@@ -577,16 +592,16 @@ onMounted(load);
                 <div class='progress progress-sm' style='width: 76px'>
                   <div
                     class='progress-bar'
-                    :class='isBudgetReached ? "bg-red" : "bg-purple"'
-                    :style='{ width: `${budgetRemainingPercent}%` }'
+                    :class='budgetUsagePercentBackground'
+                    :style='{ width: `${Math.min(budgetUsagePercent, 100)}%` }'
                   />
                 </div>
 
                 <span
                   class='small'
-                  :class='isBudgetReached ? "text-red" : "fw-medium"'
+                  :class='budgetUsagePercentColor'
                 >
-                  {{ Math.round(budgetRemainingPercent) }}%
+                  {{ budgetUsagePercent }}%
                 </span>
               </div>
             </div>
