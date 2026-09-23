@@ -7,7 +7,7 @@ import {
   IconCoins,
   IconMoneybag,
   IconPlus,
-  IconEdit,
+  IconPencil,
   IconTrash,
   IconCheck,
   IconX,
@@ -809,144 +809,205 @@ onMounted(load);
     </div>
 
     <div class='card mb-4'>
-  <div class='card-header'>
-    <div class='row w-full align-items-center'>
-      <div class='col'>
-        <h2 class='mb-0'>
-          Состав проекта
-        </h2>
-      </div>
+      <div class='card-header pe-0'>
+        <div class='row w-full align-items-center'>
+          <div class='col'>
+            <h2 class='mb-0'>
+              Состав проекта
+            </h2>
+          </div>
 
-      <div class='col-auto'>
-        <button
-          class='btn btn-primary btn-sm'
-          type='button'
-          :disabled='isProjectItemSaving'
-          @click='startCreateProjectItem'
-        >
-          <IconPlus size='18' />
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div v-if='projectItems.length'>
-    <div
-      v-for='item in projectItems'
-      :key='item.id'
-      class='d-flex align-items-center gap-3 px-3 py-2 border-bottom'
-    >
-      <input
-        class='form-check-input m-0'
-        type='checkbox'
-        :checked='item.isDone'
-        :disabled='isProjectItemSaving'
-        @change='toggleProjectItem(item)'
-      >
-
-      <div class='flex-fill'>
-        <div v-if='editingProjectItemId === item.id' class='d-flex gap-2'>
-          <input
-            v-model='editingProjectItemName'
-            class='form-control form-control-sm'
-            type='text'
-            autofocus
-            @keyup.enter='saveProjectItem(item)'
-            @keyup.esc='cancelEditProjectItem'
-          >
-
-          <button
-            class='btn btn-action btn-sm'
-            type='button'
-            :disabled='isProjectItemSaving'
-            @click='saveProjectItem(item)'
-          >
-            <IconCheck size='18' />
-          </button>
-
-          <button
-            class='btn btn-action btn-sm'
-            type='button'
-            :disabled='isProjectItemSaving'
-            @click='cancelEditProjectItem'
-          >
-            <IconX size='18' />
-          </button>
+          <div class='col-auto'>
+            <button
+              class='btn btn-primary'
+              type='button'
+              :disabled='isProjectItemSaving'
+              @click='startCreateProjectItem'
+            >
+              <IconPlus size='20' />
+            </button>
+          </div>
         </div>
+      </div>
 
-        <span
-          v-else
-          :class='item.isDone ? "text-secondary text-decoration-line-through" : ""'
-        >
-          {{ item.name }}
-        </span>
+      <div v-if='projectItems.length' class='table-responsive'>
+        <table class='table table-vcenter'>
+          <tbody class='table-tbody'>
+            <tr
+              v-for='item in projectItems'
+              :key='item.id'
+              class='table-body'
+            >
+              <td class='w-1'>
+                <input
+                  class='form-check-input m-0'
+                  type='checkbox'
+                  :checked='item.isDone'
+                  :disabled='isProjectItemSaving'
+                  @change='toggleProjectItem(item)'
+                >
+              </td>
+
+              <td
+                v-if='editingProjectItemId === item.id'
+                class='w-100'
+              >
+                <div
+                  class='d-flex align-items-center gap-2'
+                  :class='isMobile ? "flex-column align-items-stretch" : ""'
+                >
+                  <div class='input-group input-group-flat'>
+                    <Input
+                      v-model='editingProjectItemName'
+                      type='text'
+                      autofocus
+                      @keyup.enter='saveProjectItem(item)'
+                      @keyup.esc='cancelEditProjectItem'
+                    />
+                  </div>
+
+                  <div
+                    class='btn-actions flex-shrink-0'
+                    :class='isMobile ? "justify-content-end" : ""'
+                  >
+                    <button
+                      class='btn btn-action'
+                      type='button'
+                      :disabled='isProjectItemSaving'
+                      @click='saveProjectItem(item)'
+                    >
+                      <IconCheck
+                        size='20'
+                        stroke-width='1.5'
+                      />
+                    </button>
+
+                    <button
+                      class='btn btn-action'
+                      type='button'
+                      :disabled='isProjectItemSaving'
+                      @click='cancelEditProjectItem'
+                    >
+                      <IconX
+                        size='20'
+                        stroke-width='1.5'
+                      />
+                    </button>
+                  </div>
+                </div>
+              </td>
+
+              <td
+                v-else
+                class='w-100'
+              >
+                <span
+                  class='d-block text-truncate'
+                  :class='item.isDone
+                    ? "text-secondary text-decoration-line-through"
+                    : ""'
+                >
+                  {{ item.name }}
+                </span>
+              </td>
+
+              <td class='w-1'>
+                <div
+                  v-if='editingProjectItemId !== item.id'
+                  class='btn-actions'
+                >
+                  <button
+                    class='btn btn-action'
+                    type='button'
+                    :disabled='isProjectItemSaving'
+                    @click='startEditProjectItem(item)'
+                  >
+                    <IconPencil
+                      size='20'
+                      stroke-width='1.5'
+                    />
+                  </button>
+
+                  <button
+                    class='btn btn-action'
+                    type='button'
+                    :disabled='isProjectItemSaving'
+                    @click='deleteProjectItem(item)'
+                  >
+                    <IconTrash
+                      size='20'
+                      stroke-width='1.5'
+                    />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div
-        v-if='editingProjectItemId !== item.id'
-        class='d-flex gap-1'
+        v-else-if='!isAddingProjectItem'
+        class='card-body text-secondary'
       >
-        <button
-          class='btn btn-action btn-sm'
-          type='button'
-          :disabled='isProjectItemSaving'
-          @click='startEditProjectItem(item)'
-        >
-          <IconEdit size='18' />
-        </button>
-
-        <button
-          class='btn btn-action btn-sm text-danger'
-          type='button'
-          :disabled='isProjectItemSaving'
-          @click='deleteProjectItem(item)'
-        >
-          <IconTrash size='18' />
-        </button>
+        Состав проекта пока пуст
       </div>
+
+      <form
+        v-if='isAddingProjectItem'
+        class='card-footer bg-transparent border-0'
+        @submit.prevent='createProjectItem'
+      >
+        <div
+          :class='isMobile
+            ? "d-flex flex-column gap-2"
+            : "d-flex align-items-center gap-2"'
+        >
+          <div
+            class='input-group input-group-flat'
+            :class='isMobile ? "w-50" : "flex-fill"'
+          >
+            <Input
+              v-model='newProjectItemName'
+              type='text'
+              placeholder='Название элемента'
+              autofocus
+              :disabled='isProjectItemSaving'
+            />
+          </div>
+
+          <div
+            class='card-actions flex-shrink-0'
+            :class='isMobile ? "w-100" : ""'
+          >
+            <button
+              class='btn btn-primary'
+              :class='isMobile ? "flex-fill" : ""'
+              type='submit'
+              :disabled='!newProjectItemName.trim() || isProjectItemSaving'
+            >
+              <IconCheck
+                size='20'
+                stroke-width='1.5'
+              />
+            </button>
+
+            <button
+              class='btn btn-action'
+              :class='isMobile ? "flex-fill" : ""'
+              type='button'
+              :disabled='isProjectItemSaving'
+              @click='cancelCreateProjectItem'
+            >
+              <IconX
+                size='20'
+                stroke-width='1.5'
+              />
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
-  </div>
-
-  <div
-    v-else-if='!isAddingProjectItem'
-    class='card-body text-secondary'
-  >
-    Состав проекта пока пуст
-  </div>
-
-  <form
-    v-if='isAddingProjectItem'
-    class='card-footer bg-transparent'
-    @submit.prevent='createProjectItem'
-  >
-    <div class='d-flex gap-2'>
-      <input
-        v-model='newProjectItemName'
-        class='form-control'
-        type='text'
-        placeholder='Название элемента'
-        autofocus
-      >
-
-      <button
-        class='btn btn-primary'
-        type='submit'
-        :disabled='!newProjectItemName.trim() || isProjectItemSaving'
-      >
-        <IconCheck size='18' />
-      </button>
-
-      <button
-        class='btn btn-action'
-        type='button'
-        :disabled='isProjectItemSaving'
-        @click='cancelCreateProjectItem'
-      >
-        <IconX size='18' />
-      </button>
-    </div>
-  </form>
-</div>
 
     <div class='card'>
       <div class='card-table'>
