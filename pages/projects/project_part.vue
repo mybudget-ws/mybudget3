@@ -17,17 +17,15 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isMobile: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const isAddingProjectItem = ref(false);
 const newProjectItemName = ref('');
 const editingProjectItemId = ref(null);
 const editingProjectItemName = ref('');
-const isProjectItemSaving = ref(false);
+
+const isCreatingProjectItem = ref(false);
+const savingProjectItemId = ref(null);
 
 const projectItems = ref([]);
 
@@ -44,6 +42,10 @@ watch(
 );
 
 const startCreateProjectItem = () => {
+  if (isCreatingProjectItem.value || savingProjectItemId.value) {
+    return;
+  }
+
   editingProjectItemId.value = null;
   editingProjectItemName.value = '';
   newProjectItemName.value = '';
@@ -51,6 +53,10 @@ const startCreateProjectItem = () => {
 };
 
 const cancelCreateProjectItem = () => {
+  if (isCreatingProjectItem.value) {
+    return;
+  }
+
   isAddingProjectItem.value = false;
   newProjectItemName.value = '';
 };
@@ -58,11 +64,11 @@ const cancelCreateProjectItem = () => {
 const createProjectItem = async () => {
   const name = newProjectItemName.value.trim();
 
-  if (!name || isProjectItemSaving.value || !props.project) {
+  if (!name || isCreatingProjectItem.value) {
     return;
   }
 
-  isProjectItemSaving.value = true;
+  isCreatingProjectItem.value = true;
 
   try {
     const result = await api.createProjectItem(token.value, {
@@ -80,36 +86,37 @@ const createProjectItem = async () => {
       return;
     }
 
-    const position = projectItems.value.reduce(
-      (max, item) => Math.max(max, item.position || 0),
-      0
-    ) + 1;
-
     projectItems.value = [
       ...projectItems.value,
-      {
-        ...result.projectItem,
-        position,
-        isDone: false,
-      },
-    ];
+      result.projectItem,
+    ].sort(
+      (a, b) => (a.position || 0) - (b.position || 0)
+    );
 
     isAddingProjectItem.value = false;
     newProjectItemName.value = '';
   } catch (error) {
     alert(error?.message || 'Не удалось создать элемент проекта.');
   } finally {
-    isProjectItemSaving.value = false;
+    isCreatingProjectItem.value = false;
   }
 };
 
 const startEditProjectItem = (item) => {
+  if (isCreatingProjectItem.value || savingProjectItemId.value) {
+    return;
+  }
+
   isAddingProjectItem.value = false;
   editingProjectItemId.value = item.id;
   editingProjectItemName.value = item.name;
 };
 
 const cancelEditProjectItem = () => {
+  if (savingProjectItemId.value) {
+    return;
+  }
+
   editingProjectItemId.value = null;
   editingProjectItemName.value = '';
 };
@@ -117,11 +124,15 @@ const cancelEditProjectItem = () => {
 const saveProjectItem = async (item) => {
   const name = editingProjectItemName.value.trim();
 
-  if (!name || isProjectItemSaving.value) {
+  if (
+    !name ||
+    isCreatingProjectItem.value ||
+    savingProjectItemId.value
+  ) {
     return;
   }
 
-  isProjectItemSaving.value = true;
+  savingProjectItemId.value = item.id;
 
   try {
     const result = await api.updateProjectItem(token.value, {
@@ -141,19 +152,22 @@ const saveProjectItem = async (item) => {
   } catch {
     alert('Не удалось сохранить элемент проекта.');
   } finally {
-    isProjectItemSaving.value = false;
+    savingProjectItemId.value = null;
   }
 };
 
 const toggleProjectItem = async (item) => {
-  if (isProjectItemSaving.value) {
+  if (
+    isCreatingProjectItem.value ||
+    savingProjectItemId.value
+  ) {
     return;
   }
 
   const isDone = !item.isDone;
 
   item.isDone = isDone;
-  isProjectItemSaving.value = true;
+  savingProjectItemId.value = item.id;
 
   try {
     const result = await api.updateProjectItem(token.value, {
@@ -172,20 +186,23 @@ const toggleProjectItem = async (item) => {
     item.isDone = !isDone;
     alert('Не удалось обновить элемент проекта.');
   } finally {
-    isProjectItemSaving.value = false;
+    savingProjectItemId.value = null;
   }
 };
 
 const deleteProjectItem = async (item) => {
+  if (
+    isCreatingProjectItem.value ||
+    savingProjectItemId.value
+  ) {
+    return;
+  }
+
   if (!confirm('Удалить элемент проекта?')) {
     return;
   }
 
-  if (isProjectItemSaving.value) {
-    return;
-  }
-
-  isProjectItemSaving.value = true;
+  savingProjectItemId.value = item.id;
 
   try {
     const result = await api.destroyProjectItem(token.value, item.id);
@@ -201,10 +218,15 @@ const deleteProjectItem = async (item) => {
     projectItems.value = projectItems.value.filter(
       projectItem => projectItem.id !== item.id
     );
+
+    if (editingProjectItemId.value === item.id) {
+      editingProjectItemId.value = null;
+      editingProjectItemName.value = '';
+    }
   } catch {
     alert('Не удалось удалить элемент проекта.');
   } finally {
-    isProjectItemSaving.value = false;
+    savingProjectItemId.value = null;
   }
 };
 </script>
@@ -223,7 +245,7 @@ const deleteProjectItem = async (item) => {
           <button
             class='btn btn-primary'
             type='button'
-            :disabled='isProjectItemSaving'
+            :disabled='isCreatingProjectItem || savingProjectItemId'
             @click='startCreateProjectItem'
           >
             <IconPlus size='20' />
@@ -240,44 +262,76 @@ const deleteProjectItem = async (item) => {
             :key='item.id'
             class='table-body'
           >
-            <td class='w-1'>
+            <td>
               <input
                 class='form-check-input m-0'
                 type='checkbox'
                 :checked='item.isDone'
-                :disabled='isProjectItemSaving'
+                :disabled='isCreatingProjectItem || savingProjectItemId'
                 @change='toggleProjectItem(item)'
               >
             </td>
 
-            <td
-              v-if='editingProjectItemId === item.id'
-              class='w-100'
-            >
-              <div
-                class='d-flex align-items-center gap-2'
-                :class='isMobile ? "flex-column align-items-stretch" : ""'
-              >
-                <div class='input-group input-group-flat'>
-                  <Input
-                    v-model='editingProjectItemName'
-                    type='text'
-                    @keyup.enter='saveProjectItem(item)'
-                    @keyup.esc='cancelEditProjectItem'
-                  />
-                </div>
+            <template v-if='editingProjectItemId === item.id'>
+              <td class='w-100' colspan='2'>
+                <div class='d-flex align-items-center'>
+                  <div class='input-group input-group-flat w-50'>
+                    <Input
+                      v-model='editingProjectItemName'
+                      type='text'
+                    />
+                  </div>
 
-                <div
-                  class='btn-actions flex-shrink-0'
-                  :class='isMobile ? "justify-content-end" : ""'
+                  <div class='btn-actions d-flex flex-shrink-0 gap-2 ms-auto'>
+                    <button
+                      class='btn btn-action'
+                      type='button'
+                      :disabled='savingProjectItemId === item.id'
+                      @click='saveProjectItem(item)'
+                    >
+                      <IconCheck
+                        size='20'
+                        stroke-width='1.5'
+                      />
+                    </button>
+
+                    <button
+                      class='btn btn-action'
+                      type='button'
+                      :disabled='savingProjectItemId === item.id'
+                      @click='cancelEditProjectItem'
+                    >
+                      <IconX
+                        size='20'
+                        stroke-width='1.5'
+                      />
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </template>
+
+            <template v-else>
+              <td class='w-100'>
+                <span
+                  class='d-block text-truncate'
+                  :class='item.isDone
+                    ? "text-secondary text-decoration-line-through"
+                    : ""'
                 >
+                  {{ item.name }}
+                </span>
+              </td>
+
+              <td>
+                <div class='btn-actions'>
                   <button
                     class='btn btn-action'
                     type='button'
-                    :disabled='isProjectItemSaving'
-                    @click='saveProjectItem(item)'
+                    :disabled='isCreatingProjectItem || savingProjectItemId'
+                    @click='startEditProjectItem(item)'
                   >
-                    <IconCheck
+                    <IconPencil
                       size='20'
                       stroke-width='1.5'
                     />
@@ -286,62 +340,17 @@ const deleteProjectItem = async (item) => {
                   <button
                     class='btn btn-action'
                     type='button'
-                    :disabled='isProjectItemSaving'
-                    @click='cancelEditProjectItem'
+                    :disabled='isCreatingProjectItem || savingProjectItemId'
+                    @click='deleteProjectItem(item)'
                   >
-                    <IconX
+                    <IconTrash
                       size='20'
                       stroke-width='1.5'
                     />
                   </button>
                 </div>
-              </div>
-            </td>
-
-            <td
-              v-else
-              class='w-100'
-            >
-              <span
-                class='d-block text-truncate'
-                :class='item.isDone
-                  ? "text-secondary text-decoration-line-through"
-                  : ""'
-              >
-                {{ item.name }}
-              </span>
-            </td>
-
-            <td class='w-1'>
-              <div
-                v-if='editingProjectItemId !== item.id'
-                class='btn-actions'
-              >
-                <button
-                  class='btn btn-action'
-                  type='button'
-                  :disabled='isProjectItemSaving'
-                  @click='startEditProjectItem(item)'
-                >
-                  <IconPencil
-                    size='20'
-                    stroke-width='1.5'
-                  />
-                </button>
-
-                <button
-                  class='btn btn-action'
-                  type='button'
-                  :disabled='isProjectItemSaving'
-                  @click='deleteProjectItem(item)'
-                >
-                  <IconTrash
-                    size='20'
-                    stroke-width='1.5'
-                  />
-                </button>
-              </div>
-            </td>
+              </td>
+            </template>
           </tr>
         </tbody>
       </table>
@@ -359,32 +368,21 @@ const deleteProjectItem = async (item) => {
       class='card-footer bg-transparent border-0'
       @submit.prevent='createProjectItem'
     >
-      <div
-        :class='isMobile
-          ? "d-flex flex-column gap-2"
-          : "d-flex align-items-center gap-2"'
-      >
-        <div
-          class='input-group input-group-flat'
-          :class='isMobile ? "w-50" : "flex-fill"'
-        >
+      <div class='d-flex align-items-center'>
+        <div class='input-group input-group-flat w-50'>
           <Input
             v-model='newProjectItemName'
             type='text'
             placeholder='Название элемента'
-            :disabled='isProjectItemSaving'
+            :disabled='isCreatingProjectItem'
           />
         </div>
 
-        <div
-          class='card-actions flex-shrink-0'
-          :class='isMobile ? "w-100" : ""'
-        >
+        <div class='card-actions d-flex flex-shrink-0 gap-1 ms-auto'>
           <button
             class='btn btn-primary'
-            :class='isMobile ? "flex-fill" : ""'
             type='submit'
-            :disabled='!newProjectItemName.trim() || isProjectItemSaving'
+            :disabled='!newProjectItemName.trim() || isCreatingProjectItem'
           >
             <IconCheck
               size='20'
@@ -394,9 +392,8 @@ const deleteProjectItem = async (item) => {
 
           <button
             class='btn btn-action'
-            :class='isMobile ? "flex-fill" : ""'
             type='button'
-            :disabled='isProjectItemSaving'
+            :disabled='isCreatingProjectItem'
             @click='cancelCreateProjectItem'
           >
             <IconX
