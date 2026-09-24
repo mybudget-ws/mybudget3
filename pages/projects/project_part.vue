@@ -245,7 +245,7 @@ const deleteProjectItem = async (item) => {
           <button
             class='btn btn-primary'
             type='button'
-            :disabled='isCreatingProjectItem || savingProjectItemId'
+            :disabled='isCreatingProjectItem'
             @click='startCreateProjectItem'
           >
             <IconPlus size='20' />
@@ -267,7 +267,7 @@ const deleteProjectItem = async (item) => {
                 class='form-check-input m-0'
                 type='checkbox'
                 :checked='item.isDone'
-                :disabled='isCreatingProjectItem || savingProjectItemId'
+                :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
                 @change='toggleProjectItem(item)'
               >
             </td>
@@ -328,25 +328,19 @@ const deleteProjectItem = async (item) => {
                   <button
                     class='btn btn-action'
                     type='button'
-                    :disabled='isCreatingProjectItem || savingProjectItemId'
+                    :disabled='isCreatingProjectItem'
                     @click='startEditProjectItem(item)'
                   >
-                    <IconPencil
-                      size='20'
-                      stroke-width='1.5'
-                    />
+                    <IconPencil size='20' stroke-width='1.5' />
                   </button>
 
                   <button
                     class='btn btn-action'
                     type='button'
-                    :disabled='isCreatingProjectItem || savingProjectItemId'
+                    :disabled='isCreatingProjectItem'
                     @click='deleteProjectItem(item)'
                   >
-                    <IconTrash
-                      size='20'
-                      stroke-width='1.5'
-                    />
+                    <IconTrash size='20' stroke-width='1.5' />
                   </button>
                 </div>
               </td>
