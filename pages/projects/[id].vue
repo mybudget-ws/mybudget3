@@ -1,6 +1,7 @@
 
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
+import ProjectPart from '~/pages/projects/project_part.vue';
 import {
   IconArrowUp,
   IconArrowDown,
@@ -450,7 +451,6 @@ onMounted(load);
         </div>
       </div>
     </div>
-
     <div class='card placeholder-glow'>
       <div class='card-header'>
         <div
@@ -629,6 +629,12 @@ onMounted(load);
         </div>
       </div>
     </div>
+
+    <ProjectPart
+      v-if='project'
+      :project='project'
+      :is-mobile='isMobile'
+    />
 
     <div class='card'>
       <div class='card-table'>
