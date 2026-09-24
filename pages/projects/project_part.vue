@@ -262,7 +262,7 @@ const deleteProjectItem = async (item) => {
             :key='item.id'
             class='table-body'
           >
-            <td>
+            <td style='padding-left: 20px;'>
               <input
                 class='form-check-input m-0'
                 type='checkbox'
@@ -282,7 +282,9 @@ const deleteProjectItem = async (item) => {
                     />
                   </div>
 
-                  <div class='btn-actions d-flex flex-shrink-0 gap-2 ms-auto'>
+                  <div
+                    class='btn-actions d-flex flex-shrink-0 ms-auto'
+                    style='padding-right: 8px;'>
                     <button
                       class='btn btn-action'
                       type='button'
@@ -323,7 +325,7 @@ const deleteProjectItem = async (item) => {
                 </span>
               </td>
 
-              <td>
+              <td style='padding-right: 20px;'>
                 <div class='btn-actions'>
                   <button
                     class='btn btn-action'
