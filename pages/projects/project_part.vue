@@ -5,12 +5,15 @@ import {
   IconTrash,
   IconCheck,
   IconX,
+  IconDotsVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
 import { useAuth } from '~/composables/use_auth';
+import { useDevice } from '~/composables/use_device';
 
 const { token } = useAuth();
+const { isMobile } = useDevice();
 
 const props = defineProps({
   project: {
@@ -254,7 +257,117 @@ const deleteProjectItem = async (item) => {
       </div>
     </div>
 
-    <div v-if='projectItems.length' class='table-responsive'>
+    <!-- Mobile -->
+    <div
+  v-if='projectItems.length && isMobile'
+>
+  <div
+    v-for='item in projectItems'
+    :key='item.id'
+    class='card-header border-bottom-0'
+  >
+    <input
+      class='form-check-input m-0 me-3 flex-shrink-0'
+      type='checkbox'
+      :checked='item.isDone'
+      :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
+      @change='toggleProjectItem(item)'
+    >
+
+    <template v-if='editingProjectItemId === item.id'>
+      <div class='d-flex align-items-center flex-grow-1 min-w-0'>
+        <div class='input-group input-group-flat flex-grow-1'>
+          <Input
+            v-model='editingProjectItemName'
+            type='text'
+          />
+        </div>
+
+        <div class='btn-actions d-flex flex-shrink-0 ms-2'>
+          <button
+            class='btn btn-action'
+            type='button'
+            :disabled='savingProjectItemId === item.id'
+            @click='saveProjectItem(item)'
+          >
+            <IconCheck
+              size='20'
+              stroke-width='1.5'
+            />
+          </button>
+
+          <button
+            class='btn btn-action'
+            type='button'
+            :disabled='savingProjectItemId === item.id'
+            @click='cancelEditProjectItem'
+          >
+            <IconX
+              size='20'
+              stroke-width='1.5'
+            />
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <template v-else>
+      <div
+        class='flex-grow-1 min-w-0'
+        style='overflow-wrap: anywhere;'
+      >
+        <span
+          :class='item.isDone
+            ? "text-secondary text-decoration-line-through"
+            : ""'
+        >
+          {{ item.name }}
+        </span>
+      </div>
+
+      <div class='card-actions'>
+        <div class='dropdown'>
+          <button
+            type='button'
+            class='btn-action border-0 bg-transparent'
+            data-bs-toggle='dropdown'
+            data-bs-display='static'
+            aria-expanded='false'
+          >
+            <IconDotsVertical
+              size='20'
+              stroke-width='1'
+            />
+          </button>
+
+          <div class='dropdown-menu dropdown-menu-end'>
+            <button
+              class='dropdown-item'
+              type='button'
+              @click='startEditProjectItem(item)'
+            >
+              Редактировать
+            </button>
+
+            <button
+              class='dropdown-item text-danger'
+              type='button'
+              @click='deleteProjectItem(item)'
+            >
+              Удалить
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>
+
+    <!-- Desktop -->
+    <div
+      v-else-if='projectItems.length'
+      class='table-responsive'
+    >
       <table class='table table-vcenter'>
         <tbody class='table-tbody'>
           <tr
@@ -284,7 +397,8 @@ const deleteProjectItem = async (item) => {
 
                   <div
                     class='btn-actions d-flex flex-shrink-0 ms-auto'
-                    style='padding-right: 8px;'>
+                    style='padding-right: 8px;'
+                  >
                     <button
                       class='btn btn-action'
                       type='button'
@@ -333,7 +447,10 @@ const deleteProjectItem = async (item) => {
                     :disabled='isCreatingProjectItem'
                     @click='startEditProjectItem(item)'
                   >
-                    <IconPencil size='20' stroke-width='1.5' />
+                    <IconPencil
+                      size='20'
+                      stroke-width='1.5'
+                    />
                   </button>
 
                   <button
@@ -342,7 +459,10 @@ const deleteProjectItem = async (item) => {
                     :disabled='isCreatingProjectItem'
                     @click='deleteProjectItem(item)'
                   >
-                    <IconTrash size='20' stroke-width='1.5' />
+                    <IconTrash
+                      size='20'
+                      stroke-width='1.5'
+                    />
                   </button>
                 </div>
               </td>
