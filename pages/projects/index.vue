@@ -39,7 +39,7 @@ const load = async (isQuite = false) => {
   }
 
   try {
-    const result = await api.projects(token.value, { allData: true });
+    const result = await api.projectsWithBalances(token.value, { allData: true });
     if (result) {
       items.value = result;
     } else {
