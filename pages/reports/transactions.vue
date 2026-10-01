@@ -8,6 +8,7 @@ import { useDevice } from '~/composables/use_device';
 
 const route = useRoute();
 const { token } = useAuth();
+const REPORTS_CHART_STORAGE_KEY = 'reports-chart';
 const {
   CHART_HEIGHT,
   CHART_LABEL_COLOR,
@@ -65,6 +66,15 @@ const onPropertiesChange = (properties) => {
 const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
+
+onMounted(() => {
+  if (!import.meta.client) return;
+
+  localStorage.setItem(
+    REPORTS_CHART_STORAGE_KEY,
+    'transactions'
+  );
+});
 
 const load = async () => {
   isLoading.value = true;
@@ -234,7 +244,7 @@ const chartOptions = computed(() => ({
       <div class='card mt-3'>
         <div class='card-header'>
           <NuxtLink
-            :to='{ path: "/reports", query: { ...route.query, period } }'
+            :to='{ path: "/reports", query: { ...route.query, period, chart: "balance" } }'
             class='card-title text-secondary'
           >
             Баланс
