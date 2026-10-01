@@ -9,7 +9,9 @@ import { useDevice } from '~/composables/use_device';
 const { isMobile } = useDevice();
 const isShowMobileFilters = ref(false);
 const route = useRoute();
+const router = useRouter();
 const { token } = useAuth();
+const REPORTS_CHART_STORAGE_KEY = 'reports-chart';
 const {
   CHART_LABEL_COLOR,
   CHART_HEIGHT,
@@ -84,6 +86,35 @@ const load = async () => {
     isLoading.value = false;
   }
 };
+
+onMounted(() => {
+  if (!import.meta.client) return;
+
+  const savedChart = localStorage.getItem(
+    REPORTS_CHART_STORAGE_KEY
+  );
+
+  if (route.query.chart === 'balance') {
+    localStorage.setItem(
+      REPORTS_CHART_STORAGE_KEY,
+      'balance'
+    );
+
+    return;
+  }
+
+  if (savedChart === 'transactions') {
+    router.replace({
+      path: '/reports/transactions',
+      query: route.query,
+    });
+  } else {
+    localStorage.setItem(
+      REPORTS_CHART_STORAGE_KEY,
+      'balance'
+    );
+  }
+});
 
 watch(
   () => route.query,
@@ -229,7 +260,7 @@ const chartOptions = computed(() => ({
         <div class='card-header'>
           <h3 class='card-title'>Баланс</h3>
           <NuxtLink
-            :to='{ path: "/reports/transactions", query: { ...route.query, period } }'
+            :to='{ path: "/reports/transactions", query: { ...route.query, period, chart: "transactions" } }'
             class='card-title text-secondary ms-3'
           >
             Операции
