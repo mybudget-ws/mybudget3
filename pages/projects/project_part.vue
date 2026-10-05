@@ -1,9 +1,7 @@
 <script setup>
 import {
-  IconPlus,
   IconPencil,
   IconTrash,
-  IconCheck,
   IconX,
   IconDotsVertical,
 } from '@tabler/icons-vue';
@@ -22,10 +20,12 @@ const props = defineProps({
   },
 });
 
-const isAddingProjectItem = ref(false);
 const newProjectItemName = ref('');
+const newProjectItemInput = ref(null);
+
 const editingProjectItemId = ref(null);
 const editingProjectItemName = ref('');
+const editingProjectItemInput = ref(null);
 
 const isCreatingProjectItem = ref(false);
 const savingProjectItemId = ref(null);
@@ -44,24 +44,19 @@ watch(
   }
 );
 
-const startCreateProjectItem = () => {
-  if (isCreatingProjectItem.value || savingProjectItemId.value) {
-    return;
-  }
-
-  editingProjectItemId.value = null;
-  editingProjectItemName.value = '';
-  newProjectItemName.value = '';
-  isAddingProjectItem.value = true;
+const focusNewProjectItemInput = async () => {
+  await nextTick();
+  newProjectItemInput.value?.focus();
 };
 
-const cancelCreateProjectItem = () => {
-  if (isCreatingProjectItem.value) {
-    return;
-  }
+const focusEditingProjectItemInput = async () => {
+  await nextTick();
 
-  isAddingProjectItem.value = false;
-  newProjectItemName.value = '';
+  const input = Array.isArray(editingProjectItemInput.value)
+    ? editingProjectItemInput.value[0]
+    : editingProjectItemInput.value;
+
+  input?.focus();
 };
 
 const createProjectItem = async () => {
@@ -96,12 +91,12 @@ const createProjectItem = async () => {
       (a, b) => (a.position || 0) - (b.position || 0)
     );
 
-    isAddingProjectItem.value = false;
     newProjectItemName.value = '';
   } catch (error) {
     alert(error?.message || 'Не удалось создать элемент проекта.');
   } finally {
     isCreatingProjectItem.value = false;
+    focusNewProjectItemInput();
   }
 };
 
@@ -110,9 +105,10 @@ const startEditProjectItem = (item) => {
     return;
   }
 
-  isAddingProjectItem.value = false;
   editingProjectItemId.value = item.id;
   editingProjectItemName.value = item.name;
+
+  focusEditingProjectItemInput();
 };
 
 const cancelEditProjectItem = () => {
@@ -243,125 +239,107 @@ const deleteProjectItem = async (item) => {
             Состав проекта
           </h2>
         </div>
-
-        <div class='col-auto'>
-          <button
-            class='btn btn-primary'
-            type='button'
-            :disabled='isCreatingProjectItem'
-            @click='startCreateProjectItem'
-          >
-            <IconPlus size='20' />
-          </button>
-        </div>
       </div>
     </div>
 
     <!-- Mobile -->
     <div
-  v-if='projectItems.length && isMobile'
->
-  <div
-    v-for='item in projectItems'
-    :key='item.id'
-    class='card-header border-bottom-0'
-  >
-    <input
-      class='form-check-input m-0 me-3 flex-shrink-0'
-      type='checkbox'
-      :checked='item.isDone'
-      :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
-      @change='toggleProjectItem(item)'
+      v-if='projectItems.length && isMobile'
     >
-
-    <template v-if='editingProjectItemId === item.id'>
-      <div class='d-flex align-items-center flex-grow-1 min-w-0'>
-        <div class='input-group input-group-flat flex-grow-1'>
-          <Input
-            v-model='editingProjectItemName'
-            type='text'
-          />
-        </div>
-
-        <div class='btn-actions d-flex flex-shrink-0 ms-2'>
-          <button
-            class='btn btn-action'
-            type='button'
-            :disabled='savingProjectItemId === item.id'
-            @click='saveProjectItem(item)'
-          >
-            <IconCheck
-              size='20'
-              stroke-width='1.5'
-            />
-          </button>
-
-          <button
-            class='btn btn-action'
-            type='button'
-            :disabled='savingProjectItemId === item.id'
-            @click='cancelEditProjectItem'
-          >
-            <IconX
-              size='20'
-              stroke-width='1.5'
-            />
-          </button>
-        </div>
-      </div>
-    </template>
-
-    <template v-else>
       <div
-        class='flex-grow-1 min-w-0'
-        style='overflow-wrap: anywhere;'
+        v-for='item in projectItems'
+        :key='item.id'
+        class='card-header border-bottom-0'
       >
-        <span
-          :class='item.isDone
-            ? "text-secondary text-decoration-line-through"
-            : ""'
+        <input
+          class='form-check-input m-0 me-3 flex-shrink-0'
+          type='checkbox'
+          :checked='item.isDone'
+          :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
+          @change='toggleProjectItem(item)'
         >
-          {{ item.name }}
-        </span>
-      </div>
 
-      <div class='card-actions'>
-        <div class='dropdown'>
-          <button
-            type='button'
-            class='btn-action border-0 bg-transparent'
-            data-bs-toggle='dropdown'
-            data-bs-display='static'
-            aria-expanded='false'
+        <template v-if='editingProjectItemId === item.id'>
+          <form
+            class='d-flex align-items-center flex-grow-1 min-w-0'
+            @submit.prevent='saveProjectItem(item)'
           >
-            <IconDotsVertical
-              size='20'
-              stroke-width='1'
-            />
-          </button>
+            <div class='input-group input-group-flat flex-grow-1'>
+              <Input
+                ref='editingProjectItemInput'
+                v-model='editingProjectItemName'
+                type='text'
+              />
+            </div>
 
-          <div class='dropdown-menu dropdown-menu-end'>
-            <button
-              class='dropdown-item'
-              type='button'
-              @click='startEditProjectItem(item)'
-            >
-              Редактировать
-            </button>
+            <div class='btn-actions d-flex flex-shrink-0 ms-2'>
+              <button
+                class='btn btn-action'
+                type='button'
+                :disabled='savingProjectItemId === item.id'
+                @click='cancelEditProjectItem'
+              >
+                <IconX
+                  size='20'
+                  stroke-width='1.5'
+                />
+              </button>
+            </div>
+          </form>
+        </template>
 
-            <button
-              class='dropdown-item text-danger'
-              type='button'
-              @click='deleteProjectItem(item)'
+        <template v-else>
+          <div
+            class='flex-grow-1 min-w-0'
+            style='overflow-wrap: anywhere; cursor: pointer;'
+            @click='toggleProjectItem(item)'
+          >
+            <span
+              :class='item.isDone
+                ? "text-secondary text-decoration-line-through"
+                : ""'
             >
-              Удалить
-            </button>
+              {{ item.name }}
+            </span>
           </div>
-        </div>
+
+          <div class='card-actions'>
+            <div class='dropdown'>
+              <button
+                type='button'
+                class='btn-action border-0 bg-transparent'
+                data-bs-toggle='dropdown'
+                data-bs-display='static'
+                aria-expanded='false'
+              >
+                <IconDotsVertical
+                  size='20'
+                  stroke-width='1'
+                />
+              </button>
+
+              <div class='dropdown-menu dropdown-menu-end'>
+                <button
+                  class='dropdown-item'
+                  type='button'
+                  @click='startEditProjectItem(item)'
+                >
+                  Редактировать
+                </button>
+
+                <button
+                  class='dropdown-item text-danger'
+                  type='button'
+                  @click='deleteProjectItem(item)'
+                >
+                  Удалить
+                </button>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
-    </template>
-  </div>
-</div>
+    </div>
 
     <!-- Desktop -->
     <div
@@ -387,30 +365,21 @@ const deleteProjectItem = async (item) => {
 
             <template v-if='editingProjectItemId === item.id'>
               <td class='w-100' colspan='2'>
-                <div class='d-flex align-items-center'>
-                  <div class='input-group input-group-flat w-50'>
+                <form
+                  class='d-flex align-items-center'
+                  @submit.prevent='saveProjectItem(item)'
+                >
+                  <div class='input-group input-group-flat w-100'>
                     <Input
+                      ref='editingProjectItemInput'
                       v-model='editingProjectItemName'
                       type='text'
                     />
                   </div>
 
                   <div
-                    class='btn-actions d-flex flex-shrink-0 ms-auto'
-                    style='padding-right: 8px;'
+                    class='btn-actions d-flex flex-shrink-0 ms-2'
                   >
-                    <button
-                      class='btn btn-action'
-                      type='button'
-                      :disabled='savingProjectItemId === item.id'
-                      @click='saveProjectItem(item)'
-                    >
-                      <IconCheck
-                        size='20'
-                        stroke-width='1.5'
-                      />
-                    </button>
-
                     <button
                       class='btn btn-action'
                       type='button'
@@ -423,17 +392,19 @@ const deleteProjectItem = async (item) => {
                       />
                     </button>
                   </div>
-                </div>
+                </form>
               </td>
             </template>
 
             <template v-else>
               <td class='w-100'>
                 <span
-                  class='d-block text-truncate'
+                  class='d-block'
+                  style='cursor: pointer; overflow-wrap: anywhere;'
                   :class='item.isDone
                     ? "text-secondary text-decoration-line-through"
                     : ""'
+                  @click='toggleProjectItem(item)'
                 >
                   {{ item.name }}
                 </span>
@@ -472,21 +443,15 @@ const deleteProjectItem = async (item) => {
       </table>
     </div>
 
-    <div
-      v-else-if='!isAddingProjectItem'
-      class='card-body text-secondary'
-    >
-      Состав проекта пока пуст
-    </div>
-
+    <!-- Add project item -->
     <form
-      v-if='isAddingProjectItem'
       class='card-footer bg-transparent border-0'
       @submit.prevent='createProjectItem'
     >
       <div class='d-flex align-items-center'>
-        <div class='input-group input-group-flat w-50'>
+        <div class='input-group input-group-flat w-100'>
           <Input
+            ref='newProjectItemInput'
             v-model='newProjectItemName'
             type='text'
             placeholder='Название элемента'
@@ -494,23 +459,14 @@ const deleteProjectItem = async (item) => {
           />
         </div>
 
-        <div class='card-actions d-flex flex-shrink-0 gap-1 ms-auto'>
-          <button
-            class='btn btn-primary'
-            type='submit'
-            :disabled='!newProjectItemName.trim() || isCreatingProjectItem'
-          >
-            <IconCheck
-              size='20'
-              stroke-width='1.5'
-            />
-          </button>
-
+        <div
+          class='card-actions d-flex flex-shrink-0'
+        >
           <button
             class='btn btn-action'
             type='button'
             :disabled='isCreatingProjectItem'
-            @click='cancelCreateProjectItem'
+            @click='newProjectItemName = ""'
           >
             <IconX
               size='20'
