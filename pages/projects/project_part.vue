@@ -84,10 +84,9 @@ const createProjectItem = async () => {
       return;
     }
 
-    projectItems.value = [
-      ...projectItems.value,
-      result.projectItem,
-    ].sort(
+    projectItems.value.push(result.projectItem);
+
+    projectItems.value.sort(
       (a, b) => (a.position || 0) - (b.position || 0)
     );
 
@@ -415,7 +414,6 @@ const deleteProjectItem = async (item) => {
                   <button
                     class='btn btn-action'
                     type='button'
-                    :disabled='isCreatingProjectItem'
                     @click='startEditProjectItem(item)'
                   >
                     <IconPencil
@@ -427,7 +425,6 @@ const deleteProjectItem = async (item) => {
                   <button
                     class='btn btn-action'
                     type='button'
-                    :disabled='isCreatingProjectItem'
                     @click='deleteProjectItem(item)'
                   >
                     <IconTrash
