@@ -60,7 +60,7 @@ const kindDisplayName = ({ kind }) => {
   if (kind === 'transport') return 'Транспорт';
 
   return 'Другое';
-}
+};
 
 const linkColorClass = computed(() => {
   return appConfig.theme.dark ?
@@ -238,7 +238,7 @@ watchEffect(() => {
                     <td class='text-nowrap text-end'>
                       <Amount
                         :value='item.amount'
-                        :currency='item.currency.name'
+                        :currency='item.currency?.name || "???"'
                         copyable
                       />
                     </td>

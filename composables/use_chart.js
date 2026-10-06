@@ -7,6 +7,7 @@ export const useChart = () => {
 
   const CHART_HEIGHT = 500;
   const CHART_LABEL_COLOR = appConfig.theme.dark ? '#e2e8f0' : '#334155';
+  const REPORTS_PERIOD_STORAGE_KEY = 'reports-period';
 
   const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {
     month: 'long',
@@ -21,11 +22,38 @@ export const useChart = () => {
     YEARS_5: 'Пять лет',
     ALL: 'Всё время',
   }));
+
   const isPeriodValid = (value) => Boolean(PERIODS.value[value]);
-  const period = ref(isPeriodValid(route.query.period) ? route.query.period : 'CURRENT_MONTH');
+
+  const getSavedPeriod = () => {
+    if (!import.meta.client) return null;
+
+    const savedPeriod = localStorage.getItem(REPORTS_PERIOD_STORAGE_KEY);
+
+    return isPeriodValid(savedPeriod) ? savedPeriod : null;
+  };
+
+  const getInitialPeriod = () => {
+    if (isPeriodValid(route.query.period)) {
+      return route.query.period;
+    }
+
+    return getSavedPeriod() || 'CURRENT_MONTH';
+  };
+
+  const period = ref(getInitialPeriod());
+
+  const savePeriod = (value) => {
+    if (!import.meta.client) return;
+
+    localStorage.setItem(REPORTS_PERIOD_STORAGE_KEY, value);
+  };
 
   const setPeriod = (value) => {
+    if (!isPeriodValid(value)) return;
+
     period.value = value;
+    savePeriod(value);
 
     router.push({
       query: {
@@ -35,13 +63,19 @@ export const useChart = () => {
     });
   };
 
-  const toggleQueryFilter = (queryKey, id, parser, formatter = (arr) => arr.join(',')) => {
+  const toggleQueryFilter = (
+    queryKey,
+    id,
+    parser,
+    formatter = (arr) => arr.join(',')
+  ) => {
     const current = parser(route.query[queryKey]);
     const newValues = current.includes(id)
       ? current.filter(item => item !== id)
       : [...current, id];
 
     const nextQuery = { ...route.query };
+
     if (newValues.length) nextQuery[queryKey] = formatter(newValues);
     else delete nextQuery[queryKey];
 
@@ -79,11 +113,15 @@ export const useChart = () => {
     };
   });
 
-  watch(() => route.query.period, (newPeriod) => {
-    if (isPeriodValid(newPeriod) && newPeriod !== period.value) {
-      period.value = newPeriod;
+  watch(
+    () => route.query.period,
+    (newPeriod) => {
+      if (isPeriodValid(newPeriod) && newPeriod !== period.value) {
+        period.value = newPeriod;
+        savePeriod(newPeriod);
+      }
     }
-  });
+  );
 
   return {
     CHART_HEIGHT,
