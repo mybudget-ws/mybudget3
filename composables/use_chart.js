@@ -7,7 +7,6 @@ export const useChart = () => {
 
   const CHART_HEIGHT = 500;
   const CHART_LABEL_COLOR = appConfig.theme.dark ? '#e2e8f0' : '#334155';
-
   const REPORTS_PERIOD_STORAGE_KEY = 'reports-period';
 
   const currentMonthLabel = new Intl.DateTimeFormat('ru-RU', {

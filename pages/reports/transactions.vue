@@ -1,14 +1,13 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
 import api from '~/lib/api';
-import { CHART_COLORS } from '~/lib/consts';
+import { CHART_COLORS, REPORTS_CHART_STORAGE_KEY } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
 import { useDevice } from '~/composables/use_device';
 
 const route = useRoute();
 const { token } = useAuth();
-const REPORTS_CHART_STORAGE_KEY = 'reports-chart';
 const {
   CHART_HEIGHT,
   CHART_LABEL_COLOR,
