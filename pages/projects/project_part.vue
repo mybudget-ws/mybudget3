@@ -3,6 +3,7 @@ import {
   IconPencil,
   IconTrash,
   IconX,
+  IconCheck,
   IconDotsVertical,
 } from '@tabler/icons-vue';
 
@@ -274,6 +275,17 @@ const deleteProjectItem = async (item) => {
             <div class='btn-actions d-flex flex-shrink-0 ms-2'>
               <button
                 class='btn btn-action'
+                type='submit'
+                :disabled='savingProjectItemId === item.id'
+              >
+                <IconCheck
+                  size='20'
+                  stroke-width='1.5'
+                />
+              </button>
+
+              <button
+                class='btn btn-action'
                 type='button'
                 :disabled='savingProjectItemId === item.id'
                 @click='cancelEditProjectItem'
@@ -454,22 +466,6 @@ const deleteProjectItem = async (item) => {
             placeholder='Название элемента'
             :disabled='isCreatingProjectItem'
           />
-        </div>
-
-        <div
-          class='card-actions d-flex flex-shrink-0'
-        >
-          <button
-            class='btn btn-action'
-            type='button'
-            :disabled='isCreatingProjectItem'
-            @click='newProjectItemName = ""'
-          >
-            <IconX
-              size='20'
-              stroke-width='1.5'
-            />
-          </button>
         </div>
       </div>
     </form>
