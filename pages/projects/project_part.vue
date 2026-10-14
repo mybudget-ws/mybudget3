@@ -379,6 +379,7 @@ const deleteProjectItem = async (item) => {
                 <form
                   class='d-flex align-items-center'
                   @submit.prevent='saveProjectItem(item)'
+                  @keydown.esc.prevent='cancelEditProjectItem'
                 >
                   <div class='input-group input-group-flat w-100'>
                     <Input
