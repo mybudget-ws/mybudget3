@@ -5,6 +5,7 @@ import {
   IconX,
   IconCheck,
   IconDotsVertical,
+  IconGripVertical,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -30,6 +31,7 @@ const editingProjectItemInput = ref(null);
 
 const isCreatingProjectItem = ref(false);
 const savingProjectItemId = ref(null);
+const draggedProjectItemId = ref(null);
 
 const projectItems = ref([]);
 
@@ -44,6 +46,57 @@ watch(
     immediate: true,
   }
 );
+
+const onProjectItemDragStart = (item, event) => {
+  draggedProjectItemId.value = item.id;
+
+  event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', String(item.id));
+
+  const row = event.currentTarget.closest('tr');
+
+  if (row) {
+    event.dataTransfer.setDragImage(
+      row,
+      event.clientX - row.getBoundingClientRect().left,
+      event.clientY - row.getBoundingClientRect().top
+    );
+  }
+};
+
+const onProjectItemDragOver = (item) => {
+  if (
+    draggedProjectItemId.value === null ||
+    draggedProjectItemId.value === item.id
+  ) {
+    return;
+  }
+
+  const items = [...projectItems.value];
+
+  const fromIndex = items.findIndex(
+    projectItem => projectItem.id === draggedProjectItemId.value
+  );
+
+  const toIndex = items.findIndex(
+    projectItem => projectItem.id === item.id
+  );
+
+  if (fromIndex === -1 || toIndex === -1) {
+    return;
+  }
+
+  const [movedItem] = items.splice(fromIndex, 1);
+
+  items.splice(toIndex, 0, movedItem);
+
+  projectItems.value = items;
+};
+
+const onProjectItemDragEnd = async () => {
+  draggedProjectItemId.value = null;
+  await saveProjectItemsOrder();
+};
 
 const focusNewProjectItemInput = async () => {
   await nextTick();
@@ -228,6 +281,43 @@ const deleteProjectItem = async (item) => {
     savingProjectItemId.value = null;
   }
 };
+
+const saveProjectItemsOrder = async () => {
+  try {
+    const results = [];
+
+    for (const [index, item] of projectItems.value.entries()) {
+      const position = index + 1;
+
+      const result = await api.updateProjectItem(token.value, {
+        id: item.id,
+        position,
+      });
+
+      results.push({
+        id: item.id,
+        sentPosition: position,
+        returnedPosition: result?.projectItem?.position,
+        errors: result?.errors,
+      });
+
+      if (result?.errors?.length || !result?.projectItem) {
+        console.table(results);
+        alert(
+          result?.errors?.join('\n') ||
+          'Не удалось сохранить порядок элементов проекта.'
+        );
+        return;
+      }
+
+      item.position = result.projectItem.position;
+    }
+
+    console.table(results);
+  } catch (error) {
+    alert(error?.message || 'Не удалось сохранить порядок элементов проекта.');
+  }
+};
 </script>
 
 <template>
@@ -363,7 +453,23 @@ const deleteProjectItem = async (item) => {
             v-for='item in projectItems'
             :key='item.id'
             class='table-body'
+            :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
+            @dragover.prevent='onProjectItemDragOver(item)'
           >
+            <td class='project-item-drag-cell'>
+              <span
+                class='project-item-drag-handle'
+                draggable='true'
+                @dragstart='onProjectItemDragStart(item, $event)'
+                @dragend='onProjectItemDragEnd'
+              >
+                <IconGripVertical
+                  size='18'
+                  stroke-width='2'
+                  class='opacity-40'
+                />
+              </span>
+            </td>
             <td style='padding-left: 20px;'>
               <input
                 class='form-check-input m-0'
@@ -472,3 +578,25 @@ const deleteProjectItem = async (item) => {
     </form>
   </div>
 </template>
+
+<style scoped>
+  .project-item-drag-cell {
+  width: 1%;
+  padding-right: 0;
+  padding-left: 12px;
+}
+
+.project-item-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  cursor: grab;
+}
+
+.project-item-drag-handle:active {
+  cursor: grabbing;
+}
+
+.project-item-dragging {
+  opacity: 0.5;
+}
+</style>
