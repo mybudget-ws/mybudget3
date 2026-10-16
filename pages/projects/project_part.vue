@@ -263,7 +263,7 @@ const deleteProjectItem = async (item) => {
           class='form-check-input m-0 me-3 flex-shrink-0'
           type='checkbox'
           :checked='item.isDone'
-          :disabled='isCreatingProjectItem || savingProjectItemId !== null'
+              :disabled='isCreatingProjectItem || savingProjectItemId !== null || editingProjectItemId !== null'
           @mousedown='onCheckboxMouseDown($event)'
           @change='toggleProjectItem(item)'
         >
@@ -378,7 +378,7 @@ const deleteProjectItem = async (item) => {
                 class='form-check-input m-0'
                 type='checkbox'
                 :checked='item.isDone'
-            :disabled='isCreatingProjectItem || savingProjectItemId !== null'
+            :disabled='isCreatingProjectItem || savingProjectItemId !== null || editingProjectItemId !== null'
             @mousedown='onCheckboxMouseDown($event)'
             @change='toggleProjectItem(item)'
             >
