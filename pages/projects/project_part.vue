@@ -32,7 +32,8 @@ const editingProjectItemInput = ref(null);
 const isCreatingProjectItem = ref(false);
 const savingProjectItemId = ref(null);
 const draggedProjectItemId = ref(null);
-
+const mobileDragPointerId = ref(null);
+const hasMobileDragMoved = ref(false);
 const projectItems = ref([]);
 
 watch(
@@ -96,6 +97,92 @@ const onProjectItemDragOver = (item) => {
 const onProjectItemDragEnd = async () => {
   draggedProjectItemId.value = null;
   await saveProjectItemsOrder();
+};
+
+const onProjectItemPointerDown = (item, event) => {
+  if (
+    editingProjectItemId.value !== null ||
+    isCreatingProjectItem.value ||
+    savingProjectItemId.value
+  ) {
+    return;
+  }
+
+  draggedProjectItemId.value = item.id;
+  mobileDragPointerId.value = event.pointerId;
+  hasMobileDragMoved.value = false;
+
+  event.currentTarget.setPointerCapture(event.pointerId);
+};
+
+const onProjectItemPointerMove = (event) => {
+  if (mobileDragPointerId.value !== event.pointerId) {
+    return;
+  }
+
+  const targetElement = document
+    .elementFromPoint(event.clientX, event.clientY)
+    ?.closest('[data-project-item-id]');
+
+  const targetId = targetElement?.dataset.projectItemId;
+
+  if (!targetId || String(draggedProjectItemId.value) === targetId) {
+    return;
+  }
+
+  const draggedItem = projectItems.value.find(
+    item => item.id === draggedProjectItemId.value
+  );
+
+  const targetItem = projectItems.value.find(
+    item => String(item.id) === targetId
+  );
+
+  if (!draggedItem || !targetItem) {
+    return;
+  }
+
+  const rect = targetElement.getBoundingClientRect();
+  const insertAfter = event.clientY > rect.top + rect.height / 2;
+
+  const items = projectItems.value.filter(
+    item => item.id !== draggedProjectItemId.value
+  );
+
+  const targetIndex = items.findIndex(
+    item => item.id === targetItem.id
+  );
+
+  if (targetIndex === -1) {
+    return;
+  }
+
+  items.splice(targetIndex + (insertAfter ? 1 : 0), 0, draggedItem);
+
+  const orderChanged = items.some(
+    (item, index) => item.id !== projectItems.value[index]?.id
+  );
+
+  if (orderChanged) {
+    projectItems.value = items;
+    hasMobileDragMoved.value = true;
+  }
+};
+
+const onProjectItemPointerEnd = async (event) => {
+  if (mobileDragPointerId.value !== event.pointerId) {
+    return;
+  }
+
+  const shouldSave = hasMobileDragMoved.value;
+
+  mobileDragPointerId.value = null;
+  draggedProjectItemId.value = null;
+  hasMobileDragMoved.value = false;
+
+  if (shouldSave) {
+    await saveProjectItemsOrder();
+  }
 };
 
 const focusNewProjectItemInput = async () => {
@@ -340,7 +427,23 @@ const saveProjectItemsOrder = async () => {
         v-for='item in projectItems'
         :key='item.id'
         class='card-header border-bottom-0'
+        :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
+        :data-project-item-id='item.id'
       >
+        <span
+          v-if='editingProjectItemId !== item.id'
+          class='project-item-mobile-drag-handle me-2'
+          @pointerdown='onProjectItemPointerDown(item, $event)'
+          @pointermove.prevent='onProjectItemPointerMove($event)'
+          @pointerup='onProjectItemPointerEnd($event)'
+          @pointercancel='onProjectItemPointerEnd($event)'
+        >
+          <IconGripVertical
+            size='20'
+            stroke-width='2'
+            class='opacity-40'
+          />
+        </span>
         <input
           class='form-check-input m-0 me-3 flex-shrink-0'
           type='checkbox'
@@ -593,6 +696,23 @@ const saveProjectItemsOrder = async () => {
 }
 
 .project-item-drag-handle:active {
+  cursor: grabbing;
+}
+
+.project-item-dragging {
+  opacity: 0.5;
+}
+
+.project-item-mobile-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.project-item-mobile-drag-handle:active {
   cursor: grabbing;
 }
 
