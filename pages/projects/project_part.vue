@@ -53,11 +53,7 @@ const focusNewProjectItemInput = async () => {
 const focusEditingProjectItemInput = async () => {
   await nextTick();
 
-  const input = Array.isArray(editingProjectItemInput.value)
-    ? editingProjectItemInput.value[0]
-    : editingProjectItemInput.value;
-
-  input?.focus();
+  getEditingInput()?.focus();
 };
 
 const createProjectItem = async () => {
@@ -110,6 +106,10 @@ const startEditProjectItem = (item) => {
 
   focusEditingProjectItemInput();
 };
+
+const getEditingInput = () => (Array.isArray(editingProjectItemInput.value)
+  ? editingProjectItemInput.value[0]
+  : editingProjectItemInput.value);
 
 const cancelEditProjectItem = () => {
   if (savingProjectItemId.value) {
@@ -189,6 +189,14 @@ const toggleProjectItem = async (item) => {
   }
 };
 
+// Не даём checkbox'у украсть фокус у Input, пока ведётся
+// редактирование: иначе строка «моргает» и фокус теряется.
+const onCheckboxMouseDown = (event) => {
+  if (document.activeElement === getEditingInput()) {
+    event.preventDefault();
+  }
+};
+
 const deleteProjectItem = async (item) => {
   if (
     isCreatingProjectItem.value ||
@@ -255,7 +263,8 @@ const deleteProjectItem = async (item) => {
           class='form-check-input m-0 me-3 flex-shrink-0'
           type='checkbox'
           :checked='item.isDone'
-          :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
+          :disabled='isCreatingProjectItem || savingProjectItemId !== null'
+          @mousedown='onCheckboxMouseDown($event)'
           @change='toggleProjectItem(item)'
         >
 
@@ -369,13 +378,14 @@ const deleteProjectItem = async (item) => {
                 class='form-check-input m-0'
                 type='checkbox'
                 :checked='item.isDone'
-                :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
-                @change='toggleProjectItem(item)'
-              >
+            :disabled='isCreatingProjectItem || savingProjectItemId !== null'
+            @mousedown='onCheckboxMouseDown($event)'
+            @change='toggleProjectItem(item)'
+            >
             </td>
 
             <template v-if='editingProjectItemId === item.id'>
-              <td class='w-100' colspan='2'>
+              <td class='w-100' colspan='2' style='min-width: 0;'>
                 <form
                   class='d-flex align-items-center'
                   @submit.prevent='saveProjectItem(item)'
@@ -408,7 +418,7 @@ const deleteProjectItem = async (item) => {
             </template>
 
             <template v-else>
-              <td class='w-100'>
+              <td class='w-100' style='min-width: 0;'>
                 <span
                   class='d-block'
                   style='cursor: pointer; overflow-wrap: anywhere;'
