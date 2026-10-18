@@ -192,7 +192,8 @@ const toggleProjectItem = async (item) => {
 // Не даём checkbox'у украсть фокус у Input, пока ведётся
 // редактирование: иначе строка «моргает» и фокус теряется.
 const onCheckboxMouseDown = (event) => {
-  if (document.activeElement === getEditingInput()) {
+  const editingInput = getEditingInput();
+  if (editingInput && editingInput.$el === document.activeElement) {
     event.preventDefault();
   }
 };
