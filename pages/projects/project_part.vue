@@ -17,6 +17,7 @@ import { useDevice } from '~/composables/use_device';
 
 const { token } = useAuth();
 const { isMobile } = useDevice();
+const PROJECT_ITEM_SHOW_LIMIT = 6;
 
 const props = defineProps({
   project: {
@@ -38,20 +39,12 @@ const draggedProjectItemId = ref(null);
 const mobileDragPointerId = ref(null);
 const hasMobileDragMoved = ref(false);
 const projectItems = ref([]);
+const showAllProjectItems = ref(props.project.projectItems.length <= PROJECT_ITEM_SHOW_LIMIT);
 
+const totalProjectItemsCount = computed(() => projectItems.value.length);
 const completedProjectItemsCount = computed(
   () => projectItems.value.filter(item => item.isDone).length
 );
-
-const totalProjectItemsCount = computed(() => projectItems.value.length);
-const showAllProjectItems = ref(false);
-const visibleProjectItems = computed(() => {
-  if (showAllProjectItems.value || projectItems.value.length <= 3) {
-    return projectItems.value;
-  }
-
-  return projectItems.value.slice(0, 3);
-});
 
 watch(
   () => props.project.projectItems,
@@ -426,7 +419,10 @@ const saveProjectItemsOrder = async () => {
 
 <template>
   <div class='card mb-4'>
-    <div class='card-header pe-0'>
+    <div
+      class='card-header pe-0'
+      :class='showAllProjectItems ? "" : "border-bottom-0"'
+    >
       <div class='row w-full align-items-center'>
         <div class='col'>
           <h2 class='mb-0 d-flex align-items-center'>
@@ -449,11 +445,11 @@ const saveProjectItemsOrder = async () => {
         </div>
 
         <div
-          v-if='projectItems.length > 3'
+          v-if='projectItems.length > PROJECT_ITEM_SHOW_LIMIT'
           class='col-auto'
         >
           <button
-            class='btn btn-icon btn-ghost-secondary me-1'
+            class='btn btn-icon btn-action me-1'
             type='button'
             :aria-label='showAllProjectItems ? "Скрыть лишние элементы" : "Показать все элементы"'
             :title='showAllProjectItems ? "Скрыть лишние элементы" : "Показать все элементы"'
@@ -474,266 +470,268 @@ const saveProjectItemsOrder = async () => {
       </div>
     </div>
 
-    <!-- Mobile -->
-    <div
-      v-if='projectItems.length && isMobile'
-    >
+    <div v-if='showAllProjectItems'>
+      <!-- Mobile -->
       <div
-        v-for='item in visibleProjectItems'
-        :key='item.id'
-        class='card-header border-bottom-0'
-        :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
-        :data-project-item-id='item.id'
+        v-if='projectItems.length && isMobile'
       >
-        <span
-          v-if='editingProjectItemId !== item.id'
-          class='project-item-mobile-drag-handle me-2'
-          @pointerdown='onProjectItemPointerDown(item, $event)'
-          @pointermove.prevent='onProjectItemPointerMove($event)'
-          @pointerup='onProjectItemPointerEnd($event)'
-          @pointercancel='onProjectItemPointerEnd($event)'
+        <div
+          v-for='item in projectItems'
+          :key='item.id'
+          class='card-header border-bottom-0'
+          :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
+          :data-project-item-id='item.id'
         >
-          <IconGripVertical
-            size='20'
-            stroke-width='2'
-            class='opacity-40'
-          />
-        </span>
-        <input
-          class='form-check-input m-0 me-3 flex-shrink-0'
-          type='checkbox'
-          :checked='item.isDone'
-          :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
-          @change='toggleProjectItem(item)'
-        >
-
-        <template v-if='editingProjectItemId === item.id'>
-          <form
-            class='d-flex align-items-center flex-grow-1 min-w-0'
-            @submit.prevent='saveProjectItem(item)'
+          <span
+            v-if='editingProjectItemId !== item.id'
+            class='project-item-mobile-drag-handle me-2'
+            @pointerdown='onProjectItemPointerDown(item, $event)'
+            @pointermove.prevent='onProjectItemPointerMove($event)'
+            @pointerup='onProjectItemPointerEnd($event)'
+            @pointercancel='onProjectItemPointerEnd($event)'
           >
-            <div class='input-group input-group-flat flex-grow-1'>
-              <Input
-                ref='editingProjectItemInput'
-                v-model='editingProjectItemName'
-                type='text'
-              />
-            </div>
-
-            <div class='btn-actions d-flex flex-shrink-0 ms-2'>
-              <button
-                class='btn btn-action'
-                type='submit'
-                :disabled='savingProjectItemId === item.id'
-              >
-                <IconCheck
-                  size='20'
-                  stroke-width='1.5'
-                />
-              </button>
-
-              <button
-                class='btn btn-action'
-                type='button'
-                :disabled='savingProjectItemId === item.id'
-                @click='cancelEditProjectItem'
-              >
-                <IconX
-                  size='20'
-                  stroke-width='1.5'
-                />
-              </button>
-            </div>
-          </form>
-        </template>
-
-        <template v-else>
-          <div
-            class='flex-grow-1 min-w-0'
-            style='overflow-wrap: anywhere; cursor: pointer;'
-            @click='toggleProjectItem(item)'
+            <IconGripVertical
+              size='20'
+              stroke-width='2'
+              class='opacity-40'
+            />
+          </span>
+          <input
+            class='form-check-input m-0 me-3 flex-shrink-0'
+            type='checkbox'
+            :checked='item.isDone'
+            :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
+            @change='toggleProjectItem(item)'
           >
-            <span
-              :class='item.isDone
-                ? "text-secondary text-decoration-line-through"
-                : ""'
+
+          <template v-if='editingProjectItemId === item.id'>
+            <form
+              class='d-flex align-items-center flex-grow-1 min-w-0'
+              @submit.prevent='saveProjectItem(item)'
             >
-              {{ item.name }}
-            </span>
-          </div>
-
-          <div class='card-actions'>
-            <div class='dropdown'>
-              <button
-                type='button'
-                class='btn-action border-0 bg-transparent'
-                data-bs-toggle='dropdown'
-                data-bs-display='static'
-                aria-expanded='false'
-              >
-                <IconDotsVertical
-                  size='20'
-                  stroke-width='1'
+              <div class='input-group input-group-flat flex-grow-1'>
+                <Input
+                  ref='editingProjectItemInput'
+                  v-model='editingProjectItemName'
+                  type='text'
                 />
-              </button>
+              </div>
 
-              <div class='dropdown-menu dropdown-menu-end'>
+              <div class='btn-actions d-flex flex-shrink-0 ms-2'>
                 <button
-                  class='dropdown-item'
-                  type='button'
-                  @click='startEditProjectItem(item)'
+                  class='btn btn-action'
+                  type='submit'
+                  :disabled='savingProjectItemId === item.id'
                 >
-                  Редактировать
+                  <IconCheck
+                    size='20'
+                    stroke-width='1.5'
+                  />
                 </button>
 
                 <button
-                  class='dropdown-item text-danger'
+                  class='btn btn-action'
                   type='button'
-                  @click='deleteProjectItem(item)'
+                  :disabled='savingProjectItemId === item.id'
+                  @click='cancelEditProjectItem'
                 >
-                  Удалить
+                  <IconX
+                    size='20'
+                    stroke-width='1.5'
+                  />
                 </button>
               </div>
-            </div>
-          </div>
-        </template>
-      </div>
-    </div>
+            </form>
+          </template>
 
-    <!-- Desktop -->
-    <div
-      v-else-if='projectItems.length'
-      class='table-responsive'
-    >
-      <table class='table table-vcenter'>
-        <tbody class='table-tbody'>
-          <tr
-            v-for='item in visibleProjectItems'
-            :key='item.id'
-            class='table-body'
-            :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
-            @dragover.prevent='onProjectItemDragOver(item)'
-          >
-            <td class='project-item-drag-cell'>
+          <template v-else>
+            <div
+              class='flex-grow-1 min-w-0'
+              style='overflow-wrap: anywhere; cursor: pointer;'
+              @click='toggleProjectItem(item)'
+            >
               <span
-                class='project-item-drag-handle'
-                draggable='true'
-                @dragstart='onProjectItemDragStart(item, $event)'
-                @dragend='onProjectItemDragEnd'
+                :class='item.isDone
+                  ? "text-secondary text-decoration-line-through"
+                  : ""'
               >
-                <IconGripVertical
-                  size='18'
-                  stroke-width='2'
-                  class='opacity-40'
-                />
+                {{ item.name }}
               </span>
-            </td>
-            <td style='padding-left: 20px;'>
-              <input
-                class='form-check-input m-0'
-                type='checkbox'
-                :checked='item.isDone'
-                :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
-                @change='toggleProjectItem(item)'
-              >
-            </td>
+            </div>
 
-            <template v-if='editingProjectItemId === item.id'>
-              <td class='w-100' colspan='2'>
-                <form
-                  class='d-flex align-items-center'
-                  @submit.prevent='saveProjectItem(item)'
-                  @keydown.esc.prevent='cancelEditProjectItem'
+            <div class='card-actions'>
+              <div class='dropdown'>
+                <button
+                  type='button'
+                  class='btn-action border-0 bg-transparent'
+                  data-bs-toggle='dropdown'
+                  data-bs-display='static'
+                  aria-expanded='false'
                 >
-                  <div class='input-group input-group-flat w-100'>
-                    <Input
-                      ref='editingProjectItemInput'
-                      v-model='editingProjectItemName'
-                      type='text'
-                    />
-                  </div>
+                  <IconDotsVertical
+                    size='20'
+                    stroke-width='1'
+                  />
+                </button>
 
-                  <div
-                    class='btn-actions d-flex flex-shrink-0 ms-2'
+                <div class='dropdown-menu dropdown-menu-end'>
+                  <button
+                    class='dropdown-item'
+                    type='button'
+                    @click='startEditProjectItem(item)'
                   >
+                    Редактировать
+                  </button>
+
+                  <button
+                    class='dropdown-item text-danger'
+                    type='button'
+                    @click='deleteProjectItem(item)'
+                  >
+                    Удалить
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Desktop -->
+      <div
+        v-else-if='projectItems.length'
+        class='table-responsive'
+      >
+        <table class='table table-vcenter'>
+          <tbody class='table-tbody'>
+            <tr
+              v-for='item in projectItems'
+              :key='item.id'
+              class='table-body'
+              :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
+              @dragover.prevent='onProjectItemDragOver(item)'
+            >
+              <td class='project-item-drag-cell'>
+                <span
+                  class='project-item-drag-handle'
+                  draggable='true'
+                  @dragstart='onProjectItemDragStart(item, $event)'
+                  @dragend='onProjectItemDragEnd'
+                >
+                  <IconGripVertical
+                    size='18'
+                    stroke-width='2'
+                    class='opacity-40'
+                  />
+                </span>
+              </td>
+              <td style='padding-left: 20px;'>
+                <input
+                  class='form-check-input m-0'
+                  type='checkbox'
+                  :checked='item.isDone'
+                  :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
+                  @change='toggleProjectItem(item)'
+                >
+              </td>
+
+              <template v-if='editingProjectItemId === item.id'>
+                <td class='w-100' colspan='2'>
+                  <form
+                    class='d-flex align-items-center'
+                    @submit.prevent='saveProjectItem(item)'
+                    @keydown.esc.prevent='cancelEditProjectItem'
+                  >
+                    <div class='input-group input-group-flat w-100'>
+                      <Input
+                        ref='editingProjectItemInput'
+                        v-model='editingProjectItemName'
+                        type='text'
+                      />
+                    </div>
+
+                    <div
+                      class='btn-actions d-flex flex-shrink-0 ms-2'
+                    >
+                      <button
+                        class='btn btn-action'
+                        type='button'
+                        :disabled='savingProjectItemId === item.id'
+                        @click='cancelEditProjectItem'
+                      >
+                        <IconX
+                          size='20'
+                          stroke-width='1.5'
+                        />
+                      </button>
+                    </div>
+                  </form>
+                </td>
+              </template>
+
+              <template v-else>
+                <td class='w-100'>
+                  <span
+                    class='d-block'
+                    style='cursor: pointer; overflow-wrap: anywhere;'
+                    :class='item.isDone
+                      ? "text-secondary text-decoration-line-through"
+                      : ""'
+                    @click='toggleProjectItem(item)'
+                  >
+                    {{ item.name }}
+                  </span>
+                </td>
+
+                <td style='padding-right: 20px;'>
+                  <div class='btn-actions'>
                     <button
                       class='btn btn-action'
                       type='button'
-                      :disabled='savingProjectItemId === item.id'
-                      @click='cancelEditProjectItem'
+                      @click='startEditProjectItem(item)'
                     >
-                      <IconX
+                      <IconPencil
+                        size='20'
+                        stroke-width='1.5'
+                      />
+                    </button>
+
+                    <button
+                      class='btn btn-action'
+                      type='button'
+                      @click='deleteProjectItem(item)'
+                    >
+                      <IconTrash
                         size='20'
                         stroke-width='1.5'
                       />
                     </button>
                   </div>
-                </form>
-              </td>
-            </template>
-
-            <template v-else>
-              <td class='w-100'>
-                <span
-                  class='d-block'
-                  style='cursor: pointer; overflow-wrap: anywhere;'
-                  :class='item.isDone
-                    ? "text-secondary text-decoration-line-through"
-                    : ""'
-                  @click='toggleProjectItem(item)'
-                >
-                  {{ item.name }}
-                </span>
-              </td>
-
-              <td style='padding-right: 20px;'>
-                <div class='btn-actions'>
-                  <button
-                    class='btn btn-action'
-                    type='button'
-                    @click='startEditProjectItem(item)'
-                  >
-                    <IconPencil
-                      size='20'
-                      stroke-width='1.5'
-                    />
-                  </button>
-
-                  <button
-                    class='btn btn-action'
-                    type='button'
-                    @click='deleteProjectItem(item)'
-                  >
-                    <IconTrash
-                      size='20'
-                      stroke-width='1.5'
-                    />
-                  </button>
-                </div>
-              </td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Add project item -->
-    <form
-      class='card-footer bg-transparent border-0'
-      @submit.prevent='createProjectItem'
-    >
-      <div class='d-flex align-items-center'>
-        <div class='input-group input-group-flat w-100'>
-          <Input
-            ref='newProjectItemInput'
-            v-model='newProjectItemName'
-            type='text'
-            placeholder='Название элемента'
-            :disabled='isCreatingProjectItem'
-          />
-        </div>
+                </td>
+              </template>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </form>
+
+      <!-- Add project item -->
+      <form
+        class='card-footer bg-transparent border-0'
+        @submit.prevent='createProjectItem'
+      >
+        <div class='d-flex align-items-center'>
+          <div class='input-group input-group-flat w-100'>
+            <Input
+              ref='newProjectItemInput'
+              v-model='newProjectItemName'
+              type='text'
+              placeholder='Название элемента'
+              :disabled='isCreatingProjectItem'
+            />
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
