@@ -6,6 +6,9 @@ import {
   IconCheck,
   IconDotsVertical,
   IconGripVertical,
+  IconCheckbox,
+  IconEye,
+  IconEyeOff,
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
@@ -35,6 +38,20 @@ const draggedProjectItemId = ref(null);
 const mobileDragPointerId = ref(null);
 const hasMobileDragMoved = ref(false);
 const projectItems = ref([]);
+
+const completedProjectItemsCount = computed(
+  () => projectItems.value.filter(item => item.isDone).length
+);
+
+const totalProjectItemsCount = computed(() => projectItems.value.length);
+const showAllProjectItems = ref(false);
+const visibleProjectItems = computed(() => {
+  if (showAllProjectItems.value || projectItems.value.length <= 3) {
+    return projectItems.value;
+  }
+
+  return projectItems.value.slice(0, 3);
+});
 
 watch(
   () => props.project.projectItems,
@@ -412,9 +429,47 @@ const saveProjectItemsOrder = async () => {
     <div class='card-header pe-0'>
       <div class='row w-full align-items-center'>
         <div class='col'>
-          <h2 class='mb-0'>
+          <h2 class='mb-0 d-flex align-items-center'>
             Состав проекта
+
+            <span
+              v-if='totalProjectItemsCount > 0'
+              class='project-items-progress ms-3'
+              aria-label='Выполненные элементы проекта'
+            >
+              <IconCheckbox
+                size='18'
+                stroke-width='1.8'
+              />
+              <span class='project-items-progress-count'>
+                {{ completedProjectItemsCount }}/{{ totalProjectItemsCount }}
+              </span>
+            </span>
           </h2>
+        </div>
+
+        <div
+          v-if='projectItems.length > 3'
+          class='col-auto'
+        >
+          <button
+            class='btn btn-icon btn-ghost-secondary'
+            type='button'
+            :aria-label='showAllProjectItems ? "Скрыть лишние элементы" : "Показать все элементы"'
+            :title='showAllProjectItems ? "Скрыть лишние элементы" : "Показать все элементы"'
+            @click='showAllProjectItems = !showAllProjectItems'
+          >
+            <IconEyeOff
+              v-if='showAllProjectItems'
+              size='20'
+              stroke-width='1.5'
+            />
+            <IconEye
+              v-else
+              size='20'
+              stroke-width='1.5'
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -424,7 +479,7 @@ const saveProjectItemsOrder = async () => {
       v-if='projectItems.length && isMobile'
     >
       <div
-        v-for='item in projectItems'
+        v-for='item in visibleProjectItems'
         :key='item.id'
         class='card-header border-bottom-0'
         :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
@@ -553,7 +608,7 @@ const saveProjectItemsOrder = async () => {
       <table class='table table-vcenter'>
         <tbody class='table-tbody'>
           <tr
-            v-for='item in projectItems'
+            v-for='item in visibleProjectItems'
             :key='item.id'
             class='table-body'
             :class='{ "project-item-dragging": draggedProjectItemId === item.id }'
@@ -718,5 +773,20 @@ const saveProjectItemsOrder = async () => {
 
 .project-item-dragging {
   opacity: 0.5;
+}
+
+.project-items-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--tblr-secondary);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.project-items-progress-count {
+  font-size: 16px;
 }
 </style>
