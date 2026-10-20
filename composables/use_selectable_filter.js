@@ -73,11 +73,15 @@ export const useSelectableFilter = ({
   const toggleSelection = (id) => {
     if (!id) return;
 
-    if (selectedIds.value.has(id)) {
-      selectedIds.value.delete(id);
+    const next = new Set(selectedIds.value);
+
+    if (next.has(id)) {
+      next.delete(id);
     } else {
-      selectedIds.value.add(id);
+      next.add(id);
     }
+
+    selectedIds.value = next;
 
     const nextQuery = { ...route.query };
 
@@ -122,8 +126,7 @@ export const useSelectableFilter = ({
     () => route.query[queryKey],
     (value) => {
       initSelectedItemsByQuery(value);
-    },
-    { immediate: true }
+    }
   );
 
   return {

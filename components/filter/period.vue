@@ -5,6 +5,25 @@ import {
   IconGripVertical,
 } from '@tabler/icons-vue';
 
+const props = defineProps({
+  mobileDragHandle: {
+    type: Boolean,
+    default: false,
+  },
+  period: {
+    type: String,
+    default: null,
+  },
+  customPeriodFrom: {
+    type: String,
+    default: null,
+  },
+  customPeriodTo: {
+    type: String,
+    default: null,
+  },
+});
+
 const activeDatepicker = ref(null);
 
 const currentMonth = ref(new Date());
@@ -227,25 +246,6 @@ const reset = () => {
   activeDatepicker.value = null;
   emitPeriodChange();
 };
-
-const props = defineProps({
-  mobileDragHandle: {
-    type: Boolean,
-    default: false,
-  },
-  period: {
-    type: String,
-    default: null,
-  },
-  customPeriodFrom: {
-    type: String,
-    default: null,
-  },
-  customPeriodTo: {
-    type: String,
-    default: null,
-  },
-});
 
 const formatDate = (date) => {
   if (date == null) return '';

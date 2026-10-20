@@ -41,11 +41,15 @@ const initSelectedItemsByQuery = (val = '') => {
 };
 
 const toggleSelection = (id) => {
-  if (selectedIds.value.has(id)) {
-    selectedIds.value.delete(id);
+  const next = new Set(selectedIds.value);
+
+  if (next.has(id)) {
+    next.delete(id);
   } else {
-    selectedIds.value.add(id);
+    next.add(id);
   }
+
+  selectedIds.value = next;
 
   router.replace({
     query: {
