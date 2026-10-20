@@ -54,6 +54,7 @@ const emit = defineEmits([
   'pointerdown',
   'pointermove',
   'pointerup',
+  'period-change',
 ]);
 
 const currentMonthName = computed(() => {
@@ -156,6 +157,8 @@ const selectDate = (day) => {
 
     activeDatepicker.value = 'to';
 
+    if (toDate.value) emitPeriodChange();
+
     return;
   }
 
@@ -163,12 +166,14 @@ const selectDate = (day) => {
     if (fromDate.value && date < fromDate.value) {
       fromDate.value = date;
       toDate.value = null;
+      activeDatepicker.value = 'to';
 
       return;
     }
 
     toDate.value = date;
     activeDatepicker.value = null;
+    emitPeriodChange();
   }
 };
 
@@ -181,15 +186,10 @@ const selectQuickFilter = (id) => {
   selectedQuickFilter.value = id;
 
   if (id === 'custom') {
+    fromDate.value = null;
+    toDate.value = null;
     activeDatepicker.value = 'from';
-
-    if (fromDate.value) {
-      currentMonth.value = new Date(
-        fromDate.value.getFullYear(),
-        fromDate.value.getMonth(),
-        1
-      );
-    }
+    emitPeriodChange();
 
     return;
   }
@@ -197,6 +197,7 @@ const selectQuickFilter = (id) => {
   activeDatepicker.value = null;
   fromDate.value = null;
   toDate.value = null;
+  emitPeriodChange();
 };
 
 const previousMonth = () => {
@@ -220,6 +221,7 @@ const reset = () => {
   fromDate.value = null;
   toDate.value = null;
   activeDatepicker.value = null;
+  emitPeriodChange();
 };
 
 const props = defineProps({
@@ -227,7 +229,84 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  period: {
+    type: String,
+    default: null,
+  },
+  customPeriodFrom: {
+    type: String,
+    default: null,
+  },
+  customPeriodTo: {
+    type: String,
+    default: null,
+  },
 });
+
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+const parseDate = (value) => {
+  if (!value) return null;
+
+  const [year, month, day] = value.split('-').map(Number);
+
+  if (!year || !month || !day) return null;
+
+  const date = new Date(year, month - 1, day);
+
+  return formatDate(date) === value ? date : null;
+};
+
+const quickFilterPeriods = {
+  today: 'TODAY',
+  yesterday: 'YESTERDAY',
+  week: 'WEEK',
+  month: 'MONTH',
+  custom: 'CUSTOM',
+};
+
+const quickFilterIds = Object.fromEntries(
+  Object.entries(quickFilterPeriods).map(([id, period]) => [period, id])
+);
+
+watch(
+  () => [
+    props.period,
+    props.customPeriodFrom,
+    props.customPeriodTo,
+  ],
+  ([period, from, to]) => {
+    selectedQuickFilter.value = quickFilterIds[period] || null;
+    fromDate.value = parseDate(from);
+    toDate.value = parseDate(to);
+    activeDatepicker.value = null;
+
+    if (fromDate.value) {
+      currentMonth.value = new Date(
+        fromDate.value.getFullYear(),
+        fromDate.value.getMonth(),
+        1
+      );
+    }
+  },
+  { immediate: true }
+);
+
+const emitPeriodChange = () => {
+  const period = quickFilterPeriods[selectedQuickFilter.value];
+
+  emit('period-change', {
+    period: period || null,
+    from: period === 'CUSTOM' ? formatDate(fromDate.value) : null,
+    to: period === 'CUSTOM' ? formatDate(toDate.value) : null,
+  });
+};
 </script>
 
 <template>

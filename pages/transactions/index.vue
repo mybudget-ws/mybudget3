@@ -64,6 +64,9 @@ const filters = computed(() => {
     propertyIds: parseNumberArray(route.query.properties),
     kinds: parseStringArray(route.query.kinds),
     description: route.query.description?.toString().trim() || null,
+    period: route.query.period?.toString() || null,
+    customPeriodFrom: route.query.customPeriodFrom?.toString() || null,
+    customPeriodTo: route.query.customPeriodTo?.toString() || null,
   };
 });
 
@@ -171,6 +174,26 @@ const onPropertiesChange = (properties) => {
 
 const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
+};
+
+const onPeriodChange = ({ period, from, to }) => {
+  const nextQuery = { ...route.query };
+
+  if (period) {
+    nextQuery.period = period;
+  } else {
+    delete nextQuery.period;
+  }
+
+  if (period === 'CUSTOM' && from && to) {
+    nextQuery.customPeriodFrom = from;
+    nextQuery.customPeriodTo = to;
+  } else {
+    delete nextQuery.customPeriodFrom;
+    delete nextQuery.customPeriodTo;
+  }
+
+  router.replace({ query: nextQuery });
 };
 
 const load = async (isQuite = false, append = false) => {
@@ -767,6 +790,10 @@ onMounted(() => {
         >
           <FilterPeriod
             v-if='filter === "period"'
+            :period='route.query.period?.toString() || null'
+            :custom-period-from='route.query.customPeriodFrom?.toString() || null'
+            :custom-period-to='route.query.customPeriodTo?.toString() || null'
+            @period-change='onPeriodChange'
             @drag-start='onFilterDragStart("period", $event)'
             @drag-end='onFilterDragEnd'
           />
