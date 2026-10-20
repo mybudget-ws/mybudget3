@@ -37,6 +37,9 @@ const dragStartY = ref(0);
 const dragOffsetY = ref(0);
 const isDragging = ref(false);
 
+// true, пока DOM пересобирается после перестановки
+let isReordering = false;
+
 const filterElements = new Map();
 
 const setFilterElement = (filter, element) => {
@@ -89,35 +92,39 @@ const getFilterAtPoint = (y) => {
   return null;
 };
 
-const moveFilter = (filter) => {
-  if (!draggedFilter.value || draggedFilter.value === filter) return;
+const moveFilter = async (filter) => {
+  const dragged = draggedFilter.value;
+
+  if (!dragged || dragged === filter) return;
 
   const order = [...filterOrder.value];
 
-  const fromIndex = order.indexOf(draggedFilter.value);
+  const fromIndex = order.indexOf(dragged);
   const toIndex = order.indexOf(filter);
 
   if (fromIndex === -1 || toIndex === -1) return;
 
+  const element = filterElements.get(dragged);
+  const topBefore = element?.getBoundingClientRect().top ?? 0;
+
   const [moved] = order.splice(fromIndex, 1);
   order.splice(toIndex, 0, moved);
 
+  isReordering = true;
   filterOrder.value = order;
-};
 
-const onPointerDown = (filter, event) => {
-  if (event.pointerType === 'mouse' && event.button !== 0) return;
+  await nextTick();
 
-  draggedFilter.value = filter;
-  dragStartY.value = event.clientY;
-  dragOffsetY.value = 0;
-  isDragging.value = false;
+  // Компенсируем скачок карточки, чтобы она осталась под пальцем
+  if (element && draggedFilter.value === dragged) {
+    dragStartY.value += element.getBoundingClientRect().top - topBefore;
+  }
 
-  event.currentTarget.setPointerCapture(event.pointerId);
+  isReordering = false;
 };
 
 const onPointerMove = (event) => {
-  if (!draggedFilter.value) return;
+  if (!draggedFilter.value || isReordering) return;
 
   const distance = event.clientY - dragStartY.value;
 
@@ -128,21 +135,35 @@ const onPointerMove = (event) => {
   isDragging.value = true;
   dragOffsetY.value = distance;
 
+  event.preventDefault();
+
   const filter = getFilterAtPoint(event.clientY);
 
-  if (filter) {
+  if (!filter) return;
+
+  // Меняем местами только после пересечения середины соседа
+  const rect = filterElements.get(filter).getBoundingClientRect();
+  const middle = rect.top + rect.height / 2;
+
+  const fromIndex = filterOrder.value.indexOf(draggedFilter.value);
+  const toIndex = filterOrder.value.indexOf(filter);
+
+  const crossedDown = toIndex > fromIndex && event.clientY > middle;
+  const crossedUp = toIndex < fromIndex && event.clientY < middle;
+
+  if (crossedDown || crossedUp) {
     moveFilter(filter);
   }
-
-  event.preventDefault();
 };
 
-const onPointerUp = (event) => {
-  if (!draggedFilter.value) return;
+const removeListeners = () => {
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', finishDrag);
+  window.removeEventListener('pointercancel', finishDrag);
+};
 
-  if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-    event.currentTarget.releasePointerCapture(event.pointerId);
-  }
+function finishDrag() {
+  removeListeners();
 
   if (isDragging.value) {
     saveFilterOrder();
@@ -151,6 +172,27 @@ const onPointerUp = (event) => {
   draggedFilter.value = null;
   dragOffsetY.value = 0;
   isDragging.value = false;
+  isReordering = false;
+}
+
+const onPointerDown = (filter, event) => {
+  if (event.pointerType === 'mouse' && event.button !== 0) return;
+
+  // Снимаем неявный захват указателя: при перестановке DOM он всё равно теряется.
+  // События слушаем на window.
+  if (event.target?.hasPointerCapture?.(event.pointerId)) {
+    event.target.releasePointerCapture(event.pointerId);
+  }
+
+  draggedFilter.value = filter;
+  dragStartY.value = event.clientY;
+  dragOffsetY.value = 0;
+  isDragging.value = false;
+  isReordering = false;
+
+  window.addEventListener('pointermove', onPointerMove, { passive: false });
+  window.addEventListener('pointerup', finishDrag);
+  window.addEventListener('pointercancel', finishDrag);
 };
 
 const filterStyle = (filter) => {
@@ -166,6 +208,10 @@ const filterStyle = (filter) => {
 
 onMounted(() => {
   loadFilterOrder();
+});
+
+onBeforeUnmount(() => {
+  removeListeners();
 });
 </script>
 
@@ -198,8 +244,6 @@ onMounted(() => {
               v-if='filter === "period"'
               :mobile-drag-handle='true'
               @pointerdown='onPointerDown("period", $event)'
-              @pointermove='onPointerMove'
-              @pointerup='onPointerUp'
             />
 
             <FilterKinds
@@ -208,8 +252,6 @@ onMounted(() => {
               :mobile-drag-handle='true'
               @update:items='emit("kinds-change", $event)'
               @pointerdown='onPointerDown("kinds", $event)'
-              @pointermove='onPointerMove'
-              @pointerup='onPointerUp'
             />
 
             <FilterAccounts
@@ -218,8 +260,6 @@ onMounted(() => {
               :mobile-drag-handle='true'
               @update:items='emit("accounts-change", $event)'
               @pointerdown='onPointerDown("accounts", $event)'
-              @pointermove='onPointerMove'
-              @pointerup='onPointerUp'
             />
 
             <FilterCategories
@@ -227,8 +267,6 @@ onMounted(() => {
               :mobile-drag-handle='true'
               @update:items='emit("categories-change", $event)'
               @pointerdown='onPointerDown("categories", $event)'
-              @pointermove='onPointerMove'
-              @pointerup='onPointerUp'
             />
 
             <FilterProjects
@@ -236,8 +274,6 @@ onMounted(() => {
               :mobile-drag-handle='true'
               @update:items='emit("projects-change", $event)'
               @pointerdown='onPointerDown("projects", $event)'
-              @pointermove='onPointerMove'
-              @pointerup='onPointerUp'
             />
 
             <FilterProperties
@@ -245,8 +281,6 @@ onMounted(() => {
               :mobile-drag-handle='true'
               @update:items='emit("properties-change", $event)'
               @pointerdown='onPointerDown("properties", $event)'
-              @pointermove='onPointerMove'
-              @pointerup='onPointerUp'
             />
           </div>
         </div>

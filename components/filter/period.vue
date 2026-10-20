@@ -2,8 +2,20 @@
 import {
   IconChevronLeft,
   IconChevronRight,
-  IconGripVertical,
 } from '@tabler/icons-vue';
+
+const props = defineProps({
+  mobileDragHandle: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const emit = defineEmits([
+  'drag-start',
+  'drag-end',
+  'pointerdown',
+]);
 
 const activeDatepicker = ref(null);
 
@@ -47,14 +59,6 @@ const weekDays = [
   'Сб',
   'Вс',
 ];
-
-const emit = defineEmits([
-  'drag-start',
-  'drag-end',
-  'pointerdown',
-  'pointermove',
-  'pointerup',
-]);
 
 const currentMonthName = computed(() => {
   return monthNames[currentMonth.value.getMonth()];
@@ -127,10 +131,14 @@ const isSameDate = (date1, date2) => {
 };
 
 const isStartDate = (day) => {
+  if (!day) return false;
+
   return isSameDate(createDate(day), fromDate.value);
 };
 
 const isEndDate = (day) => {
+  if (!day) return false;
+
   return isSameDate(createDate(day), toDate.value);
 };
 
@@ -170,6 +178,13 @@ const selectDate = (day) => {
     toDate.value = date;
     activeDatepicker.value = null;
   }
+};
+
+const reset = () => {
+  selectedQuickFilter.value = null;
+  fromDate.value = null;
+  toDate.value = null;
+  activeDatepicker.value = null;
 };
 
 const selectQuickFilter = (id) => {
@@ -214,42 +229,18 @@ const nextMonth = () => {
     1
   );
 };
-
-const reset = () => {
-  selectedQuickFilter.value = null;
-  fromDate.value = null;
-  toDate.value = null;
-  activeDatepicker.value = null;
-};
-
-const props = defineProps({
-  mobileDragHandle: {
-    type: Boolean,
-    default: false,
-  },
-});
 </script>
 
 <template>
   <div class='card mb-3'>
     <div class='card-body pt-3 pe-2 pb-1 ps-3'>
       <div class='subheader mb-3 d-flex align-items-center'>
-        <span
-          class='filter-drag-handle me-1'
-          :class='{ "filter-drag-handle-mobile": props.mobileDragHandle }'
-          :draggable='!props.mobileDragHandle'
-          @dragstart='!props.mobileDragHandle && emit("drag-start", $event)'
-          @dragend='!props.mobileDragHandle && emit("drag-end")'
-          @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
-          @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
-          @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
-        >
-          <IconGripVertical
-            size='18'
-            stroke-width='2'
-            class='opacity-40'
-          />
-        </span>
+        <FilterDragHandle
+          :mobile='props.mobileDragHandle'
+          @drag-start='emit("drag-start", $event)'
+          @drag-end='emit("drag-end")'
+          @pointerdown='emit("pointerdown", $event)'
+        />
         Дата
       </div>
 
@@ -430,24 +421,4 @@ const props = defineProps({
   color: var(--tblr-primary);
   font-weight: 600;
 }
-
-.filter-drag-handle {
-  display: inline-flex;
-  align-items: center;
-  cursor: grab;
-}
-
-.filter-drag-handle:active {
-  cursor: grabbing;
-}
-
-.filter-drag-handle-mobile {
-  cursor: grab;
-  touch-action: none;
-}
-
-.filter-drag-handle-mobile:active {
-  cursor: grabbing;
-}
 </style>
-

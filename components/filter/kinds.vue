@@ -1,8 +1,24 @@
 <script setup>
-import { IconGripVertical } from '@tabler/icons-vue';
-
 const route = useRoute();
 const router = useRouter();
+
+const props = defineProps({
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+  mobileDragHandle: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const emit = defineEmits([
+  'update:items',
+  'drag-start',
+  'drag-end',
+  'pointerdown',
+]);
 
 const selectedIds = ref(new Set());
 const items = ref([
@@ -10,26 +26,6 @@ const items = ref([
   { id: 'EXPENSE', name: 'Расход' },
   { id: 'TRANSFER', name: 'Перевод' },
 ]);
-
-const emit = defineEmits([
-  'update:items',
-  'drag-start',
-  'drag-end',
-  'pointerdown',
-  'pointermove',
-  'pointerup',
-]);
-
-const props = defineProps({
-  isLoading: {
-    type: Boolean,
-    default: null,
-  },
-  mobileDragHandle: {
-    type: Boolean,
-    default: false,
-  },
-});
 
 const selectedItems = computed(() => {
   return items.value.filter(item => selectedIds.value.has(item.id));
@@ -72,26 +68,17 @@ watch(selectedItems, (val) => {
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='props.isLoading' />
 
-    <div v-else class='card-body pt-3 pe-2 pb-0 ps-3 pb-1'>
+    <div v-else class='card-body pt-3 pe-2 pb-1 ps-3'>
       <div class='subheader mb-3 d-flex align-items-center'>
-        <span
-          class='filter-drag-handle me-1'
-          :class='{ "filter-drag-handle-mobile": props.mobileDragHandle }'
-          :draggable='!props.mobileDragHandle'
-          @dragstart='!props.mobileDragHandle && emit("drag-start", $event)'
-          @dragend='!props.mobileDragHandle && emit("drag-end")'
-          @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
-          @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
-          @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
-        >
-          <IconGripVertical
-            size='18'
-            stroke-width='2'
-            class='opacity-40'
-          />
-        </span>
+        <FilterDragHandle
+          :mobile='props.mobileDragHandle'
+          @drag-start='emit("drag-start", $event)'
+          @drag-end='emit("drag-end")'
+          @pointerdown='emit("pointerdown", $event)'
+        />
         Тип операций
       </div>
+
       <div v-for='item in items' :key='item.id'>
         <label class='form-check'>
           <input
@@ -108,24 +95,3 @@ watch(selectedItems, (val) => {
     </div>
   </div>
 </template>
-
-<style scoped>
-  .filter-drag-handle {
-    display: inline-flex;
-    align-items: center;
-    cursor: grab;
-  }
-
-  .filter-drag-handle:active {
-    cursor: grabbing;
-  }
-
-  .filter-drag-handle-mobile {
-    cursor: grab;
-    touch-action: none;
-  }
-
-  .filter-drag-handle-mobile:active {
-    cursor: grabbing;
-  }
-</style>

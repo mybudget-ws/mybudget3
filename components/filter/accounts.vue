@@ -1,9 +1,6 @@
 <script setup>
 import api from '~/lib/api';
-import {
-  IconGripVertical,
-  IconPlus,
-} from '@tabler/icons-vue';
+import { IconPlus } from '@tabler/icons-vue';
 
 const props = defineProps({
   reload: {
@@ -26,8 +23,6 @@ const emit = defineEmits([
   'drag-start',
   'drag-end',
   'pointerdown',
-  'pointermove',
-  'pointerup',
 ]);
 
 const {
@@ -85,22 +80,12 @@ const onSaved = async () => {
     <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
       <div class='d-flex align-items-center justify-content-between mb-2'>
         <div class='subheader d-flex align-items-center'>
-          <span
-            class='filter-drag-handle me-1'
-            :class='{ "filter-drag-handle-mobile": props.mobileDragHandle }'
-            :draggable='!props.mobileDragHandle'
-            @dragstart='!props.mobileDragHandle && emit("drag-start", $event)'
-            @dragend='!props.mobileDragHandle && emit("drag-end")'
-            @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
-            @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
-            @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
-          >
-            <IconGripVertical
-              size='18'
-              stroke-width='2'
-              class='opacity-40'
-            />
-          </span>
+          <FilterDragHandle
+            :mobile='props.mobileDragHandle'
+            @drag-start='emit("drag-start", $event)'
+            @drag-end='emit("drag-end")'
+            @pointerdown='emit("pointerdown", $event)'
+          />
           Счета
         </div>
         <button
@@ -143,24 +128,3 @@ const onSaved = async () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-  .filter-drag-handle {
-    display: inline-flex;
-    align-items: center;
-    cursor: grab;
-  }
-
-  .filter-drag-handle:active {
-    cursor: grabbing;
-  }
-  
-  .filter-drag-handle-mobile {
-    cursor: grab;
-    touch-action: none;
-  }
-
-  .filter-drag-handle-mobile:active {
-    cursor: grabbing;
-  }
-</style>
