@@ -5,25 +5,6 @@ import {
   IconGripVertical,
 } from '@tabler/icons-vue';
 
-const props = defineProps({
-  mobileDragHandle: {
-    type: Boolean,
-    default: false,
-  },
-  period: {
-    type: String,
-    default: null,
-  },
-  customPeriodFrom: {
-    type: String,
-    default: null,
-  },
-  customPeriodTo: {
-    type: String,
-    default: null,
-  },
-});
-
 const activeDatepicker = ref(null);
 
 const currentMonth = ref(new Date());
@@ -73,6 +54,7 @@ const emit = defineEmits([
   'pointerdown',
   'pointermove',
   'pointerup',
+  'pointercancel',
   'period-change',
 ]);
 
@@ -247,6 +229,25 @@ const reset = () => {
   emitPeriodChange();
 };
 
+const props = defineProps({
+  mobileDragHandle: {
+    type: Boolean,
+    default: false,
+  },
+  period: {
+    type: String,
+    default: null,
+  },
+  customPeriodFrom: {
+    type: String,
+    default: null,
+  },
+  customPeriodTo: {
+    type: String,
+    default: null,
+  },
+});
+
 const formatDate = (date) => {
   if (date == null) return '';
 
@@ -328,6 +329,7 @@ const emitPeriodChange = () => {
           @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
           @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
           @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
+          @pointercancel='props.mobileDragHandle && emit("pointercancel", $event)'
         >
           <IconGripVertical
             size='18'
@@ -522,4 +524,3 @@ const emitPeriodChange = () => {
   cursor: grabbing;
 }
 </style>
-

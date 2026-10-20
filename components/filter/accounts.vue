@@ -28,6 +28,7 @@ const emit = defineEmits([
   'pointerdown',
   'pointermove',
   'pointerup',
+  'pointercancel',
 ]);
 
 const {
@@ -49,6 +50,9 @@ const {
 
 defineExpose({ load });
 
+// transactionEventTicks увеличивается при каждой перезагрузке транзакций.
+// Значение 1 — первичная загрузка страницы (счета уже загружены watch ниже),
+// поэтому баланс перезагружаем только начиная со второго тика.
 watch(
   () => props.reload,
   () => {
@@ -58,11 +62,18 @@ watch(
   }
 );
 
-watchEffect(() => {
-  if (token.value) {
-    load();
-  }
-});
+// watch по token вместо watchEffect: явная зависимость только от токена.
+// route.query внутри load() читается уже после await, так что watchEffect
+// его и не ловил, — но явный watch надёжнее при будущих правках load().
+watch(
+  () => token.value,
+  (value) => {
+    if (value) {
+      load();
+    }
+  },
+  { immediate: true }
+);
 
 const isShowModal = ref(false);
 
@@ -94,6 +105,7 @@ const onSaved = async () => {
             @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
             @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
             @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
+            @pointercancel='props.mobileDragHandle && emit("pointercancel", $event)'
           >
             <IconGripVertical
               size='18'
@@ -125,7 +137,7 @@ const onSaved = async () => {
             <Amount
               class='d-block text-secondary fs-6'
               :value='item.balance'
-              :currency='item.currency.name'
+              :currency='item.currency?.name'
             />
           </span>
         </label>
@@ -154,7 +166,7 @@ const onSaved = async () => {
   .filter-drag-handle:active {
     cursor: grabbing;
   }
-  
+
   .filter-drag-handle-mobile {
     cursor: grab;
     touch-action: none;

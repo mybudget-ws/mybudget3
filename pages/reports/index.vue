@@ -67,6 +67,61 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
+// Период из мобильной модалки. Один атомарный router.push вместо setPeriod:
+// period и даты кастомного интервала попадают в query одним переходом —
+// график перезагружается ровно один раз (watch на route.query ниже).
+// Имена параметров period/customPeriodFrom/customPeriodTo должны совпадать
+// с теми, что use_chart() читает при сборке filters.
+const onPeriodChange = ({ period: nextPeriod, from, to }) => {
+  const query = { ...route.query };
+
+  if (nextPeriod) {
+    query.period = nextPeriod;
+  } else {
+    delete query.period;
+  }
+
+  if (nextPeriod === 'CUSTOM' && from && to) {
+    query.customPeriodFrom = from;
+    query.customPeriodTo = to;
+  } else {
+    delete query.customPeriodFrom;
+    delete query.customPeriodTo;
+  }
+
+  router.push({ query });
+};
+
+// Решение о редиректе принимаем до регистрации watch на route.query:
+// иначе при savedChart === 'transactions' график баланса успевает
+// загрузиться один лишний раз до фактического перехода.
+const isRedirecting = ref(false);
+
+if (import.meta.client) {
+  const savedChart = localStorage.getItem(
+    REPORTS_CHART_STORAGE_KEY
+  );
+
+  if (route.query.chart === 'balance') {
+    localStorage.setItem(
+      REPORTS_CHART_STORAGE_KEY,
+      'balance'
+    );
+  } else if (savedChart === 'transactions') {
+    isRedirecting.value = true;
+
+    router.replace({
+      path: '/reports/transactions',
+      query: route.query,
+    });
+  } else {
+    localStorage.setItem(
+      REPORTS_CHART_STORAGE_KEY,
+      'balance'
+    );
+  }
+}
+
 const load = async () => {
   isLoading.value = true;
   isError.value = false;
@@ -86,38 +141,11 @@ const load = async () => {
   }
 };
 
-onMounted(() => {
-  if (!import.meta.client) return;
-
-  const savedChart = localStorage.getItem(
-    REPORTS_CHART_STORAGE_KEY
-  );
-
-  if (route.query.chart === 'balance') {
-    localStorage.setItem(
-      REPORTS_CHART_STORAGE_KEY,
-      'balance'
-    );
-
-    return;
-  }
-
-  if (savedChart === 'transactions') {
-    router.replace({
-      path: '/reports/transactions',
-      query: route.query,
-    });
-  } else {
-    localStorage.setItem(
-      REPORTS_CHART_STORAGE_KEY,
-      'balance'
-    );
-  }
-});
-
 watch(
   () => route.query,
   () => {
+    if (isRedirecting.value) return;
+
     if (token.value) load();
   },
   { immediate: true }
@@ -194,7 +222,11 @@ const chartOptions = computed(() => ({
   <ModalFiltersWindow
     v-if='isShowMobileFilters'
     is-loaded
+    :period='period || ""'
+    :custom-period-from='route.query.customPeriodFrom || ""'
+    :custom-period-to='route.query.customPeriodTo || ""'
     @close='isShowMobileFilters = false'
+    @period-change='onPeriodChange'
     @kinds-change='onKindsChange'
     @accounts-change='onAccountsChange'
     @categories-change='onCategoriesChange'
@@ -216,7 +248,7 @@ const chartOptions = computed(() => ({
               v-for='kind in selectedKinds'
               :key='kind.id'
               :name='kind.name'
-              :is-x='true'              
+              :is-x='true'
               @click='onKindClick(kind.id)'
             />
 

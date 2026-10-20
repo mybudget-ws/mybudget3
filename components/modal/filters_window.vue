@@ -8,10 +8,23 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  period: {
+    type: String,
+    default: null,
+  },
+  customPeriodFrom: {
+    type: String,
+    default: null,
+  },
+  customPeriodTo: {
+    type: String,
+    default: null,
+  },
 });
 
 const emit = defineEmits([
   'close',
+  'period-change',
   'kinds-change',
   'accounts-change',
   'categories-change',
@@ -57,8 +70,10 @@ const loadFilterOrder = () => {
 
     if (!Array.isArray(saved)) return;
 
-    const valid = saved.filter((key) => defaultFilterOrder.includes(key));
-    const missing = defaultFilterOrder.filter((key) => !valid.includes(key));
+    const valid = [...new Set(saved)]
+      .filter((key) => defaultFilterOrder.includes(key));
+    const missing = defaultFilterOrder
+      .filter((key) => !valid.includes(key));
 
     filterOrder.value = [...valid, ...missing];
   } catch {
@@ -76,8 +91,14 @@ const saveFilterOrder = () => {
 };
 
 const getFilterAtPoint = (y) => {
-  for (const [filter, element] of filterElements) {
+  // Итерируем по актуальному порядку фильтров, а не по порядку вставки
+  // в Map: после перестановок порядок ключей Map может расходиться с DOM.
+  for (const filter of filterOrder.value) {
     if (filter === draggedFilter.value) continue;
+
+    const element = filterElements.get(filter);
+
+    if (!element) continue;
 
     const rect = element.getBoundingClientRect();
 
@@ -113,7 +134,11 @@ const onPointerDown = (filter, event) => {
   dragOffsetY.value = 0;
   isDragging.value = false;
 
-  event.currentTarget.setPointerCapture(event.pointerId);
+  try {
+    event.currentTarget.setPointerCapture(event.pointerId);
+  } catch {
+    // указатель мог быть уже освобождён браузером
+  }
 };
 
 const onPointerMove = (event) => {
@@ -137,6 +162,12 @@ const onPointerMove = (event) => {
   event.preventDefault();
 };
 
+const resetDragState = () => {
+  draggedFilter.value = null;
+  dragOffsetY.value = 0;
+  isDragging.value = false;
+};
+
 const onPointerUp = (event) => {
   if (!draggedFilter.value) return;
 
@@ -148,9 +179,19 @@ const onPointerUp = (event) => {
     saveFilterOrder();
   }
 
-  draggedFilter.value = null;
-  dragOffsetY.value = 0;
-  isDragging.value = false;
+  resetDragState();
+};
+
+// Жест прерван системой (входящий звонок, системный жест и т.п.).
+// Без обработки drag «зависал»: элемент оставался с transform и zIndex.
+const onPointerCancel = () => {
+  if (!draggedFilter.value) return;
+
+  if (isDragging.value) {
+    saveFilterOrder();
+  }
+
+  resetDragState();
 };
 
 const filterStyle = (filter) => {
@@ -196,10 +237,15 @@ onMounted(() => {
           >
             <FilterPeriod
               v-if='filter === "period"'
+              :period='props.period'
+              :custom-period-from='props.customPeriodFrom'
+              :custom-period-to='props.customPeriodTo'
               :mobile-drag-handle='true'
+              @period-change='emit(&apos;period-change&apos;, $event)'
               @pointerdown='onPointerDown("period", $event)'
               @pointermove='onPointerMove'
               @pointerup='onPointerUp'
+              @pointercancel='onPointerCancel'
             />
 
             <FilterKinds
@@ -210,6 +256,7 @@ onMounted(() => {
               @pointerdown='onPointerDown("kinds", $event)'
               @pointermove='onPointerMove'
               @pointerup='onPointerUp'
+              @pointercancel='onPointerCancel'
             />
 
             <FilterAccounts
@@ -220,6 +267,7 @@ onMounted(() => {
               @pointerdown='onPointerDown("accounts", $event)'
               @pointermove='onPointerMove'
               @pointerup='onPointerUp'
+              @pointercancel='onPointerCancel'
             />
 
             <FilterCategories
@@ -229,6 +277,7 @@ onMounted(() => {
               @pointerdown='onPointerDown("categories", $event)'
               @pointermove='onPointerMove'
               @pointerup='onPointerUp'
+              @pointercancel='onPointerCancel'
             />
 
             <FilterProjects
@@ -238,6 +287,7 @@ onMounted(() => {
               @pointerdown='onPointerDown("projects", $event)'
               @pointermove='onPointerMove'
               @pointerup='onPointerUp'
+              @pointercancel='onPointerCancel'
             />
 
             <FilterProperties
@@ -247,6 +297,7 @@ onMounted(() => {
               @pointerdown='onPointerDown("properties", $event)'
               @pointermove='onPointerMove'
               @pointerup='onPointerUp'
+              @pointercancel='onPointerCancel'
             />
           </div>
         </div>
@@ -273,6 +324,8 @@ onMounted(() => {
 
 .mobile-filter-item-dragging {
   transition: none;
-  opacity: 0.8;
+  opacity: 0.9;
+  /* drop-shadow следует форме карточки внутри, а не боксу обёртки */
+  filter: drop-shadow(0 0.5rem 0.75rem rgba(0, 0, 0, 0.25));
 }
 </style>

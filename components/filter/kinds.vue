@@ -18,6 +18,7 @@ const emit = defineEmits([
   'pointerdown',
   'pointermove',
   'pointerup',
+  'pointercancel',
 ]);
 
 const props = defineProps({
@@ -37,26 +38,31 @@ const selectedItems = computed(() => {
 
 const initSelectedItemsByQuery = (val = '') => {
   const queryIds = val?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.filter(Boolean));
+
+  // Игнорируем значения из URL, которых нет среди известных типов операций
+  selectedIds.value = new Set(
+    queryIds.filter((id) => items.value.some((item) => item.id === id))
+  );
 };
 
 const toggleSelection = (id) => {
-  const next = new Set(selectedIds.value);
-
-  if (next.has(id)) {
-    next.delete(id);
+  if (selectedIds.value.has(id)) {
+    selectedIds.value.delete(id);
   } else {
-    next.add(id);
+    selectedIds.value.add(id);
   }
 
-  selectedIds.value = next;
+  const query = { ...route.query };
+  const kinds = Array.from(selectedIds.value).join(',');
 
-  router.replace({
-    query: {
-      ...route.query,
-      kinds: Array.from(selectedIds.value).join(','),
-    },
-  });
+  // Пустой выбор не оставляет «мёртвый» параметр kinds= в URL
+  if (kinds) {
+    query.kinds = kinds;
+  } else {
+    delete query.kinds;
+  }
+
+  router.replace({ query });
 };
 
 watch(
@@ -87,6 +93,7 @@ watch(selectedItems, (val) => {
           @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
           @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
           @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
+          @pointercancel='props.mobileDragHandle && emit("pointercancel", $event)'
         >
           <IconGripVertical
             size='18'

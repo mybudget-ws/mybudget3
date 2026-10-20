@@ -24,6 +24,7 @@ const emit = defineEmits([
   'pointerdown',
   'pointermove',
   'pointerup',
+  'pointercancel',
 ]);
 
 const {
@@ -40,11 +41,18 @@ const {
   loadFn: () => api.properties(token.value),
 });
 
-watchEffect(() => {
-  if (token.value) {
-    load();
-  }
-});
+// watch по token вместо watchEffect: явная зависимость только от токена.
+// route.query внутри load() читается уже после await, так что watchEffect
+// его и не ловил, — но явный watch надёжнее при будущих правках load().
+watch(
+  () => token.value,
+  (value) => {
+    if (value) {
+      load();
+    }
+  },
+  { immediate: true }
+);
 
 const isShowModal = ref(false);
 
@@ -75,6 +83,7 @@ const onSaved = async () => {
             @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
             @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
             @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
+            @pointercancel='props.mobileDragHandle && emit("pointercancel", $event)'
           >
             <IconGripVertical
               size='18'

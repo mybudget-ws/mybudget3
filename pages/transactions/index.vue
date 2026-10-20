@@ -1,79 +1,43 @@
 <script setup>
-import {
-  IconArrowDown,
-  IconArrowUp,
-  IconArrowsRightLeft,
-  IconSearch,
-  IconFilter,
-} from '@tabler/icons-vue';
-
+import VueApexCharts from 'vue3-apexcharts';
 import api from '~/lib/api';
-import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
-import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
+import { CHART_COLORS, REPORTS_CHART_STORAGE_KEY } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
+import { useChart } from '~/composables/use_chart';
 import { useDevice } from '~/composables/use_device';
 
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
-const { isMobile } = useDevice();
+const {
+  CHART_HEIGHT,
+  CHART_LABEL_COLOR,
+  PERIODS,
+  period,
+  setPeriod,
+  filters,
+  onCategoryClick,
+  onAccountClick,
+  onProjectClick,
+  onPropertyClick,
+  onKindClick,
+} = useChart();
 
-const PER_PAGE = 50;
-const hasMore = ref(true);
-const isLoadingMore = ref(false);
-const isLoading = ref(false);
-const isQuiteLoading = ref(false);
-const isLoaded = ref(false);
-const isCopyItem = ref(false);
-const isShowModal = ref(false);
-const isShowModalTransfer = ref(false);
-const isShowModalAccount = ref(false);
-const isShowMobileFilters = ref(false);
-const currentKind = ref(KIND_EXPENSE);
-const currentItem = ref(null);
-const page = ref(1);
-const transactions = ref([]);
-const transactionEventTicks = ref(1);
+const CHART_TYPE = 'bar';
+const isLoading = ref(true);
+const isError = ref(false);
+const chartData = ref({});
+
+const { isMobile } = useDevice();
+const series = computed(() => chartData.value.series);
+const categories = computed(() => chartData.value.categories);
+
 const selectedAccounts = ref([]);
 const selectedCategories = ref([]);
 const selectedKinds = ref([]);
 const selectedProjects = ref([]);
 const selectedProperties = ref([]);
-
-const FILTERS_STORAGE_KEY = 'transactions-filters-order';
-
-const defaultFilterOrder = [
-  'period',
-  'kinds',
-  'accounts',
-  'categories',
-  'projects',
-  'properties',
-];
-
-const filterOrder = ref([...defaultFilterOrder]);
-const draggedFilter = ref(null);
-
-const description = ref(route.query.description?.toString() || '');
-
-const filters = computed(() => {
-  return {
-    accountIds: parseNumberArray(route.query.accounts),
-    categoryIds: parseNumberArray(route.query.categories),
-    projectIds: parseNumberArray(route.query.projects),
-    propertyIds: parseNumberArray(route.query.properties),
-    kinds: parseStringArray(route.query.kinds),
-    description: route.query.description?.toString().trim() || null,
-    period: route.query.period?.toString() || null,
-    customPeriodFrom: route.query.customPeriodFrom?.toString() || null,
-    customPeriodTo: route.query.customPeriodTo?.toString() || null,
-  };
-});
-
-const isEmpty = computed(() => {
-  if (isLoading.value) return false;
-  return transactions.value.length === 0;
-});
+const isShowMobileFilters = ref(false);
 
 const isTopFiltersVisible = computed(() => (
   selectedCategories.value.length
@@ -81,79 +45,10 @@ const isTopFiltersVisible = computed(() => (
     || selectedAccounts.value.length
     || selectedProperties.value.length
     || selectedKinds.value.length
-    || route.query.description
 ));
 
-const params = computed(() => ({
-  page: page.value,
-  perPage: PER_PAGE,
-  filters: filters.value,
-}));
-
-const loadFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem(FILTERS_STORAGE_KEY)
-    );
-
-    if (!Array.isArray(saved)) return;
-
-    const valid = saved.filter((key) => defaultFilterOrder.includes(key));
-    const missing = defaultFilterOrder.filter((key) => !valid.includes(key));
-
-    filterOrder.value = [...valid, ...missing];
-  } catch {
-    filterOrder.value = [...defaultFilterOrder];
-  }
-};
-
-const saveFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  localStorage.setItem(
-    FILTERS_STORAGE_KEY,
-    JSON.stringify(filterOrder.value)
-  );
-};
-
-const onFilterDragStart = (filter, event) => {
-  draggedFilter.value = filter;
-
-  event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/plain', filter);
-
-  const filterItem = event.currentTarget.closest('.filter-item');
-
-  if (filterItem) {
-    event.dataTransfer.setDragImage(
-      filterItem,
-      event.clientX - filterItem.getBoundingClientRect().left,
-      event.clientY - filterItem.getBoundingClientRect().top
-    );
-  }
-};
-
-const onFilterDragOver = (filter) => {
-  if (!draggedFilter.value || draggedFilter.value === filter) return;
-
-  const order = [...filterOrder.value];
-
-  const fromIndex = order.indexOf(draggedFilter.value);
-  const toIndex = order.indexOf(filter);
-
-  if (fromIndex === -1 || toIndex === -1) return;
-
-  const [moved] = order.splice(fromIndex, 1);
-  order.splice(toIndex, 0, moved);
-
-  filterOrder.value = order;
-};
-
-const onFilterDragEnd = () => {
-  saveFilterOrder();
-  draggedFilter.value = null;
+const onAccountsChange = (accounts) => {
+  selectedAccounts.value = accounts;
 };
 
 const onCategoriesChange = (categories) => {
@@ -164,10 +59,6 @@ const onProjectsChange = (projects) => {
   selectedProjects.value = projects;
 };
 
-const onAccountsChange = (accounts) => {
-  selectedAccounts.value = accounts;
-};
-
 const onPropertiesChange = (properties) => {
   selectedProperties.value = properties;
 };
@@ -176,666 +67,253 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
-const onPeriodChange = ({ period, from, to }) => {
-  const nextQuery = { ...route.query };
+// Период из мобильной модалки. Один атомарный router.push вместо setPeriod:
+// period и даты кастомного интервала попадают в query одним переходом —
+// график перезагружается ровно один раз (watch на route.query ниже).
+// Имена параметров period/customPeriodFrom/customPeriodTo должны совпадать
+// с теми, что use_chart() читает при сборке filters.
+const onPeriodChange = ({ period: nextPeriod, from, to }) => {
+  const query = { ...route.query };
 
-  if (period) {
-    nextQuery.period = period;
+  if (nextPeriod) {
+    query.period = nextPeriod;
   } else {
-    delete nextQuery.period;
+    delete query.period;
   }
 
-  if (period === 'CUSTOM' && from && to) {
-    nextQuery.customPeriodFrom = from;
-    nextQuery.customPeriodTo = to;
+  if (nextPeriod === 'CUSTOM' && from && to) {
+    query.customPeriodFrom = from;
+    query.customPeriodTo = to;
   } else {
-    delete nextQuery.customPeriodFrom;
-    delete nextQuery.customPeriodTo;
+    delete query.customPeriodFrom;
+    delete query.customPeriodTo;
   }
 
-  router.replace({ query: nextQuery });
+  router.push({ query });
 };
 
-const load = async (isQuite = false, append = false) => {
-  if (isQuite) {
-    isQuiteLoading.value = true;
-  } else {
-    isLoading.value = true;
-  }
+onMounted(() => {
+  if (!import.meta.client) return;
+
+  localStorage.setItem(
+    REPORTS_CHART_STORAGE_KEY,
+    'transactions'
+  );
+});
+
+const load = async () => {
+  isLoading.value = true;
+  isError.value = false;
 
   try {
-    const items = await api.transactions(token.value, params.value);
-
-    if (items) {
-      if (append) {
-        transactions.value = [...transactions.value, ...items];
-      } else {
-        transactions.value = items;
-      }
-      hasMore.value = items.length === PER_PAGE;
-      isLoaded.value = true;
+    const result = await api.chartTransactions(token.value, filters.value);
+    if (result) {
+      chartData.value = result;
+    } else {
+      isError.value = true;
     }
   } catch (err) {
     console.error(err);
+    isError.value = true;
   } finally {
-    if (isQuite) transactionEventTicks.value++;
     isLoading.value = false;
-    isQuiteLoading.value = false;
   }
 };
 
-const loadMore = async () => {
-  if (isLoadingMore.value) return;
-
-  isLoadingMore.value = true;
-  page.value += 1;
-
-  await load(true, true);
-
-  isLoadingMore.value = false;
-};
-
-const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить операцию?')) {
-    isQuiteLoading.value = true;
-    await api.destroyTransaction(token.value, id);
-    await load(true);
-  }
-};
-
-const openCreate = (kind) => {
-  currentKind.value = kind;
-  currentItem.value = null;
-  isCopyItem.value = false;
-  isShowModal.value = true;
-};
-
-const openCreateMobile = (kind) => {
-  const backUrl = router.resolve({
-    path: route.path,
-    query: route.query,
-  }).href;
-
-  router.push({
-    path: '/transactions/new_transaction_mobile',
-    query: {
-      ...route.query,
-      kind,
-      back_url: backUrl,
-    },
-  });
-};
-
-const openCreateTransferMobile = () => {
-  const backUrl = router.resolve({
-    path: route.path,
-    query: route.query,
-  }).href;
-
-  router.push({
-    path: '/transactions/new_transfer_mobile',
-    query: {
-      ...route.query,
-      back_url: backUrl,
-    },
-  });
-};
-
-const openEdit = (item) => {
-  if (isMobile.value) {
-    const backUrl = router.resolve({
-      path: route.path,
-      query: route.query,
-    }).href;
-
-    router.push({
-      path: '/transactions/new_transaction_mobile',
-      query: {
-        id: item.id,
-        kind: item.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
-        categories: item.categories?.map(category => category.id).join(',') || undefined,
-        project_id: item.project?.id || undefined,
-        property_id: item.property?.id || undefined,
-        back_url: backUrl,
-      },
-    });
-
-    return;
-  }
-
-  currentItem.value = { ...item };
-  currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
-  isCopyItem.value = false;
-  isShowModal.value = true;
-};
-
-const openCopy = (item) => {
-  if (isMobile.value) {
-    const backUrl = router.resolve({
-      path: route.path,
-      query: route.query,
-    }).href;
-    router.push({
-      path: '/transactions/new_transaction_mobile',
-      query: {
-        copy_id: item.id,
-        kind: item.amount > 0 ? KIND_INCOME : KIND_EXPENSE,
-        categories: item.categories?.map(category => category.id).join(',') || undefined,
-        project_id: item.project?.id || undefined,
-        property_id: item.property?.id || undefined,
-        back_url: backUrl,
-      },
-    });
-
-    return;
-  }
-
-  currentItem.value = { ...item, id: undefined };
-  currentKind.value = item.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
-  isCopyItem.value = true;
-  isShowModal.value = true;
-};
-
-const openCreateTransfer = () => {
-  if (isMobile.value) {
-    openCreateTransferMobile();
-    return;
-  }
-
-  isShowModalTransfer.value = true;
-};
-
-const onSaved = async () => {
-  isShowModal.value = false;
-  isShowModalTransfer.value = false;
-  isShowModalAccount.value = false;
-  isCopyItem.value = false;
-  await load(true);
-};
-
-// TODO: Подумать, унифицировать, этот код с кодом
-//       в components/categories.vue
-const onCategoryClick = (id) => {
-  const current = route.query.categories ?
-    route.query.categories.toString().split(',').map(Number).filter(Boolean) :
-    [];
-
-  const newCategories = current.includes(id) ?
-    current.filter(c => c !== id) :
-    [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newCategories.length > 0) {
-    nextQuery.categories = newCategories.join(',');
-  } else {
-    delete nextQuery.categories;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onAccountNew = () => {
-  isShowModal.value = false;
-  isShowModalTransfer.value = false;
-  isShowModalAccount.value = true;
-};
-
-const onProjectClick = (id) => {
-  const current = route.query.projects
-    ? route.query.projects.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProjects = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProjects.length > 0) {
-    nextQuery.projects = newProjects.join(',');
-  } else {
-    delete nextQuery.projects;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onAccountClick = (id) => {
-  const current = route.query.accounts
-    ? route.query.accounts.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newAccounts = current.includes(id)
-    ? current.filter(a => a !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newAccounts.length > 0) {
-    nextQuery.accounts = newAccounts.join(',');
-  } else {
-    delete nextQuery.accounts;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onPropertyClick = (id) => {
-  const current = route.query.properties
-    ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProperties = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProperties.length > 0) {
-    nextQuery.properties = newProperties.join(',');
-  } else {
-    delete nextQuery.properties;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onKindClick = (id) => {
-  const current = route.query.kinds
-    ? route.query.kinds.toString().split(',').filter(Boolean)
-    : [];
-
-  const newKinds = current.includes(id)
-    ? current.filter(k => k !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newKinds.length > 0) {
-    nextQuery.kinds = newKinds.join(',');
-  } else {
-    delete nextQuery.kinds;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onDescriptionSearch = () => {
-  const nextQuery = { ...route.query };
-
-  if (description.value.trim()) {
-    nextQuery.description = description.value.trim();
-  } else {
-    delete nextQuery.description;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const clearDescriptionSearch = () => {
-  description.value = '';
-
-  const nextQuery = { ...route.query };
-  delete nextQuery.description;
-
-  router.replace({ query: nextQuery });
-};
-
-// Тут watchEffect не использую, т.к. похоже
-// watch на route.query срабатывает.
-//
-// watchEffect(() => {
-//   if (token.value) load();
-// });
 watch(
   () => route.query,
   () => {
-    if (!token.value) return;
-
-    page.value = 1;
-    load(false, false);
+    if (token.value) load();
   },
   { immediate: true }
 );
-watch(
-  () => route.query.description,
-  (value) => {
-    description.value = value?.toString() || '';
-  }
-);
-onMounted(() => {
-  loadFilterOrder();
-});
+
+const chartOptions = computed(() => ({
+  chart: {
+    type: CHART_TYPE,
+    fontFamily: 'inherit',
+    height: CHART_HEIGHT,
+    parentHeightOffset: 0,
+    toolbar: { show: false, },
+    animations: { enabled: false },
+  },
+  colors: CHART_COLORS,
+  tooltip: { theme: 'dark' },
+  stroke: { show: false },
+  grid: {
+    padding: {
+      top: -20,
+      right: 0,
+      left: -4,
+      bottom: -4
+    },
+    strokeDashArray: 4,
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  xaxis: {
+    categories: [...categories.value],
+    labels: {
+      padding: 0,
+      style: {
+        colors: CHART_LABEL_COLOR,
+      }
+    },
+    tooltip: { enabled: false },
+  },
+  yaxis: {
+    labels: {
+      padding: 4,
+      style: {
+        colors: CHART_LABEL_COLOR,
+      },
+      formatter: (val) => {
+        return new Intl.NumberFormat('ru-RU', {
+          maximumFractionDigits: 0,
+          useGrouping: true,
+        }).format(val);
+      },
+    },
+  },
+  legend: {
+    show: true,
+    position: 'bottom',
+    offsetY: 12,
+    markers: {
+      width: 10,
+      height: 10,
+      radius: 100,
+    },
+    itemMargin: {
+      horizontal: 8,
+      vertical: 8
+    },
+    labels: {
+      colors: CHART_LABEL_COLOR,
+    },
+  },
+  // labels: [
+  //   '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24',
+  //   '2020-06-25', '2020-06-26', '2020-06-27', '2020-06-28',
+  //   '2020-06-29', '2020-06-30', '2020-07-01', '2020-07-02'
+  // ],
+}));
 </script>
 
 <template>
-  <ModalNewTransaction
-    v-if='isShowModal'
-    :kind='currentKind'
-    :item='currentItem'
-    :is-copy='isCopyItem'
-    @saved='onSaved'
-    @close='isShowModal = false'
-    @account-new='onAccountNew'
-  />
-  <ModalNewTransfer
-    v-if='isShowModalTransfer'
-    @saved='onSaved'
-    @close='isShowModalTransfer = false'
-    @account-new='onAccountNew'
-  />
-  <ModalNewAccount
-    v-if='isShowModalAccount'
-    @saved='onSaved'
-    @close='isShowModalAccount = false'
-  />
   <ModalFiltersWindow
     v-if='isShowMobileFilters'
-    :is-loaded='isLoaded'
-    :transaction-event-ticks='transactionEventTicks'
+    is-loaded
+    :period='period || ""'
+    :custom-period-from='route.query.customPeriodFrom || ""'
+    :custom-period-to='route.query.customPeriodTo || ""'
     @close='isShowMobileFilters = false'
+    @period-change='onPeriodChange'
     @kinds-change='onKindsChange'
     @accounts-change='onAccountsChange'
     @categories-change='onCategoriesChange'
     @projects-change='onProjectsChange'
     @properties-change='onPropertiesChange'
   />
-
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
-      <!-- https://tabler.io/admin-template/preview -->
       <div class='card'>
-        <div class='card-table'>
-          <div class='card-header pe-0'>
-            <div class='row w-full align-items-center'>
-              <div class='col'>
-                <div class='d-flex align-items-center'>
-                  <h2 class='mb-0'>Операции</h2>
-                  <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
-                </div>
-              </div>
-              <div class='col-md-auto col-sm-12'>
-                <div class='ms-auto d-flex flex-wrap btn-list'>
-                  <div
-                    class='input-group input-group-flat'
-                    :class='{
-                      "w-auto" : !isMobile,
-                      "mt-1" : isMobile,
-                     }'
-                  >
-                    <span class='input-group-text'>
-                      <IconSearch size='20' stroke-width='1' />
-                    </span>
-
-                    <input
-                      id='advanced-table-search'
-                      v-model='description'
-                      type='text'
-                      class='form-control ps-2'
-                      placeholder='Поиск по описанию'
-                      @keyup.enter='onDescriptionSearch'
-                    >
-                    <span class='input-group-text'>
-                      <kbd>Enter</kbd>
-                    </span>
-                  </div>
-
-                  <div
-                    class='d-flex justify-content-between'
-                    :class='{ "w-100": isMobile }'
-                  >
-                    <div class='d-flex gap-2'>
-                      <button
-                        class='btn btn-outline-green'
-                        type='button'
-                        @click='isMobile ? openCreateMobile(KIND_INCOME) : openCreate(KIND_INCOME)'
-                      >
-                        <IconArrowUp stroke-width='2' />
-                      </button>
-                      <button
-                        class='btn btn-outline-secondary'
-                        type='button'
-                        @click='openCreateTransfer()'
-                      >
-                        <IconArrowsRightLeft stroke-width='2' />
-                      </button>
-                      <button
-                        class='btn btn-primary'
-                        type='button'
-                        @click='isMobile ? openCreateMobile(KIND_EXPENSE) : openCreate(KIND_EXPENSE)'
-                      >
-                        <IconArrowDown stroke-width='2' />
-                      </button>
-                    </div>
-                    <button
-                      v-if='isMobile'
-                      class='btn btn-ghost-secondary'
-                      type='button'
-                      @click='isShowMobileFilters = true'
-                    >
-                      <IconFilter stroke-width='2' />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            v-if='isTopFiltersVisible'
-            class='card-body border-bottom'
-          >
-            <div class='badges-list'>
-              <BadgeCategory
-                v-if='route.query.description'
-                :name='route.query.description'
-                :is-x='true'
-                @click='clearDescriptionSearch'
-              />
-              <BadgeCategory
-                v-for='kind in selectedKinds'
-                :key='kind.id'
-                :name='kind.name'
-                :is-x='true'
-                @click='onKindClick(kind.id)'
-              />
-              <BadgeAccount
-                v-for='account in selectedAccounts'
-                :key='account.id'
-                :name='account.name'
-                :is-x='true'
-                @click='onAccountClick(account.id)'
-              />
-              <BadgeCategory
-                v-for='category in selectedCategories'
-                :key='category.id'
-                :name='category.name'
-                :is-x='true'
-                @click='onCategoryClick(category.id)'
-              />
-              <BadgeProject
-                v-for='project in selectedProjects'
-                :key='project.id'
-                :name='project.name'
-                :is-x='true'
-                @click='onProjectClick(project.id)'
-              />
-              <BadgeProperty
-                v-for='property in selectedProperties'
-                :key='property.id'
-                :name='property.name'
-                :is-x='true'
-                @click='onPropertyClick(property.id)'
-              />
-            </div>
-          </div>
-
-          <div v-if='isLoading' class='card-body text-center'>
-            <PlaceholderLoading />
-          </div>
-
-          <div v-if='!isLoading && isMobile'>
-            <TransactionItem
-              v-for='(item, index) in transactions'
-              :key='item.id'
-              :transaction='item'
-              is-mobile
-              is-show-copy
-              is-clickable
-              :is-last='index === transactions.length - 1'
-              @edit='openEdit'
-              @copy='openCopy'
-              @delete='destroy'
-              @account-click='onAccountClick'
-              @project-click='onProjectClick'
-              @property-click='onPropertyClick'
-              @category-click='onCategoryClick'
+        <ReportsHeader
+          :period='period'
+          :periods='PERIODS'
+          @change-period='setPeriod'
+          @show-filters='isShowMobileFilters = true'
+        />
+        <div v-if='isTopFiltersVisible' class='card-body border-top'>
+          <div class='badges-list'>
+            <BadgeCategory
+              v-for='kind in selectedKinds'
+              :key='kind.id'
+              :name='kind.name'
+              :is-x='true'
+              @click='onKindClick(kind.id)'
             />
-            <div v-if='isEmpty' class='text-secondary text-center mt-3 mb-3'>
-              Похоже таких операций ещё нет
-            </div>
 
-            <button
-              v-else
-              class='btn btn-outline-secondary w-100 border-0'
-              :disabled='!hasMore || isLoadingMore'
-              @click='loadMore'
-            >
-              <template v-if='isLoadingMore'>
-                Загрузка...
-              </template>
+            <BadgeAccount
+              v-for='account in selectedAccounts'
+              :key='account.id'
+              :name='account.name'
+              :is-x='true'
+              @click='onAccountClick(account.id)'
+            />
 
-              <template v-else-if='hasMore'>
-                Загрузить ещё
-              </template>
+            <BadgeCategory
+              v-for='category in selectedCategories'
+              :key='category.id'
+              :name='category.name'
+              :is-x='true'
+              @click='onCategoryClick(category.id)'
+            />
 
-              <template v-else>
-                Операций больше нет
-              </template>
-            </button>
-          </div>
+            <BadgeProject
+              v-for='project in selectedProjects'
+              :key='project.id'
+              :name='project.name'
+              :is-x='true'
+              @click='onProjectClick(project.id)'
+            />
 
-          <div v-if='!isLoading && !isMobile' class='advanced-table'>
-            <div class='table-responsive'>
-              <table class='table table-vcenter table-selectable'>
-                <thead>
-                  <tr>
-                    <th class='w-1 text-nowrap'>Дата</th>
-                    <th class='w-1 text-nowrap text-end'>Величина</th>
-                    <th class='w-1 text-nowrap'>Счёт</th>
-                    <th>Категории</th>
-                    <th>Описание</th>
-                    <th class='w-1'/>
-                  </tr>
-                </thead>
-                <tbody class='table-tbody'>
-                  <TransactionItem
-                    v-for='item in transactions'
-                    :key='item.id'
-                    :transaction='item'
-                    is-clickable
-                    is-show-copy
-                    @edit='openEdit'
-                    @copy='openCopy'
-                    @delete='destroy'
-                    @account-click='onAccountClick'
-                    @project-click='onProjectClick'
-                    @property-click='onPropertyClick'
-                    @category-click='onCategoryClick'
-                  />
-                </tbody>
-              </table>
-            </div>
-
-            <div v-if='isEmpty' class='card-footer bg-transparent'>
-              <div class='text-secondary'>
-                Похоже таких операций ещё нет
-              </div>
-            </div>
-            <div v-else class='card-footer bg-transparent border-top'>
-              <button                
-                class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
-                :disabled='!hasMore || isLoadingMore'
-                @click='loadMore'
-              >
-                <template v-if='isLoadingMore'>
-                  Загрузка...
-                </template>
-
-                <template v-else-if='hasMore'>
-                  Загрузить ещё
-                </template>
-
-                <template v-else>
-                  Операций больше нет
-                </template>
-              </button>
-            </div>
+            <BadgeProperty
+              v-for='property in selectedProperties'
+              :key='property.id'
+              :name='property.name'
+              :is-x='true'
+              @click='onPropertyClick(property.id)'
+            />
           </div>
         </div>
       </div>
+
+      <div class='card mt-3'>
+        <div class='card-header'>
+          <NuxtLink
+            :to='{ path: "/reports", query: { ...route.query, period, chart: "balance" } }'
+            class='card-title text-secondary'
+          >
+            Баланс
+          </NuxtLink>
+          <h3 class='card-title ms-3'>Операции</h3>
+        </div>
+        <div class='card-body'>
+          <div
+            v-if='isLoading'
+            class='d-flex align-items-center justify-content-center h-100'
+            :style='{ minHeight: `${CHART_HEIGHT}px` }'
+          >
+            <PlaceholderLoading />
+          </div>
+          <div v-else-if='!isError' class='w-full'>
+            <VueApexCharts
+              :type='CHART_TYPE'
+              :height='CHART_HEIGHT'
+              :options='chartOptions'
+              :series='series'
+            />
+          </div>
+          <AlertWarning
+            v-else
+            title='Не удалось загрузить график'
+            description='Попробуйте обновить страницу'
+          />
+        </div>
+      </div>
     </div>
+
     <div
       v-show='!isMobile'
       class='col-sm-12 col-lg-3 col-xl-2'
     >
-      <div class='filter-list'>
-        <div
-          v-for='filter in filterOrder'
-          :key='filter'
-          class='filter-item'
-          :class='{ "filter-item-dragging": draggedFilter === filter }'
-          @dragover.prevent='onFilterDragOver(filter)'
-        >
-          <FilterPeriod
-            v-if='filter === "period"'
-            :period='route.query.period?.toString() || null'
-            :custom-period-from='route.query.customPeriodFrom?.toString() || null'
-            :custom-period-to='route.query.customPeriodTo?.toString() || null'
-            @period-change='onPeriodChange'
-            @drag-start='onFilterDragStart("period", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterKinds
-            v-else-if='filter === "kinds"'
-            :is-loading='!isLoaded'
-            @update:items='onKindsChange'
-            @drag-start='onFilterDragStart("kinds", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterAccounts
-            v-else-if='filter === "accounts"'
-            :reload='transactionEventTicks'
-            @update:items='onAccountsChange'
-            @drag-start='onFilterDragStart("accounts", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterCategories
-            v-else-if='filter === "categories"'
-            @update:items='onCategoriesChange'
-            @drag-start='onFilterDragStart("categories", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterProjects
-            v-else-if='filter === "projects"'
-            @update:items='onProjectsChange'
-            @drag-start='onFilterDragStart("projects", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterProperties
-            v-else-if='filter === "properties"'
-            @update:items='onPropertiesChange'
-            @drag-start='onFilterDragStart("properties", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-        </div>
-      </div>
+      <FilterKinds @update:items='onKindsChange' />
+      <FilterAccounts @update:items='onAccountsChange' />
+      <FilterCategories @update:items='onCategoriesChange' />
+      <FilterProjects @update:items='onProjectsChange' />
+      <FilterProperties @update:items='onPropertiesChange' />
     </div>
   </div>
 </template>

@@ -24,6 +24,7 @@ const emit = defineEmits([
   'pointerdown',
   'pointermove',
   'pointerup',
+  'pointercancel',
 ]);
 
 const {
@@ -43,11 +44,18 @@ const {
   loadFn: () => api.categories(token.value),
 });
 
-watchEffect(() => {
-  if (token.value) {
-    load();
-  }
-});
+// watch по token вместо watchEffect: явная зависимость только от токена.
+// route.query внутри load() читается уже после await, так что watchEffect
+// его и не ловил, — но явный watch надёжнее при будущих правках load().
+watch(
+  () => token.value,
+  (value) => {
+    if (value) {
+      load();
+    }
+  },
+  { immediate: true }
+);
 
 const isShowModal = ref(false);
 
@@ -79,6 +87,7 @@ const onSaved = async () => {
             @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
             @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
             @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
+            @pointercancel='props.mobileDragHandle && emit("pointercancel", $event)'
           >
             <IconGripVertical
               size='18'
@@ -125,6 +134,13 @@ const onSaved = async () => {
 </template>
 
 <style scoped>
+  /* Длинные названия обрезаются с многоточием, а не «в никуда» */
+  .form-check-label {
+    display: block;
+    min-width: 0;
+    text-overflow: ellipsis;
+  }
+
   .filter-drag-handle {
     display: inline-flex;
     align-items: center;
@@ -134,7 +150,7 @@ const onSaved = async () => {
   .filter-drag-handle:active {
     cursor: grabbing;
   }
-  
+
   .filter-drag-handle-mobile {
     cursor: grab;
     touch-action: none;
