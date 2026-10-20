@@ -148,6 +148,13 @@ const selectDate = (day) => {
 
   const date = createDate(day);
 
+  if (activeDatepicker.value === null) {
+    activeDatepicker.value = 'to';
+    fromDate.value = date;
+    toDate.value = null;
+    return;
+  }
+
   if (activeDatepicker.value === 'from') {
     fromDate.value = date;
 
@@ -158,7 +165,6 @@ const selectDate = (day) => {
     activeDatepicker.value = 'to';
 
     if (toDate.value) emitPeriodChange();
-
     return;
   }
 
@@ -167,7 +173,6 @@ const selectDate = (day) => {
       fromDate.value = date;
       toDate.value = null;
       activeDatepicker.value = 'to';
-
       return;
     }
 
@@ -189,7 +194,6 @@ const selectQuickFilter = (id) => {
     fromDate.value = null;
     toDate.value = null;
     activeDatepicker.value = 'from';
-    emitPeriodChange();
 
     return;
   }
@@ -244,6 +248,8 @@ const props = defineProps({
 });
 
 const formatDate = (date) => {
+  if (date == null) return '';
+
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -415,19 +421,6 @@ const emitPeriodChange = () => {
             </span>
           </div>
         </div>
-      </div>
-
-      <div
-        v-if='selectedQuickFilter === "custom"'
-        class='pb-2'
-      >
-        <button
-          type='button'
-          class='btn btn-action btn-sm text-secondary w-100'
-          @click='reset'
-        >
-          Сбросить
-        </button>
       </div>
     </div>
   </div>
