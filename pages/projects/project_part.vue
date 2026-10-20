@@ -453,7 +453,7 @@ const saveProjectItemsOrder = async () => {
           class='col-auto'
         >
           <button
-            class='btn btn-icon btn-ghost-secondary'
+            class='btn btn-icon btn-ghost-secondary me-1'
             type='button'
             :aria-label='showAllProjectItems ? "Скрыть лишние элементы" : "Показать все элементы"'
             :title='showAllProjectItems ? "Скрыть лишние элементы" : "Показать все элементы"'
