@@ -1,18 +1,11 @@
 <script setup>
 import api from '~/lib/api';
-import {
-  IconGripVertical,
-  IconPlus,
-} from '@tabler/icons-vue';
+import { IconPlus } from '@tabler/icons-vue';
 
 const props = defineProps({
   reload: {
     type: Number,
     default: 0,
-  },
-  mobileDragHandle: {
-    type: Boolean,
-    default: false,
   },
 });
 
@@ -21,14 +14,7 @@ const router = useRouter();
 
 const { token } = useAuth();
 
-const emit = defineEmits([
-  'update:items',
-  'drag-start',
-  'drag-end',
-  'pointerdown',
-  'pointermove',
-  'pointerup',
-]);
+const emit = defineEmits(['update:items']);
 
 const {
   isLoading,
@@ -58,11 +44,15 @@ watch(
   }
 );
 
-watchEffect(() => {
-  if (token.value) {
-    load();
-  }
-});
+watch(
+  token,
+  (value) => {
+    if (value) {
+      load();
+    }
+  },
+  { immediate: true }
+);
 
 const isShowModal = ref(false);
 
@@ -78,32 +68,14 @@ const onSaved = async () => {
     @saved='onSaved'
     @close='isShowModal = false'
   />
-
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='isLoading' />
 
     <div v-else class='card-body pt-2 pe-2 pb-0 ps-3'>
       <div class='d-flex align-items-center justify-content-between mb-2'>
-        <div class='subheader d-flex align-items-center'>
-          <span
-            class='filter-drag-handle me-1'
-            :class='{ "filter-drag-handle-mobile": props.mobileDragHandle }'
-            :draggable='!props.mobileDragHandle'
-            @dragstart='!props.mobileDragHandle && emit("drag-start", $event)'
-            @dragend='!props.mobileDragHandle && emit("drag-end")'
-            @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
-            @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
-            @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
-          >
-            <IconGripVertical
-              size='18'
-              stroke-width='2'
-              class='opacity-40'
-            />
-          </span>
-          Счета
-        </div>
+        <div class='subheader'>Счета</div>
         <button
+          type='button'
           class='btn btn-action'
           title='Создать счёт'
           @click='isShowModal = true'
@@ -111,7 +83,6 @@ const onSaved = async () => {
           <IconPlus size='20' stroke-width='1'/>
         </button>
       </div>
-
       <div v-for='item in visibleItems' :key='item.id'>
         <label class='form-check'>
           <input
@@ -125,14 +96,14 @@ const onSaved = async () => {
             <Amount
               class='d-block text-secondary fs-6'
               :value='item.balance'
-              :currency='item.currency.name'
+              :currency='item.currency?.name'
             />
           </span>
         </label>
       </div>
-
       <div v-if='canToggleShowAll' class='pb-2'>
         <button
+          type='button'
           class='btn btn-action btn-sm text-secondary w-100'
           style='margin-left: -0.25rem;'
           @click='isShowAll = !isShowAll'
@@ -143,24 +114,3 @@ const onSaved = async () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-  .filter-drag-handle {
-    display: inline-flex;
-    align-items: center;
-    cursor: grab;
-  }
-
-  .filter-drag-handle:active {
-    cursor: grabbing;
-  }
-  
-  .filter-drag-handle-mobile {
-    cursor: grab;
-    touch-action: none;
-  }
-
-  .filter-drag-handle-mobile:active {
-    cursor: grabbing;
-  }
-</style>

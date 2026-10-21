@@ -1,6 +1,4 @@
 <script setup>
-import { IconGripVertical } from '@tabler/icons-vue';
-
 const route = useRoute();
 const router = useRouter();
 
@@ -11,24 +9,13 @@ const items = ref([
   { id: 'TRANSFER', name: 'Перевод' },
 ]);
 
-const emit = defineEmits([
-  'update:items',
-  'drag-start',
-  'drag-end',
-  'pointerdown',
-  'pointermove',
-  'pointerup',
-]);
+const emit = defineEmits(['update:items']);
 
 const props = defineProps({
   isLoading: {
     type: Boolean,
-    default: null,
-  },
-  mobileDragHandle: {
-    type: Boolean,
     default: false,
-  },
+  }
 });
 
 const selectedItems = computed(() => {
@@ -36,8 +23,17 @@ const selectedItems = computed(() => {
 });
 
 const initSelectedItemsByQuery = (val = '') => {
-  const queryIds = val?.toString().split(',') || [];
-  selectedIds.value = new Set(queryIds.filter(Boolean));
+  const queryIds = (val?.toString() ?? '').split(',').filter(Boolean);
+  const current = selectedIds.value;
+
+  // Состояние уже совпадает с URL (например, после нашего же router.replace) —
+  // не пересоздаём Set, иначе computed отдаст новый массив и 'update:items'
+  // сработает второй раз подряд.
+  if (queryIds.length === current.size && queryIds.every(id => current.has(id))) {
+    return;
+  }
+
+  selectedIds.value = new Set(queryIds);
 };
 
 const toggleSelection = (id) => {
@@ -47,10 +43,13 @@ const toggleSelection = (id) => {
     selectedIds.value.add(id);
   }
 
+  const ids = Array.from(selectedIds.value);
+
   router.replace({
     query: {
       ...route.query,
-      kinds: Array.from(selectedIds.value).join(','),
+      // undefined убирает параметр из URL, вместо пустого ?kinds=
+      kinds: ids.length ? ids.join(',') : undefined,
     },
   });
 };
@@ -72,24 +71,8 @@ watch(selectedItems, (val) => {
   <div class='card mb-3'>
     <PlaceholderLoadingFilters v-if='props.isLoading' />
 
-    <div v-else class='card-body pt-3 pe-2 pb-0 ps-3 pb-1'>
-      <div class='subheader mb-3 d-flex align-items-center'>
-        <span
-          class='filter-drag-handle me-1'
-          :class='{ "filter-drag-handle-mobile": props.mobileDragHandle }'
-          :draggable='!props.mobileDragHandle'
-          @dragstart='!props.mobileDragHandle && emit("drag-start", $event)'
-          @dragend='!props.mobileDragHandle && emit("drag-end")'
-          @pointerdown='props.mobileDragHandle && emit("pointerdown", $event)'
-          @pointermove='props.mobileDragHandle && emit("pointermove", $event)'
-          @pointerup='props.mobileDragHandle && emit("pointerup", $event)'
-        >
-          <IconGripVertical
-            size='18'
-            stroke-width='2'
-            class='opacity-40'
-          />
-        </span>
+    <div v-else class='card-body pt-3 pe-2 ps-3 pb-1'>
+      <div class='subheader mb-3'>
         Тип операций
       </div>
       <div v-for='item in items' :key='item.id'>
@@ -108,24 +91,3 @@ watch(selectedItems, (val) => {
     </div>
   </div>
 </template>
-
-<style scoped>
-  .filter-drag-handle {
-    display: inline-flex;
-    align-items: center;
-    cursor: grab;
-  }
-
-  .filter-drag-handle:active {
-    cursor: grabbing;
-  }
-
-  .filter-drag-handle-mobile {
-    cursor: grab;
-    touch-action: none;
-  }
-
-  .filter-drag-handle-mobile:active {
-    cursor: grabbing;
-  }
-</style>

@@ -28,8 +28,8 @@ const isError = ref(false);
 const chartData = ref({});
 
 const { isMobile } = useDevice();
-const series = computed(() => chartData.value.series);
-const categories = computed(() => chartData.value.categories);
+const series = computed(() => chartData.value.series ?? []);
+const categories = computed(() => chartData.value.categories ?? []);
 
 const selectedAccounts = ref([]);
 const selectedCategories = ref([]);
@@ -75,27 +75,37 @@ onMounted(() => {
   );
 });
 
+// Ответ на устаревший запрос (быстрая смена фильтров/периода) отбрасываем
+let loadSeq = 0;
+
 const load = async () => {
+  const seq = ++loadSeq;
+
   isLoading.value = true;
   isError.value = false;
 
   try {
     const result = await api.chartTransactions(token.value, filters.value);
+
+    if (seq !== loadSeq) return;
+
     if (result) {
       chartData.value = result;
     } else {
       isError.value = true;
     }
   } catch (err) {
+    if (seq !== loadSeq) return;
     console.error(err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
+    if (seq === loadSeq) isLoading.value = false;
   }
 };
 
+// Грузим при смене query и когда появился токен
 watch(
-  () => route.query,
+  [() => route.query, () => Boolean(token.value)],
   () => {
     if (token.value) load();
   },
@@ -167,11 +177,6 @@ const chartOptions = computed(() => ({
       colors: CHART_LABEL_COLOR,
     },
   },
-  // labels: [
-  //   '2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24',
-  //   '2020-06-25', '2020-06-26', '2020-06-27', '2020-06-28',
-  //   '2020-06-29', '2020-06-30', '2020-07-01', '2020-07-02'
-  // ],
 }));
 </script>
 

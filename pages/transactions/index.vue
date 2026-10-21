@@ -22,7 +22,7 @@ const PER_PAGE = 50;
 const hasMore = ref(true);
 const isLoadingMore = ref(false);
 const isLoading = ref(false);
-const isQuiteLoading = ref(false);
+const isQuietLoading = ref(false);
 const isLoaded = ref(false);
 const isCopyItem = ref(false);
 const isShowModal = ref(false);
@@ -39,21 +39,6 @@ const selectedCategories = ref([]);
 const selectedKinds = ref([]);
 const selectedProjects = ref([]);
 const selectedProperties = ref([]);
-
-const FILTERS_STORAGE_KEY = 'transactions-filters-order';
-
-const defaultFilterOrder = [
-  'period',
-  'kinds',
-  'accounts',
-  'categories',
-  'projects',
-  'properties',
-];
-
-const filterOrder = ref([...defaultFilterOrder]);
-const draggedFilter = ref(null);
-
 const description = ref(route.query.description?.toString() || '');
 
 const filters = computed(() => {
@@ -64,9 +49,6 @@ const filters = computed(() => {
     propertyIds: parseNumberArray(route.query.properties),
     kinds: parseStringArray(route.query.kinds),
     description: route.query.description?.toString().trim() || null,
-    period: route.query.period?.toString() || null,
-    customPeriodFrom: route.query.customPeriodFrom?.toString() || null,
-    customPeriodTo: route.query.customPeriodTo?.toString() || null,
   };
 });
 
@@ -90,72 +72,6 @@ const params = computed(() => ({
   filters: filters.value,
 }));
 
-const loadFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem(FILTERS_STORAGE_KEY)
-    );
-
-    if (!Array.isArray(saved)) return;
-
-    const valid = saved.filter((key) => defaultFilterOrder.includes(key));
-    const missing = defaultFilterOrder.filter((key) => !valid.includes(key));
-
-    filterOrder.value = [...valid, ...missing];
-  } catch {
-    filterOrder.value = [...defaultFilterOrder];
-  }
-};
-
-const saveFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  localStorage.setItem(
-    FILTERS_STORAGE_KEY,
-    JSON.stringify(filterOrder.value)
-  );
-};
-
-const onFilterDragStart = (filter, event) => {
-  draggedFilter.value = filter;
-
-  event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/plain', filter);
-
-  const filterItem = event.currentTarget.closest('.filter-item');
-
-  if (filterItem) {
-    event.dataTransfer.setDragImage(
-      filterItem,
-      event.clientX - filterItem.getBoundingClientRect().left,
-      event.clientY - filterItem.getBoundingClientRect().top
-    );
-  }
-};
-
-const onFilterDragOver = (filter) => {
-  if (!draggedFilter.value || draggedFilter.value === filter) return;
-
-  const order = [...filterOrder.value];
-
-  const fromIndex = order.indexOf(draggedFilter.value);
-  const toIndex = order.indexOf(filter);
-
-  if (fromIndex === -1 || toIndex === -1) return;
-
-  const [moved] = order.splice(fromIndex, 1);
-  order.splice(toIndex, 0, moved);
-
-  filterOrder.value = order;
-};
-
-const onFilterDragEnd = () => {
-  saveFilterOrder();
-  draggedFilter.value = null;
-};
-
 const onCategoriesChange = (categories) => {
   selectedCategories.value = categories;
 };
@@ -176,35 +92,30 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
-const onPeriodChange = ({ period, from, to }) => {
-  const nextQuery = { ...route.query };
+// Номер последнего запроса: ответ на устаревший запрос (например, при быстром
+// переключении фильтров) нужно отбросить, иначе он перезапишет свежие данные.
+let loadSeq = 0;
 
-  if (period) {
-    nextQuery.period = period;
-  } else {
-    delete nextQuery.period;
-  }
+const load = async (isQuiet = false, append = false) => {
+  const seq = ++loadSeq;
 
-  if (period === 'CUSTOM' && from && to) {
-    nextQuery.customPeriodFrom = from;
-    nextQuery.customPeriodTo = to;
-  } else {
-    delete nextQuery.customPeriodFrom;
-    delete nextQuery.customPeriodTo;
-  }
+  // Тихая перезагрузка (после сохранения/удаления) всегда начинается с первой
+  // страницы: раньше она запрашивала текущую page и заменяла ею весь список.
+  const targetPage = append ? page.value + 1 : 1;
 
-  router.replace({ query: nextQuery });
-};
-
-const load = async (isQuite = false, append = false) => {
-  if (isQuite) {
-    isQuiteLoading.value = true;
+  if (isQuiet) {
+    isQuietLoading.value = true;
   } else {
     isLoading.value = true;
   }
 
   try {
-    const items = await api.transactions(token.value, params.value);
+    const items = await api.transactions(token.value, {
+      ...params.value,
+      page: targetPage,
+    });
+
+    if (seq !== loadSeq) return;
 
     if (items) {
       if (append) {
@@ -212,36 +123,52 @@ const load = async (isQuite = false, append = false) => {
       } else {
         transactions.value = items;
       }
+      // Страница фиксируется только после успешной загрузки
+      page.value = targetPage;
       hasMore.value = items.length === PER_PAGE;
       isLoaded.value = true;
     }
   } catch (err) {
+    if (seq !== loadSeq) return;
     console.error(err);
   } finally {
-    if (isQuite) transactionEventTicks.value++;
-    isLoading.value = false;
-    isQuiteLoading.value = false;
+    if (seq === loadSeq) {
+      // Пагинация не меняет балансы, перезагружать счета ради неё не нужно
+      if (isQuiet && !append) transactionEventTicks.value++;
+      isLoading.value = false;
+      isQuietLoading.value = false;
+    }
   }
 };
 
 const loadMore = async () => {
-  if (isLoadingMore.value) return;
+  if (isLoadingMore.value || isLoading.value || isQuietLoading.value) return;
 
   isLoadingMore.value = true;
-  page.value += 1;
-
   await load(true, true);
-
   isLoadingMore.value = false;
 };
 
 const destroy = async ({ id }) => {
-  if (confirm('Вы уверены, что хотите удалить операцию?')) {
-    isQuiteLoading.value = true;
+  if (!confirm('Вы уверены, что хотите удалить операцию?')) return;
+
+  isQuietLoading.value = true;
+
+  try {
     await api.destroyTransaction(token.value, id);
-    await load(true);
+  } catch (err) {
+    console.error(err);
+    isQuietLoading.value = false;
+    return;
   }
+
+  await load(true);
 };
+
+const getBackUrl = () => router.resolve({
+  path: route.path,
+  query: route.query,
+}).href;
 
 const openCreate = (kind) => {
   currentKind.value = kind;
@@ -251,10 +178,7 @@ const openCreate = (kind) => {
 };
 
 const openCreateMobile = (kind) => {
-  const backUrl = router.resolve({
-    path: route.path,
-    query: route.query,
-  }).href;
+  const backUrl = getBackUrl();
 
   router.push({
     path: '/transactions/new_transaction_mobile',
@@ -267,10 +191,7 @@ const openCreateMobile = (kind) => {
 };
 
 const openCreateTransferMobile = () => {
-  const backUrl = router.resolve({
-    path: route.path,
-    query: route.query,
-  }).href;
+  const backUrl = getBackUrl();
 
   router.push({
     path: '/transactions/new_transfer_mobile',
@@ -283,10 +204,7 @@ const openCreateTransferMobile = () => {
 
 const openEdit = (item) => {
   if (isMobile.value) {
-    const backUrl = router.resolve({
-      path: route.path,
-      query: route.query,
-    }).href;
+    const backUrl = getBackUrl();
 
     router.push({
       path: '/transactions/new_transaction_mobile',
@@ -311,10 +229,7 @@ const openEdit = (item) => {
 
 const openCopy = (item) => {
   if (isMobile.value) {
-    const backUrl = router.resolve({
-      path: route.path,
-      query: route.query,
-    }).href;
+    const backUrl = getBackUrl();
     router.push({
       path: '/transactions/new_transaction_mobile',
       query: {
@@ -353,112 +268,37 @@ const onSaved = async () => {
   await load(true);
 };
 
-// TODO: Подумать, унифицировать, этот код с кодом
-//       в components/categories.vue
-const onCategoryClick = (id) => {
-  const current = route.query.categories ?
-    route.query.categories.toString().split(',').map(Number).filter(Boolean) :
-    [];
+// Переключает значение в query-параметре (accounts, categories, ...).
+// TODO: тот же код есть в composables/use_selectable_filter.js и use_chart.js.
+const toggleQueryValue = (key, value, { numeric = true } = {}) => {
+  const raw = route.query[key]?.toString().split(',').filter(Boolean) ?? [];
+  const current = numeric ? raw.map(Number).filter(Boolean) : raw;
 
-  const newCategories = current.includes(id) ?
-    current.filter(c => c !== id) :
-    [...current, id];
+  const next = current.includes(value)
+    ? current.filter(v => v !== value)
+    : [...current, value];
 
   const nextQuery = { ...route.query };
 
-  if (newCategories.length > 0) {
-    nextQuery.categories = newCategories.join(',');
+  if (next.length > 0) {
+    nextQuery[key] = next.join(',');
   } else {
-    delete nextQuery.categories;
+    delete nextQuery[key];
   }
 
   router.replace({ query: nextQuery });
 };
+
+const onCategoryClick = (id) => toggleQueryValue('categories', id);
+const onProjectClick = (id) => toggleQueryValue('projects', id);
+const onAccountClick = (id) => toggleQueryValue('accounts', id);
+const onPropertyClick = (id) => toggleQueryValue('properties', id);
+const onKindClick = (id) => toggleQueryValue('kinds', id, { numeric: false });
 
 const onAccountNew = () => {
   isShowModal.value = false;
   isShowModalTransfer.value = false;
   isShowModalAccount.value = true;
-};
-
-const onProjectClick = (id) => {
-  const current = route.query.projects
-    ? route.query.projects.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProjects = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProjects.length > 0) {
-    nextQuery.projects = newProjects.join(',');
-  } else {
-    delete nextQuery.projects;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onAccountClick = (id) => {
-  const current = route.query.accounts
-    ? route.query.accounts.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newAccounts = current.includes(id)
-    ? current.filter(a => a !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newAccounts.length > 0) {
-    nextQuery.accounts = newAccounts.join(',');
-  } else {
-    delete nextQuery.accounts;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onPropertyClick = (id) => {
-  const current = route.query.properties
-    ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProperties = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProperties.length > 0) {
-    nextQuery.properties = newProperties.join(',');
-  } else {
-    delete nextQuery.properties;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onKindClick = (id) => {
-  const current = route.query.kinds
-    ? route.query.kinds.toString().split(',').filter(Boolean)
-    : [];
-
-  const newKinds = current.includes(id)
-    ? current.filter(k => k !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newKinds.length > 0) {
-    nextQuery.kinds = newKinds.join(',');
-  } else {
-    delete nextQuery.kinds;
-  }
-
-  router.replace({ query: nextQuery });
 };
 
 const onDescriptionSearch = () => {
@@ -482,19 +322,15 @@ const clearDescriptionSearch = () => {
   router.replace({ query: nextQuery });
 };
 
-// Тут watchEffect не использую, т.к. похоже
-// watch на route.query срабатывает.
-//
-// watchEffect(() => {
-//   if (token.value) load();
-// });
+// Грузим при смене query и когда токен появился (если он приходит позже
+// монтирования, иначе первая загрузка не произойдёт до смены фильтров).
+// Следим именно за Boolean(token), чтобы обновление самого токена не
+// перезагружало список.
 watch(
-  () => route.query,
+  [() => route.query, () => Boolean(token.value)],
   () => {
     if (!token.value) return;
-
-    page.value = 1;
-    load(false, false);
+    load();
   },
   { immediate: true }
 );
@@ -504,9 +340,6 @@ watch(
     description.value = value?.toString() || '';
   }
 );
-onMounted(() => {
-  loadFilterOrder();
-});
 </script>
 
 <template>
@@ -552,7 +385,7 @@ onMounted(() => {
               <div class='col'>
                 <div class='d-flex align-items-center'>
                   <h2 class='mb-0'>Операции</h2>
-                  <PlaceholderLoading v-if='isQuiteLoading' class='spinner-border-sm ms-2' />
+                  <PlaceholderLoading v-if='isQuietLoading' class='spinner-border-sm ms-2' />
                 </div>
               </div>
               <div class='col-md-auto col-sm-12'>
@@ -698,8 +531,9 @@ onMounted(() => {
 
             <button
               v-else
+              type='button'
               class='btn btn-outline-secondary w-100 border-0'
-              :disabled='!hasMore || isLoadingMore'
+              :disabled='!hasMore || isLoadingMore || isQuietLoading'
               @click='loadMore'
             >
               <template v-if='isLoadingMore'>
@@ -754,9 +588,10 @@ onMounted(() => {
               </div>
             </div>
             <div v-else class='card-footer bg-transparent border-top'>
-              <button                
+              <button
+                type='button'
                 class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
-                :disabled='!hasMore || isLoadingMore'
+                :disabled='!hasMore || isLoadingMore || isQuietLoading'
                 @click='loadMore'
               >
                 <template v-if='isLoadingMore'>
@@ -780,62 +615,11 @@ onMounted(() => {
       v-show='!isMobile'
       class='col-sm-12 col-lg-3 col-xl-2'
     >
-      <div class='filter-list'>
-        <div
-          v-for='filter in filterOrder'
-          :key='filter'
-          class='filter-item'
-          :class='{ "filter-item-dragging": draggedFilter === filter }'
-          @dragover.prevent='onFilterDragOver(filter)'
-        >
-          <FilterPeriod
-            v-if='filter === "period"'
-            :period='route.query.period?.toString() || null'
-            :custom-period-from='route.query.customPeriodFrom?.toString() || null'
-            :custom-period-to='route.query.customPeriodTo?.toString() || null'
-            @period-change='onPeriodChange'
-            @drag-start='onFilterDragStart("period", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterKinds
-            v-else-if='filter === "kinds"'
-            :is-loading='!isLoaded'
-            @update:items='onKindsChange'
-            @drag-start='onFilterDragStart("kinds", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterAccounts
-            v-else-if='filter === "accounts"'
-            :reload='transactionEventTicks'
-            @update:items='onAccountsChange'
-            @drag-start='onFilterDragStart("accounts", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterCategories
-            v-else-if='filter === "categories"'
-            @update:items='onCategoriesChange'
-            @drag-start='onFilterDragStart("categories", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterProjects
-            v-else-if='filter === "projects"'
-            @update:items='onProjectsChange'
-            @drag-start='onFilterDragStart("projects", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-
-          <FilterProperties
-            v-else-if='filter === "properties"'
-            @update:items='onPropertiesChange'
-            @drag-start='onFilterDragStart("properties", $event)'
-            @drag-end='onFilterDragEnd'
-          />
-        </div>
-      </div>
+      <FilterKinds :is-loading='!isLoaded' @update:items='onKindsChange' />
+      <FilterAccounts :reload='transactionEventTicks' @update:items='onAccountsChange' />
+      <FilterCategories @update:items='onCategoriesChange' />
+      <FilterProjects @update:items='onProjectsChange' />
+      <FilterProperties @update:items='onPropertiesChange' />
     </div>
   </div>
 </template>
