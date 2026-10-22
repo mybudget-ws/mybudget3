@@ -176,26 +176,6 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
-const onPeriodChange = ({ period, from, to }) => {
-  const nextQuery = { ...route.query };
-
-  if (period) {
-    nextQuery.period = period;
-  } else {
-    delete nextQuery.period;
-  }
-
-  if (period === 'CUSTOM' && from && to) {
-    nextQuery.customPeriodFrom = from;
-    nextQuery.customPeriodTo = to;
-  } else {
-    delete nextQuery.customPeriodFrom;
-    delete nextQuery.customPeriodTo;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
 const load = async (isQuite = false, append = false) => {
   if (isQuite) {
     isQuiteLoading.value = true;
@@ -790,10 +770,6 @@ onMounted(() => {
         >
           <FilterPeriod
             v-if='filter === "period"'
-            :period='route.query.period?.toString() || null'
-            :custom-period-from='route.query.customPeriodFrom?.toString() || null'
-            :custom-period-to='route.query.customPeriodTo?.toString() || null'
-            @period-change='onPeriodChange'
             @drag-start='onFilterDragStart("period", $event)'
             @drag-end='onFilterDragEnd'
           />

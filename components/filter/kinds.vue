@@ -41,18 +41,23 @@ const initSelectedItemsByQuery = (val = '') => {
 };
 
 const toggleSelection = (id) => {
-  if (selectedIds.value.has(id)) {
-    selectedIds.value.delete(id);
+  const next = new Set(selectedIds.value);
+
+  if (next.has(id)) {
+    next.delete(id);
   } else {
-    selectedIds.value.add(id);
+    next.add(id);
   }
 
-  router.replace({
-    query: {
-      ...route.query,
-      kinds: Array.from(selectedIds.value).join(','),
-    },
-  });
+  const nextQuery = { ...route.query };
+
+  if (next.size > 0) {
+    nextQuery.kinds = Array.from(next).join(',');
+  } else {
+    delete nextQuery.kinds;
+  }
+
+  router.replace({ query: nextQuery });
 };
 
 watch(

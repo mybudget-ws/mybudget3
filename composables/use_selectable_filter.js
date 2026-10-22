@@ -1,3 +1,5 @@
+import { parseNumberArray } from '~/lib/helper_parsers';
+
 export const useSelectableFilter = ({
   loadFn,
   queryKey,
@@ -58,14 +60,8 @@ export const useSelectableFilter = ({
     emit('update:items', selected);
   };
 
-  const initSelectedItemsByQuery = (query = '') => {
-    const queryIds = query
-      ?.toString()
-      .split(',')
-      .map(Number)
-      .filter(Boolean) || [];
-
-    selectedIds.value = new Set(queryIds);
+  const initSelectedItemsByQuery = (query) => {
+    selectedIds.value = new Set(parseNumberArray(query));
 
     emitSelected();
   };
@@ -73,27 +69,25 @@ export const useSelectableFilter = ({
   const toggleSelection = (id) => {
     if (!id) return;
 
-    if (selectedIds.value.has(id)) {
-      selectedIds.value.delete(id);
+    const next = new Set(selectedIds.value);
+
+    if (next.has(id)) {
+      next.delete(id);
     } else {
-      selectedIds.value.add(id);
+      next.add(id);
     }
 
     const nextQuery = { ...route.query };
 
-    const ids = Array.from(selectedIds.value);
-
-    if (ids.length > 0) {
-      nextQuery[queryKey] = ids.join(',');
+    if (next.size > 0) {
+      nextQuery[queryKey] = Array.from(next).join(',');
     } else {
       delete nextQuery[queryKey];
     }
 
-    router.replace({
-      query: nextQuery,
-    });
-
-    emitSelected();
+    // selectedIds и emit('update:items') обновит watch ниже,
+    // когда изменится route.query[queryKey].
+    router.replace({ query: nextQuery });
   };
 
   const load = async (isQuiet = false) => {
