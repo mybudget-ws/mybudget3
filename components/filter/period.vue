@@ -5,6 +5,9 @@ import {
   IconGripVertical,
 } from '@tabler/icons-vue';
 
+const route = useRoute();
+const router = useRouter();
+
 const activeDatepicker = ref(null);
 
 const currentMonth = ref(new Date());
@@ -54,7 +57,6 @@ const emit = defineEmits([
   'pointerdown',
   'pointermove',
   'pointerup',
-  'period-change',
 ]);
 
 const currentMonthName = computed(() => {
@@ -233,18 +235,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  period: {
-    type: String,
-    default: null,
-  },
-  customPeriodFrom: {
-    type: String,
-    default: null,
-  },
-  customPeriodTo: {
-    type: String,
-    default: null,
-  },
 });
 
 const formatDate = (date) => {
@@ -283,14 +273,14 @@ const quickFilterIds = Object.fromEntries(
 
 watch(
   () => [
-    props.period,
-    props.customPeriodFrom,
-    props.customPeriodTo,
+    route.query.period,
+    route.query.customPeriodFrom,
+    route.query.customPeriodTo,
   ],
   ([period, from, to]) => {
-    selectedQuickFilter.value = quickFilterIds[period] || null;
-    fromDate.value = parseDate(from);
-    toDate.value = parseDate(to);
+    selectedQuickFilter.value = quickFilterIds[period?.toString()] || null;
+    fromDate.value = parseDate(from?.toString());
+    toDate.value = parseDate(to?.toString());
     activeDatepicker.value = null;
 
     if (fromDate.value) {
@@ -306,12 +296,23 @@ watch(
 
 const emitPeriodChange = () => {
   const period = quickFilterPeriods[selectedQuickFilter.value];
+  const nextQuery = { ...route.query };
 
-  emit('period-change', {
-    period: period || null,
-    from: period === 'CUSTOM' ? formatDate(fromDate.value) : null,
-    to: period === 'CUSTOM' ? formatDate(toDate.value) : null,
-  });
+  if (period) {
+    nextQuery.period = period;
+  } else {
+    delete nextQuery.period;
+  }
+
+  if (period === 'CUSTOM' && fromDate.value && toDate.value) {
+    nextQuery.customPeriodFrom = formatDate(fromDate.value);
+    nextQuery.customPeriodTo = formatDate(toDate.value);
+  } else {
+    delete nextQuery.customPeriodFrom;
+    delete nextQuery.customPeriodTo;
+  }
+
+  router.replace({ query: nextQuery });
 };
 </script>
 
@@ -522,4 +523,3 @@ const emitPeriodChange = () => {
   cursor: grabbing;
 }
 </style>
-
