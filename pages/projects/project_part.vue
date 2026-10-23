@@ -53,11 +53,6 @@ const isBusy = computed(
     isSavingOrder.value
 );
 
-const hasOrderChanged = () =>
-  !!orderSnapshot &&
-  orderSnapshot.some(
-    (item, index) => item.id !== projectItems.value[index]?.id
-  );
 
 const totalProjectItemsCount = computed(() => projectItems.value.length);
 const completedProjectItemsCount = computed(
@@ -129,15 +124,10 @@ const onProjectItemDragOver = (item) => {
 };
 
 const onProjectItemDragEnd = async () => {
+  const itemId = draggedProjectItemId.value;
+
   draggedProjectItemId.value = null;
-
-  // Не шлём запросы, если порядок не изменился
-  if (!hasOrderChanged()) {
-    orderSnapshot = null;
-    return;
-  }
-
-  await saveProjectItemsOrder();
+  await saveProjectItemOrder(itemId);
 };
 
 const onProjectItemPointerDown = (item, event) => {
@@ -210,15 +200,12 @@ const onProjectItemPointerEnd = async (event) => {
     return;
   }
 
+  const itemId = draggedProjectItemId.value;
+
   mobileDragPointerId.value = null;
   draggedProjectItemId.value = null;
 
-  if (!hasOrderChanged()) {
-    orderSnapshot = null;
-    return;
-  }
-
-  await saveProjectItemsOrder();
+  await saveProjectItemOrder(itemId);
 };
 
 const focusNewProjectItemInput = async () => {
@@ -410,33 +397,46 @@ const deleteProjectItem = async (item) => {
   }
 };
 
-const saveProjectItemsOrder = async () => {
+// На сервере acts_as_list: достаточно отправить новую позицию одного
+// перемещённого элемента, остальные сдвигаются автоматически.
+const saveProjectItemOrder = async (itemId) => {
   const previousOrder = orderSnapshot;
 
   orderSnapshot = null;
+
+  if (itemId === null || !previousOrder) {
+    return;
+  }
+
+  const oldIndex = previousOrder.findIndex(item => item.id === itemId);
+  const newIndex = projectItems.value.findIndex(item => item.id === itemId);
+
+  // Элемент не сдвинулся — запрос не нужен
+  if (newIndex === -1 || newIndex === oldIndex) {
+    return;
+  }
+
   isSavingOrder.value = true;
 
   try {
-    for (const [index, item] of projectItems.value.entries()) {
-      const result = await api.updateProjectItem(token.value, {
-        id: item.id,
-        position: index + 1,
-      });
+    const result = await api.updateProjectItem(token.value, {
+      id: itemId,
+      position: newIndex + 1,
+    });
 
-      if (result?.errors?.length || !result?.projectItem) {
-        throw new Error(
-          result?.errors?.join('\n') ||
-          'Не удалось сохранить порядок элементов проекта.'
-        );
-      }
-
-      item.position = result.projectItem.position;
+    if (result?.errors?.length || !result?.projectItem) {
+      throw new Error(
+        result?.errors?.join('\n') ||
+        'Не удалось сохранить порядок элементов проекта.'
+      );
     }
+
+    // Приводим локальные позиции в соответствие с серверными
+    projectItems.value.forEach((item, index) => {
+      item.position = index + 1;
+    });
   } catch (error) {
-    // Откатываем порядок в интерфейсе, чтобы он не расходился с сервером
-    if (previousOrder) {
-      projectItems.value = previousOrder;
-    }
+    projectItems.value = previousOrder;
 
     alert(error?.message || 'Не удалось сохранить порядок элементов проекта.');
   } finally {
