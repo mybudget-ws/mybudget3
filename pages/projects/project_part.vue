@@ -37,9 +37,27 @@ const isCreatingProjectItem = ref(false);
 const savingProjectItemId = ref(null);
 const draggedProjectItemId = ref(null);
 const mobileDragPointerId = ref(null);
-const hasMobileDragMoved = ref(false);
+const isSavingOrder = ref(false);
 const projectItems = ref([]);
-const showAllProjectItems = ref(props.project.projectItems.length <= PROJECT_ITEM_SHOW_LIMIT);
+const showAllProjectItems = ref(
+  (props.project.projectItems?.length ?? 0) <= PROJECT_ITEM_SHOW_LIMIT
+);
+
+// Порядок элементов до начала перетаскивания (для отката и проверки изменений)
+let orderSnapshot = null;
+
+const isBusy = computed(
+  () =>
+    isCreatingProjectItem.value ||
+    savingProjectItemId.value !== null ||
+    isSavingOrder.value
+);
+
+const hasOrderChanged = () =>
+  !!orderSnapshot &&
+  orderSnapshot.some(
+    (item, index) => item.id !== projectItems.value[index]?.id
+  );
 
 const totalProjectItemsCount = computed(() => projectItems.value.length);
 const completedProjectItemsCount = computed(
@@ -59,7 +77,13 @@ watch(
 );
 
 const onProjectItemDragStart = (item, event) => {
+  if (isBusy.value || editingProjectItemId.value !== null) {
+    event.preventDefault();
+    return;
+  }
+
   draggedProjectItemId.value = item.id;
+  orderSnapshot = [...projectItems.value];
 
   event.dataTransfer.effectAllowed = 'move';
   event.dataTransfer.setData('text/plain', String(item.id));
@@ -106,21 +130,24 @@ const onProjectItemDragOver = (item) => {
 
 const onProjectItemDragEnd = async () => {
   draggedProjectItemId.value = null;
+
+  // Не шлём запросы, если порядок не изменился
+  if (!hasOrderChanged()) {
+    orderSnapshot = null;
+    return;
+  }
+
   await saveProjectItemsOrder();
 };
 
 const onProjectItemPointerDown = (item, event) => {
-  if (
-    editingProjectItemId.value !== null ||
-    isCreatingProjectItem.value ||
-    savingProjectItemId.value
-  ) {
+  if (editingProjectItemId.value !== null || isBusy.value) {
     return;
   }
 
   draggedProjectItemId.value = item.id;
   mobileDragPointerId.value = event.pointerId;
-  hasMobileDragMoved.value = false;
+  orderSnapshot = [...projectItems.value];
 
   event.currentTarget.setPointerCapture(event.pointerId);
 };
@@ -175,7 +202,6 @@ const onProjectItemPointerMove = (event) => {
 
   if (orderChanged) {
     projectItems.value = items;
-    hasMobileDragMoved.value = true;
   }
 };
 
@@ -184,15 +210,15 @@ const onProjectItemPointerEnd = async (event) => {
     return;
   }
 
-  const shouldSave = hasMobileDragMoved.value;
-
   mobileDragPointerId.value = null;
   draggedProjectItemId.value = null;
-  hasMobileDragMoved.value = false;
 
-  if (shouldSave) {
-    await saveProjectItemsOrder();
+  if (!hasOrderChanged()) {
+    orderSnapshot = null;
+    return;
   }
+
+  await saveProjectItemsOrder();
 };
 
 const focusNewProjectItemInput = async () => {
@@ -251,7 +277,7 @@ const createProjectItem = async () => {
 };
 
 const startEditProjectItem = (item) => {
-  if (isCreatingProjectItem.value || savingProjectItemId.value) {
+  if (isBusy.value) {
     return;
   }
 
@@ -273,11 +299,14 @@ const cancelEditProjectItem = () => {
 const saveProjectItem = async (item) => {
   const name = editingProjectItemName.value.trim();
 
-  if (
-    !name ||
-    isCreatingProjectItem.value ||
-    savingProjectItemId.value
-  ) {
+  if (!name || isBusy.value) {
+    return;
+  }
+
+  // Название не изменилось — просто закрываем редактирование
+  if (name === item.name) {
+    editingProjectItemId.value = null;
+    editingProjectItemName.value = '';
     return;
   }
 
@@ -294,6 +323,11 @@ const saveProjectItem = async (item) => {
       return;
     }
 
+    if (!result?.projectItem) {
+      alert('Не удалось сохранить элемент проекта.');
+      return;
+    }
+
     Object.assign(item, result.projectItem);
 
     editingProjectItemId.value = null;
@@ -306,10 +340,7 @@ const saveProjectItem = async (item) => {
 };
 
 const toggleProjectItem = async (item) => {
-  if (
-    isCreatingProjectItem.value ||
-    savingProjectItemId.value
-  ) {
+  if (isBusy.value) {
     return;
   }
 
@@ -324,9 +355,12 @@ const toggleProjectItem = async (item) => {
       isDone,
     });
 
-    if (result?.errors?.length) {
+    if (result?.errors?.length || !result?.projectItem) {
       item.isDone = !isDone;
-      alert(result.errors.join('\n'));
+      alert(
+        result?.errors?.join('\n') ||
+        'Не удалось обновить элемент проекта.'
+      );
       return;
     }
 
@@ -340,10 +374,7 @@ const toggleProjectItem = async (item) => {
 };
 
 const deleteProjectItem = async (item) => {
-  if (
-    isCreatingProjectItem.value ||
-    savingProjectItemId.value
-  ) {
+  if (isBusy.value) {
     return;
   }
 
@@ -380,39 +411,36 @@ const deleteProjectItem = async (item) => {
 };
 
 const saveProjectItemsOrder = async () => {
+  const previousOrder = orderSnapshot;
+
+  orderSnapshot = null;
+  isSavingOrder.value = true;
+
   try {
-    const results = [];
-
     for (const [index, item] of projectItems.value.entries()) {
-      const position = index + 1;
-
       const result = await api.updateProjectItem(token.value, {
         id: item.id,
-        position,
-      });
-
-      results.push({
-        id: item.id,
-        sentPosition: position,
-        returnedPosition: result?.projectItem?.position,
-        errors: result?.errors,
+        position: index + 1,
       });
 
       if (result?.errors?.length || !result?.projectItem) {
-        console.table(results);
-        alert(
+        throw new Error(
           result?.errors?.join('\n') ||
           'Не удалось сохранить порядок элементов проекта.'
         );
-        return;
       }
 
       item.position = result.projectItem.position;
     }
-
-    console.table(results);
   } catch (error) {
+    // Откатываем порядок в интерфейсе, чтобы он не расходился с сервером
+    if (previousOrder) {
+      projectItems.value = previousOrder;
+    }
+
     alert(error?.message || 'Не удалось сохранить порядок элементов проекта.');
+  } finally {
+    isSavingOrder.value = false;
   }
 };
 </script>
@@ -500,7 +528,7 @@ const saveProjectItemsOrder = async () => {
             class='form-check-input m-0 me-3 flex-shrink-0'
             type='checkbox'
             :checked='item.isDone'
-            :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
+            :disabled='isBusy'
             @change='toggleProjectItem(item)'
           >
 
@@ -508,6 +536,7 @@ const saveProjectItemsOrder = async () => {
             <form
               class='d-flex align-items-center flex-grow-1 min-w-0'
               @submit.prevent='saveProjectItem(item)'
+              @keydown.esc.prevent='cancelEditProjectItem'
             >
               <div class='input-group input-group-flat flex-grow-1'>
                 <Input
@@ -630,7 +659,7 @@ const saveProjectItemsOrder = async () => {
                   class='form-check-input m-0'
                   type='checkbox'
                   :checked='item.isDone'
-                  :disabled='isCreatingProjectItem || savingProjectItemId === item.id'
+                  :disabled='isBusy'
                   @change='toggleProjectItem(item)'
                 >
               </td>
@@ -653,6 +682,17 @@ const saveProjectItemsOrder = async () => {
                     <div
                       class='btn-actions d-flex flex-shrink-0 ms-2'
                     >
+                      <button
+                        class='btn btn-action'
+                        type='submit'
+                        :disabled='savingProjectItemId === item.id'
+                      >
+                        <IconCheck
+                          size='20'
+                          stroke-width='1.5'
+                        />
+                      </button>
+
                       <button
                         class='btn btn-action'
                         type='button'
@@ -736,7 +776,7 @@ const saveProjectItemsOrder = async () => {
 </template>
 
 <style scoped>
-  .project-item-drag-cell {
+.project-item-drag-cell {
   width: 1%;
   padding-right: 0;
   padding-left: 12px;
@@ -767,10 +807,6 @@ const saveProjectItemsOrder = async () => {
 
 .project-item-mobile-drag-handle:active {
   cursor: grabbing;
-}
-
-.project-item-dragging {
-  opacity: 0.5;
 }
 
 .project-items-progress {

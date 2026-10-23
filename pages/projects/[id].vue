@@ -1,4 +1,3 @@
-
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
 import ProjectPart from '~/pages/projects/project_part.vue';
@@ -36,9 +35,6 @@ const hasMore = ref(true);
 const page = ref(1);
 const isLoadingMore = ref(false);
 
-const transactionPage = ref(1);
-const hasMoreTransactions = ref(true);
-
 const isLoading = ref(true);
 const isQuiteLoading = ref(false);
 const isError = ref(false);
@@ -65,7 +61,7 @@ const balance = computed(() => {
 });
 
 const budgetUsagePercentColor = computed(() => {
-  if (!project.value.budgetUsagePercent) return '';
+  if (!project.value?.budgetUsagePercent) return '';
 
   const percent = Math.abs(project.value.budgetUsagePercent);
   if (percent < 80) {
@@ -80,7 +76,7 @@ const budgetUsagePercentColor = computed(() => {
 });
 
 const budgetUsagePercentBackground = computed(() => {
-  if (!project.value.budgetUsagePercent) return '';
+  if (!project.value?.budgetUsagePercent) return '';
 
   const percent = Math.abs(project.value.budgetUsagePercent);
   if (percent < 80) {
@@ -209,7 +205,13 @@ const loadProject = async (projectId) => {
   project.value = result;
 };
 
+let transactionsRequestId = 0;
+
+// Возвращает true, если страница успешно загружена и применена.
 const loadTransactions = async (projectId, page = 1, append = false) => {
+  // Защита от гонок: результат устаревшего запроса игнорируется
+  const requestId = ++transactionsRequestId;
+
   try {
     const result = await api.transactions(token.value, {
       page,
@@ -218,6 +220,10 @@ const loadTransactions = async (projectId, page = 1, append = false) => {
         projectIds: [projectId],
       },
     });
+
+    if (requestId !== transactionsRequestId) {
+      return false;
+    }
 
     const items = result || [];
 
@@ -228,12 +234,16 @@ const loadTransactions = async (projectId, page = 1, append = false) => {
     }
 
     hasMore.value = items.length === PER_PAGE;
+
+    return true;
   } catch (error) {
     console.error('PROJECT TRANSACTIONS ERROR:', error);
 
-    if (!append) {
+    if (requestId === transactionsRequestId && !append) {
       transactions.value = [];
     }
+
+    return false;
   }
 };
 
@@ -243,12 +253,16 @@ const loadMoreTransactions = async () => {
   }
 
   isLoadingMore.value = true;
-  page.value += 1;
 
   try {
     const projectId = Number(route.params.id);
+    const nextPage = page.value + 1;
 
-    await loadTransactions(projectId, page.value, true);
+    // Номер страницы увеличиваем только после успешной загрузки,
+    // иначе при ошибке страница будет пропущена
+    if (await loadTransactions(projectId, nextPage, true)) {
+      page.value = nextPage;
+    }
   } finally {
     isLoadingMore.value = false;
   }
@@ -260,8 +274,6 @@ const loadChart = async (projectId) => {
       period: 'ALL',
       projectIds: [projectId],
     });
-
-    console.log('PROJECT CHART RESULT:', result);
 
     chartData.value = result || null;
   } catch (error) {
@@ -357,9 +369,6 @@ const onEditTransaction = (transaction) => {
 const onTransactionSaved = async () => {
   isShowTransactionModal.value = false;
 
-  transactionPage.value = 1;
-  hasMoreTransactions.value = true;
-
   await load(true);
 };
 
@@ -371,9 +380,6 @@ const onDeleteTransaction = async (transaction) => {
   try {
     await api.destroyTransaction(token.value, transaction.id);
 
-    transactionPage.value = 1;
-    hasMoreTransactions.value = true;
-
     await load(true);
   } catch (error) {
     console.error('Failed to delete transaction:', error);
@@ -381,7 +387,18 @@ const onDeleteTransaction = async (transaction) => {
   }
 };
 
-onMounted(load);
+onMounted(() => load());
+
+// Компонент переиспользуется при переходе между проектами
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    // newId пустой при уходе со страницы — не перезагружаем
+    if (newId && newId !== oldId) {
+      load();
+    }
+  }
+);
 </script>
 
 <template>
@@ -633,7 +650,6 @@ onMounted(load);
     <ProjectPart
       v-if='project'
       :project='project'
-      :is-mobile='isMobile'
     />
 
     <div class='card'>
@@ -679,30 +695,6 @@ onMounted(load);
             @delete='onDeleteTransaction'
           />
 
-          <div
-            v-if='!transactions.length'
-            class='text-secondary text-center mt-3'
-          >
-            Похоже, операций ещё нет
-          </div>
-          <button
-            v-else
-            class='btn btn-outline-secondary w-100 border-0'
-            :disabled='!hasMore || isLoadingMore'
-            @click='loadMoreTransactions'
-          >
-            <template v-if='isLoadingMore'>
-              Загрузка...
-            </template>
-
-            <template v-else-if='hasMore'>
-              Загрузить ещё
-            </template>
-
-            <template v-else>
-              Операций больше нет
-            </template>
-          </button>
         </div>
 
         <div v-if='!isLoading && !isMobile' class='advanced-table'>
@@ -782,4 +774,3 @@ onMounted(load);
     </div>
   </template>
 </template>
-
