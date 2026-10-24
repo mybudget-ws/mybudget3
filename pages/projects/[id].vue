@@ -248,7 +248,15 @@ const loadTransactions = async (projectId, page = 1, append = false) => {
 };
 
 const loadMoreTransactions = async () => {
-  if (isLoadingMore.value || !hasMore.value || !project.value) {
+  // Пока идёт (в том числе тихое) обновление первой страницы, подгрузка
+  // запрещена: иначе она вытеснит результат обновления
+  if (
+    isLoadingMore.value ||
+    isLoading.value ||
+    isQuiteLoading.value ||
+    !hasMore.value ||
+    !project.value
+  ) {
     return;
   }
 
@@ -754,7 +762,7 @@ watch(
         >
           <button
             class='btn btn-action btn-sm text-secondary w-100 border-0 p-2'
-            :disabled='!hasMore || isLoadingMore'
+            :disabled='!hasMore || isLoadingMore || isQuiteLoading'
             @click='loadMoreTransactions'
           >
             <template v-if='isLoadingMore'>

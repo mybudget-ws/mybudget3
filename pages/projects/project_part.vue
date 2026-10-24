@@ -226,7 +226,7 @@ const focusEditingProjectItemInput = async () => {
 const createProjectItem = async () => {
   const name = newProjectItemName.value.trim();
 
-  if (!name || isCreatingProjectItem.value) {
+  if (!name || isBusy.value) {
     return;
   }
 
@@ -766,7 +766,7 @@ const saveProjectItemOrder = async (itemId) => {
               v-model='newProjectItemName'
               type='text'
               placeholder='Название элемента'
-              :disabled='isCreatingProjectItem'
+              :disabled='isBusy'
             />
           </div>
         </div>
