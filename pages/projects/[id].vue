@@ -193,10 +193,19 @@ const chartOptions = computed(() => ({
   },
 }));
 
+let projectRequestId = 0;
+
 const loadProject = async (projectId) => {
+  const requestId = ++projectRequestId;
+
   const result = await api.project(token.value, {
     id: projectId,
   });
+
+  // Ответ устаревшего запроса не должен перетирать актуальный проект
+  if (requestId !== projectRequestId) {
+    return;
+  }
 
   if (!result) {
     throw new Error('Проект не найден');
@@ -276,21 +285,36 @@ const loadMoreTransactions = async () => {
   }
 };
 
+let chartRequestId = 0;
+
 const loadChart = async (projectId) => {
+  const requestId = ++chartRequestId;
+
   try {
     const result = await api.chartTransactions(token.value, {
       period: 'ALL',
       projectIds: [projectId],
     });
 
+    if (requestId !== chartRequestId) {
+      return;
+    }
+
     chartData.value = result || null;
   } catch (error) {
     console.error('PROJECT CHART ERROR:', error);
-    chartData.value = null;
+
+    if (requestId === chartRequestId) {
+      chartData.value = null;
+    }
   }
 };
 
+let loadRequestId = 0;
+
 const load = async (isQuite = false) => {
+  const requestId = ++loadRequestId;
+
   isError.value = false;
 
   if (isQuite) {
@@ -314,10 +338,16 @@ const load = async (isQuite = false) => {
     ]);
   } catch (error) {
     console.error(error);
-    isError.value = true;
+
+    if (requestId === loadRequestId) {
+      isError.value = true;
+    }
   } finally {
-    isLoading.value = false;
-    isQuiteLoading.value = false;
+    // Устаревший load не должен гасить индикаторы более нового
+    if (requestId === loadRequestId) {
+      isLoading.value = false;
+      isQuiteLoading.value = false;
+    }
   }
 };
 
