@@ -31,6 +31,8 @@ if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
 // console.log('appConfig.theme.dark', appConfig.theme.dark);
 const theme = appConfig.theme.dark ? 'dark' : 'light';
 const navbarMenu = ref(null);
+const navbarToggler = ref(null);
+let closeAfterOpen = false;
 
 useHead({
   htmlAttrs: {
@@ -44,14 +46,44 @@ useHead({
   },
 });
 
-watch(
-  () => route.fullPath,
-  () => {
-    if (isMobile.value && navbarMenu.value) {
-      Collapse.getOrCreateInstance(navbarMenu.value).hide();
-    }
+function closeMenu() {
+  const el = navbarMenu.value;
+  if (!isMobile.value || !el) return;
+
+  // { toggle: false } не даёт Bootstrap открыть меню при первом создании экземпляра.
+  const collapse = Collapse.getOrCreateInstance(el, { toggle: false });
+
+  // Класс `collapsing` есть и при открытии, и при закрытии,
+  // поэтому открытие определяем по aria-expanded на кнопке-переключателе.
+  const isOpening =
+    el.classList.contains('collapsing') &&
+    navbarToggler.value?.getAttribute('aria-expanded') === 'true';
+
+  if (el.classList.contains('show')) {
+    collapse.hide();
+  } else if (isOpening && !closeAfterOpen) {
+    // Клик пришёлся на анимацию открытия: ждём её конца и закрываем
+    closeAfterOpen = true;
+    el.addEventListener(
+      'shown.bs.collapse',
+      () => {
+        closeAfterOpen = false;
+        collapse.hide();
+      },
+      { once: true }
+    );
   }
-)
+}
+
+function onMenuClick(event) {
+  // Реагируем только на клик по ссылке, а не по пустому месту в меню
+  if (event.target.closest('a')) {
+    closeMenu();
+  }
+}
+
+// Закрываем меню и при других переходах (например, кнопка «Назад»)
+watch(() => route.fullPath, closeMenu)
 </script>
 
 <template>
@@ -59,6 +91,7 @@ watch(
     <header class='navbar navbar-expand-md d-print-none'>
       <div class='container-xxl'>
         <button
+          ref='navbarToggler'
           class='navbar-toggler'
           type='button'
           data-bs-toggle='collapse'
@@ -110,45 +143,45 @@ watch(
           ref='navbarMenu'
           class='collapse navbar-collapse'
         >
-          <ul class='navbar-nav'>
+          <ul class='navbar-nav' @click='onMenuClick'>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/transactions'>
+              <NuxtLink class='nav-link' to='/transactions'>
                 <IconReceipt size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Операции</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/reports'>
+              <NuxtLink class='nav-link' to='/reports'>
                 <IconChartHistogram size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Отчёты</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/accounts'>
+              <NuxtLink class='nav-link' to='/accounts'>
                 <IconWallet size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Счета</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/categories'>
+              <NuxtLink class='nav-link' to='/categories'>
                 <IconTags size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Категории</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/goals'>
+              <NuxtLink class='nav-link' to='/goals'>
                 <IconTargetArrow size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Цели</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/projects'>
+              <NuxtLink class='nav-link' to='/projects'>
                 <IconBulb size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Проекты</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/properties'>
+              <NuxtLink class='nav-link' to='/properties'>
                 <IconKey size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Имущество</span>
               </NuxtLink>
