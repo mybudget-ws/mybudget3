@@ -44,17 +44,24 @@ useHead({
   },
 });
 
-watch(
-  () => route.fullPath,
-  () => {
-    const el = navbarMenu.value;
-    // Закрываем меню только на мобильных и только если оно реально открыто.
-    // { toggle: false } не даёт Bootstrap открыть меню при первом создании экземпляра.
-    if (isMobile.value && el && el.classList.contains('show')) {
-      Collapse.getOrCreateInstance(el, { toggle: false }).hide();
-    }
+function closeMenu() {
+  const el = navbarMenu.value;
+  // Закрываем меню только на мобильных и только если оно реально открыто.
+  // { toggle: false } не даёт Bootstrap открыть меню при первом создании экземпляра.
+  if (isMobile.value && el && el.classList.contains('show')) {
+    Collapse.getOrCreateInstance(el, { toggle: false }).hide();
   }
-)
+}
+
+function onMenuClick(event) {
+  // Реагируем только на клик по ссылке, а не по пустому месту в меню
+  if (event.target.closest('a')) {
+    closeMenu();
+  }
+}
+
+// Закрываем меню и при других переходах (например, кнопка «Назад»)
+watch(() => route.fullPath, closeMenu)
 </script>
 
 <template>
@@ -113,7 +120,7 @@ watch(
           ref='navbarMenu'
           class='collapse navbar-collapse'
         >
-          <ul class='navbar-nav'>
+          <ul class='navbar-nav' @click='onMenuClick'>
             <li class='nav-item'>
               <NuxtLink class='nav-link' to='/transactions'>
                 <IconReceipt size='20' stroke-width='1' />
