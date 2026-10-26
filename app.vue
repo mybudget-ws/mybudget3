@@ -31,6 +31,8 @@ if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
 // console.log('appConfig.theme.dark', appConfig.theme.dark);
 const theme = appConfig.theme.dark ? 'dark' : 'light';
 const navbarMenu = ref(null);
+const navbarToggler = ref(null);
+let closeAfterOpen = false;
 
 useHead({
   htmlAttrs: {
@@ -46,10 +48,30 @@ useHead({
 
 function closeMenu() {
   const el = navbarMenu.value;
-  // Закрываем меню только на мобильных и только если оно реально открыто.
+  if (!isMobile.value || !el) return;
+
   // { toggle: false } не даёт Bootstrap открыть меню при первом создании экземпляра.
-  if (isMobile.value && el && el.classList.contains('show')) {
-    Collapse.getOrCreateInstance(el, { toggle: false }).hide();
+  const collapse = Collapse.getOrCreateInstance(el, { toggle: false });
+
+  // Класс `collapsing` есть и при открытии, и при закрытии,
+  // поэтому открытие определяем по aria-expanded на кнопке-переключателе.
+  const isOpening =
+    el.classList.contains('collapsing') &&
+    navbarToggler.value?.getAttribute('aria-expanded') === 'true';
+
+  if (el.classList.contains('show')) {
+    collapse.hide();
+  } else if (isOpening && !closeAfterOpen) {
+    // Клик пришёлся на анимацию открытия: ждём её конца и закрываем
+    closeAfterOpen = true;
+    el.addEventListener(
+      'shown.bs.collapse',
+      () => {
+        closeAfterOpen = false;
+        collapse.hide();
+      },
+      { once: true }
+    );
   }
 }
 
@@ -69,6 +91,7 @@ watch(() => route.fullPath, closeMenu)
     <header class='navbar navbar-expand-md d-print-none'>
       <div class='container-xxl'>
         <button
+          ref='navbarToggler'
           class='navbar-toggler'
           type='button'
           data-bs-toggle='collapse'
