@@ -47,8 +47,11 @@ useHead({
 watch(
   () => route.fullPath,
   () => {
-    if (isMobile.value && navbarMenu.value) {
-      Collapse.getOrCreateInstance(navbarMenu.value).hide();
+    const el = navbarMenu.value;
+    // Закрываем меню только на мобильных и только если оно реально открыто.
+    // { toggle: false } не даёт Bootstrap открыть меню при первом создании экземпляра.
+    if (isMobile.value && el && el.classList.contains('show')) {
+      Collapse.getOrCreateInstance(el, { toggle: false }).hide();
     }
   }
 )
@@ -112,43 +115,43 @@ watch(
         >
           <ul class='navbar-nav'>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/transactions'>
+              <NuxtLink class='nav-link' to='/transactions'>
                 <IconReceipt size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Операции</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/reports'>
+              <NuxtLink class='nav-link' to='/reports'>
                 <IconChartHistogram size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Отчёты</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/accounts'>
+              <NuxtLink class='nav-link' to='/accounts'>
                 <IconWallet size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Счета</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/categories'>
+              <NuxtLink class='nav-link' to='/categories'>
                 <IconTags size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Категории</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/goals'>
+              <NuxtLink class='nav-link' to='/goals'>
                 <IconTargetArrow size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Цели</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/projects'>
+              <NuxtLink class='nav-link' to='/projects'>
                 <IconBulb size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Проекты</span>
               </NuxtLink>
             </li>
             <li class='nav-item'>
-              <NuxtLink class='nav-link' href='/properties'>
+              <NuxtLink class='nav-link' to='/properties'>
                 <IconKey size='20' stroke-width='1' />
                 <span class='nav-link-title ms-1'>Имущество</span>
               </NuxtLink>
