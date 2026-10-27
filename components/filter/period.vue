@@ -16,16 +16,6 @@ const fromDate = ref(null);
 
 const toDate = ref(null);
 
-const quickFilters = [
-  { id: 'today', name: 'Сегодня' },
-  { id: 'yesterday', name: 'Вчера' },
-  { id: 'week', name: 'Текущая неделя' },
-  { id: 'month', name: 'Текущий месяц' },
-  { id: 'custom', name: 'Свой интервал' },
-];
-
-const selectedQuickFilter = ref(null);
-
 const monthNames = [
   'Январь',
   'Февраль',
@@ -40,6 +30,16 @@ const monthNames = [
   'Ноябрь',
   'Декабрь',
 ];
+
+const quickFilters = [
+  { id: 'today', name: 'Сегодня' },
+  { id: 'yesterday', name: 'Вчера' },
+  { id: 'week', name: 'Эта неделя' },
+  { id: 'month', name: monthNames[new Date().getMonth()] },
+  { id: 'custom', name: 'Свой интервал' },
+];
+
+const selectedQuickFilter = ref(null);
 
 const weekDays = [
   'Пн',

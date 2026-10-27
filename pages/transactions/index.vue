@@ -81,8 +81,8 @@ const periodName = computed(() => {
   const names = {
     TODAY: 'Сегодня',
     YESTERDAY: 'Вчера',
-    WEEK: 'Текущая неделя',
-    MONTH: 'Текущий месяц',
+    WEEK: 'Эта неделя',
+    MONTH: new Date().toLocaleDateString('ru-RU', { month: 'long' }).replace(/^./, char => char.toUpperCase()),
     YEAR: 'Текущий год',
     CUSTOM: 'Свой интервал',
   };
