@@ -8,6 +8,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  showPeriod: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits([
@@ -21,7 +25,7 @@ const emit = defineEmits([
 
 const FILTERS_STORAGE_KEY = 'transactions-filters-order';
 
-const defaultFilterOrder = [
+const baseFilterOrder = [
   'period',
   'kinds',
   'accounts',
@@ -30,7 +34,13 @@ const defaultFilterOrder = [
   'properties',
 ];
 
-const filterOrder = ref([...defaultFilterOrder]);
+const getDefaultFilterOrder = () => (
+  props.showPeriod
+    ? baseFilterOrder
+    : baseFilterOrder.filter((filter) => filter !== 'period')
+);
+
+const filterOrder = ref(getDefaultFilterOrder());
 
 const draggedFilter = ref(null);
 const dragStartY = ref(0);
@@ -50,6 +60,8 @@ const setFilterElement = (filter, element) => {
 const loadFilterOrder = () => {
   if (!import.meta.client) return;
 
+  const defaults = getDefaultFilterOrder();
+
   try {
     const saved = JSON.parse(
       localStorage.getItem(FILTERS_STORAGE_KEY)
@@ -57,12 +69,12 @@ const loadFilterOrder = () => {
 
     if (!Array.isArray(saved)) return;
 
-    const valid = saved.filter((key) => defaultFilterOrder.includes(key));
-    const missing = defaultFilterOrder.filter((key) => !valid.includes(key));
+    const valid = saved.filter((key) => defaults.includes(key));
+    const missing = defaults.filter((key) => !valid.includes(key));
 
     filterOrder.value = [...valid, ...missing];
   } catch {
-    filterOrder.value = [...defaultFilterOrder];
+    filterOrder.value = [...defaults];
   }
 };
 
@@ -195,7 +207,7 @@ onMounted(() => {
             :style='filterStyle(filter)'
           >
             <FilterPeriod
-              v-if='filter === "period"'
+              v-if='props.showPeriod && filter === "period"'
               :mobile-drag-handle='true'
               @pointerdown='onPointerDown("period", $event)'
               @pointermove='onPointerMove'

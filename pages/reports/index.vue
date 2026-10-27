@@ -194,6 +194,7 @@ const chartOptions = computed(() => ({
   <ModalFiltersWindow
     v-if='isShowMobileFilters'
     is-loaded
+    :show-period='false'
     @close='isShowMobileFilters = false'
     @kinds-change='onKindsChange'
     @accounts-change='onAccountsChange'
