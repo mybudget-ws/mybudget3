@@ -753,7 +753,6 @@ const saveProjectItemOrder = async (itemId) => {
           </tbody>
         </table>
       </div>
-
       <!-- Add project item -->
       <form
         class='card-footer bg-transparent border-0'
@@ -769,6 +768,20 @@ const saveProjectItemOrder = async (itemId) => {
               :disabled='isBusy'
             />
           </div>
+
+          <button
+            v-if='isMobile'
+            class='btn btn-action border-fix flex-shrink-0 ms-2'
+            type='submit'
+            :disabled='isBusy || !newProjectItemName.trim()'
+            aria-label='Добавить элемент'
+            title='Добавить элемент'
+          >
+            <IconCheck
+              size='20'
+              stroke-width='1.5'
+            />
+          </button>
         </div>
       </form>
     </div>
@@ -776,6 +789,10 @@ const saveProjectItemOrder = async (itemId) => {
 </template>
 
 <style scoped>
+.btn-action.border-fix {
+  border-color: transparent;
+}
+
 .project-item-drag-cell {
   width: 1%;
   padding-right: 0;
