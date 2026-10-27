@@ -28,6 +28,13 @@ const props = defineProps({
 
 const newProjectItemName = ref('');
 const newProjectItemInput = ref(null);
+const projectItemsProgress = computed(() =>
+  totalProjectItemsCount.value
+    ? Math.round(
+        (completedProjectItemsCount.value / totalProjectItemsCount.value) * 100
+      )
+    : 0
+);
 
 const editingProjectItemId = ref(null);
 const editingProjectItemName = ref('');
@@ -453,7 +460,7 @@ const saveProjectItemOrder = async (itemId) => {
     >
       <div class='row w-full align-items-center'>
         <div class='col'>
-          <h2 class='mb-0 d-flex align-items-center'>
+          <h2 class='mb-1 d-flex align-items-center'>
             Состав проекта
 
             <span
@@ -470,6 +477,29 @@ const saveProjectItemOrder = async (itemId) => {
               </span>
             </span>
           </h2>
+
+          <!--Progress-bar-->
+          <div v-if='totalProjectItemsCount > 0'>
+            <div class='d-flex align-items-center gap-2'>
+              <div
+                class='progress flex-grow-1'
+                role='progressbar'
+                style='height: 6px;'
+                :aria-valuenow='projectItemsProgress'
+                aria-valuemin='0'
+                aria-valuemax='100'
+              >
+                <div
+                  class='progress-bar bg-gray-400'
+                  :style='{ width: `${projectItemsProgress}%` }'
+                />
+              </div>
+
+              <span class='text-secondary small'>
+                {{ projectItemsProgress }}%
+              </span>
+            </div>
+          </div>
         </div>
 
         <div
