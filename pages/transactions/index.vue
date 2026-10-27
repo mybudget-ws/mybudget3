@@ -75,8 +75,24 @@ const isEmpty = computed(() => {
   return transactions.value.length === 0;
 });
 
+const periodName = computed(() => {
+  const period = filters.value.period;
+
+  const names = {
+    TODAY: 'Сегодня',
+    YESTERDAY: 'Вчера',
+    WEEK: 'Текущая неделя',
+    MONTH: 'Текущий месяц',
+    YEAR: 'Текущий год',
+    CUSTOM: 'Свой интервал',
+  };
+
+  return names[period] || null;
+});
+
 const isTopFiltersVisible = computed(() => (
-  selectedCategories.value.length
+  periodName.value
+    || selectedCategories.value.length
     || selectedProjects.value.length
     || selectedAccounts.value.length
     || selectedProperties.value.length
@@ -453,6 +469,16 @@ const onDescriptionSearch = () => {
   router.replace({ query: nextQuery });
 };
 
+const onPeriodClear = () => {
+  const nextQuery = { ...route.query };
+
+  delete nextQuery.period;
+  delete nextQuery.customPeriodFrom;
+  delete nextQuery.customPeriodTo;
+
+  router.replace({ query: nextQuery });
+};
+
 const clearDescriptionSearch = () => {
   description.value = '';
 
@@ -607,6 +633,12 @@ onMounted(() => {
             class='card-body border-bottom'
           >
             <div class='badges-list'>
+              <BadgeCategory
+                v-if='periodName'
+                :name='periodName'
+                :is-x='true'
+                @click='onPeriodClear'
+              />
               <BadgeCategory
                 v-if='route.query.description'
                 :name='route.query.description'
