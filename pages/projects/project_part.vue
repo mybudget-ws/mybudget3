@@ -771,7 +771,7 @@ const saveProjectItemOrder = async (itemId) => {
 
           <button
             v-if='isMobile'
-            class='btn btn-action flex-shrink-0 ms-2'
+            class='btn btn-action border-fix flex-shrink-0 ms-2'
             type='submit'
             :disabled='isBusy || !newProjectItemName.trim()'
             aria-label='Добавить элемент'
@@ -789,6 +789,10 @@ const saveProjectItemOrder = async (itemId) => {
 </template>
 
 <style scoped>
+.btn-action.border-fix {
+  border-color: transparent;
+}
+
 .project-item-drag-cell {
   width: 1%;
   padding-right: 0;
