@@ -84,8 +84,53 @@ const periodName = computed(() => {
     WEEK: 'Эта неделя',
     MONTH: new Date().toLocaleDateString('ru-RU', { month: 'long' }).replace(/^./, char => char.toUpperCase()),
     YEAR: 'Текущий год',
-    CUSTOM: 'Свой интервал',
   };
+
+  if (period === 'CUSTOM') {
+    const from = filters.value.customPeriodFrom;
+    const to = filters.value.customPeriodTo;
+
+    if (!from || !to) return 'Свой интервал';
+
+    const dateFrom = new Date(`${from}T00:00:00`);
+    const dateTo = new Date(`${to}T00:00:00`);
+
+    if (Number.isNaN(dateFrom.getTime()) || Number.isNaN(dateTo.getTime())) {
+      return 'Свой интервал';
+    }
+
+    const formatDate = (date) => date.getDate();
+    const formatMonth = (date) => new Intl.DateTimeFormat('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+    }).format(date).replace(/^\d+\s/, '');
+    const formatYear = (date) => date.getFullYear();
+    const currentYear = new Date().getFullYear();
+
+    const dayFrom = formatDate(dateFrom);
+    const dayTo = formatDate(dateTo);
+    const monthFrom = formatMonth(dateFrom);
+    const monthTo = formatMonth(dateTo);
+    const yearFrom = formatYear(dateFrom);
+    const yearTo = formatYear(dateTo);
+
+    if (yearFrom === yearTo && dateFrom.getMonth() === dateTo.getMonth()) {
+      return `${dayFrom} - ${dayTo} ${monthTo}`;
+    }
+
+    const fromLabel = `${dayFrom} ${monthFrom}`;
+    const toLabel = `${dayTo} ${monthTo}`;
+
+    if (yearFrom === yearTo) {
+      return `${fromLabel} - ${toLabel}`;
+    }
+
+    if (yearTo === currentYear) {
+      return `${fromLabel} ${yearFrom} - ${toLabel}`;
+    }
+
+    return `${fromLabel} ${yearFrom} - ${toLabel} ${yearTo}`;
+  }
 
   return names[period] || null;
 });
