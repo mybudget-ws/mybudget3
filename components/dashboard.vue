@@ -498,7 +498,7 @@ watch(token, (val) => {
         :chart-data='dashboard.accountsChart'
       >
         <div v-if='!isLoading && isMobile'>
-          <div class='card-header'>
+          <div class='card-header bg-surface-secondary'>
             <div class='flex-fill'>
               <div class='card-title'>
                 Всего
@@ -559,7 +559,7 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr class='bg-surface-secondary'>
                 <td class='text-secondary'><b>Всего</b></td>
                 <td class='text-end no-button-padding'>
                   <Amount
@@ -609,7 +609,7 @@ watch(token, (val) => {
         :chart-data='dashboard.assetsChart'
       >
         <div v-if='!isLoading && isMobile'>
-          <div class='card-header'>
+          <div class='card-header bg-surface-secondary'>
             <div class='flex-fill'>
               <div class='card-title'>
                 Всего
@@ -665,7 +665,7 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr class='bg-surface-secondary'>
                 <td class='text-secondary'><b>Всего</b></td>
                 <td class='text-end text-success no-button-padding'>
                   <Amount
