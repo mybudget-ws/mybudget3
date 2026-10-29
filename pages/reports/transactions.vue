@@ -23,6 +23,18 @@ const {
 } = useChart();
 
 const CHART_TYPE = 'bar';
+const REPORT_FILTERS_STORAGE_KEY = 'reports-filters-order';
+
+const defaultFilterOrder = [
+  'kinds',
+  'accounts',
+  'categories',
+  'projects',
+  'properties',
+];
+
+const filterOrder = ref([...defaultFilterOrder]);
+const draggedFilter = ref(null);
 const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
@@ -66,8 +78,76 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
+const loadFilterOrder = () => {
+  if (!import.meta.client) return;
+
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem(REPORT_FILTERS_STORAGE_KEY)
+    );
+
+    if (!Array.isArray(saved)) return;
+
+    const valid = saved.filter(key => defaultFilterOrder.includes(key));
+    const missing = defaultFilterOrder.filter(key => !valid.includes(key));
+
+    filterOrder.value = [...valid, ...missing];
+  } catch {
+    filterOrder.value = [...defaultFilterOrder];
+  }
+};
+
+const saveFilterOrder = () => {
+  if (!import.meta.client) return;
+
+  localStorage.setItem(
+    REPORT_FILTERS_STORAGE_KEY,
+    JSON.stringify(filterOrder.value)
+  );
+};
+
+const onFilterDragStart = (filter, event) => {
+  draggedFilter.value = filter;
+
+  event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', filter);
+
+  const filterItem = event.currentTarget.closest('.filter-item');
+
+  if (filterItem) {
+    event.dataTransfer.setDragImage(
+      filterItem,
+      event.clientX - filterItem.getBoundingClientRect().left,
+      event.clientY - filterItem.getBoundingClientRect().top
+    );
+  }
+};
+
+const onFilterDragOver = (filter) => {
+  if (!draggedFilter.value || draggedFilter.value === filter) return;
+
+  const order = [...filterOrder.value];
+
+  const fromIndex = order.indexOf(draggedFilter.value);
+  const toIndex = order.indexOf(filter);
+
+  if (fromIndex === -1 || toIndex === -1) return;
+
+  const [moved] = order.splice(fromIndex, 1);
+  order.splice(toIndex, 0, moved);
+
+  filterOrder.value = order;
+};
+
+const onFilterDragEnd = () => {
+  saveFilterOrder();
+  draggedFilter.value = null;
+};
+
 onMounted(() => {
   if (!import.meta.client) return;
+
+  loadFilterOrder();
 
   localStorage.setItem(
     REPORTS_CHART_STORAGE_KEY,
@@ -275,16 +355,54 @@ const chartOptions = computed(() => ({
         </div>
       </div>
     </div>
-
     <div
       v-show='!isMobile'
       class='col-sm-12 col-lg-3 col-xl-2'
     >
-      <FilterKinds @update:items='onKindsChange' />
-      <FilterAccounts @update:items='onAccountsChange' />
-      <FilterCategories @update:items='onCategoriesChange' />
-      <FilterProjects @update:items='onProjectsChange' />
-      <FilterProperties @update:items='onPropertiesChange' />
+      <div class='filter-list'>
+        <div
+          v-for='filter in filterOrder'
+          :key='filter'
+          class='filter-item'
+          :class='{ "filter-item-dragging": draggedFilter === filter }'
+          @dragover.prevent='onFilterDragOver(filter)'
+        >
+          <FilterKinds
+            v-if='filter === "kinds"'
+            @update:items='onKindsChange'
+            @drag-start='onFilterDragStart("kinds", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterAccounts
+            v-else-if='filter === "accounts"'
+            @update:items='onAccountsChange'
+            @drag-start='onFilterDragStart("accounts", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterCategories
+            v-else-if='filter === "categories"'
+            @update:items='onCategoriesChange'
+            @drag-start='onFilterDragStart("categories", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterProjects
+            v-else-if='filter === "projects"'
+            @update:items='onProjectsChange'
+            @drag-start='onFilterDragStart("projects", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterProperties
+            v-else-if='filter === "properties"'
+            @update:items='onPropertiesChange'
+            @drag-start='onFilterDragStart("properties", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
