@@ -213,9 +213,11 @@ const onSubmit = async () => {
   }
 };
 
-nextTick(() => {
-  amountInputRef.value?.focus?.();
-});
+if (!isCopy.value) {
+  nextTick(() => {
+    amountInputRef.value?.focus?.();
+  });
+}
 
 watch(
   [token, transactionId, copyId],
