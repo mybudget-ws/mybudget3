@@ -21,7 +21,6 @@ const currentAccountIds = ref([]);
 const currentCategoryIds = ref([]);
 const currentProjectId = ref(undefined);
 const currentPropertyId = ref(undefined);
-
 const propertyIdParam = computed(() => {
   const id = Number(route.query.property_id);
   return Number.isInteger(id) && id > 0 ? id : undefined;
@@ -53,7 +52,7 @@ const copyId = computed(() => {
 
   return Number.isInteger(id) && id > 0 ? id : undefined;
 });
-
+const isTransactionLoaded = ref(!transactionId.value && !copyId.value);
 const isEdit = computed(() => !!transactionId.value);
 const isCopy = computed(() => !!copyId.value);
 
@@ -81,8 +80,10 @@ const loadItem = async () => {
 
   currentAccount.value = item.account;
   currentAccountIds.value = item.account
-    ? [item.account.id]
+    ? [Number(item.account.id)]
     : [];
+
+  isTransactionLoaded.value = true;
 
   currentCategoryIds.value = categoryIdsParam.value;
   currentProjectId.value = projectIdParam.value;
@@ -212,9 +213,11 @@ const onSubmit = async () => {
   }
 };
 
-nextTick(() => {
-  amountInputRef.value?.focus?.();
-});
+if (!isCopy.value) {
+  nextTick(() => {
+    amountInputRef.value?.focus?.();
+  });
+}
 
 watch(
   [token, transactionId, copyId],
@@ -294,6 +297,7 @@ watch(
 
             <div class='mb-3'>
               <FormAccounts
+                v-if='isTransactionLoaded'
                 :ids='currentAccountIds'
                 @toggle-account='toggleAccountCallback'
                 @loaded='isLoaded = true'

@@ -59,18 +59,20 @@ const load = async () => {
 const initSelectedIds = (query = route.query) => {
   if (props.initialSelectedId) {
     selectedIds.value = [props.initialSelectedId];
-  } else if (props.ids.length === 0) {
-    const queryIds = query.accounts?.toString().split(',').filter(v => v !== '') || [];
-    selectedIds.value = queryIds.map(id => Number(id)).filter(id => id > 0);
+  } else if (props.ids.length > 0) {
+    selectedIds.value = props.ids.map(Number);
   } else {
-    selectedIds.value = props.ids;
+    const queryIds = query.accounts?.toString().split(',').filter(v => v !== '') || [];
+    selectedIds.value = queryIds.map(Number).filter(id => id > 0);
   }
+
   if (selectedIds.value.length === 0 && visibleItems.value.length > 0) {
     selectedIds.value = [visibleItems.value[0].id];
   }
+
   emit('toggleAccount', findItem(selectedIds.value[0]));
   emit('toggleAccountIds', selectedIds.value);
-}
+};
 
 const toggleSelection = (id) => {
   if (props.type == TYPE_RADIO) {
@@ -132,9 +134,21 @@ watch(
   { immediate: true }
 );
 
-watch(() => route, (newRoute) => {
-  initSelectedIds(newRoute.query.accounts);
-}, { immediate: true, deep: true })
+watch(
+  () => props.ids,
+  (ids) => {
+    if (ids.length > 0) {
+      selectedIds.value = ids.map(Number);
+    }
+  },
+  { deep: true }
+);
+
+watch(
+  () => route.query.accounts,
+  () => initSelectedIds(),
+  { deep: true }
+);
 </script>
 
 <template>
@@ -148,7 +162,7 @@ watch(() => route, (newRoute) => {
           <input
             :type='type'
             :name='radioGroupName'
-            value='item.id'
+            :value='item.id'
             class='form-selectgroup-input'
             :checked='isSelected(item.id)'
             @change='toggleSelection(item.id)'
