@@ -28,8 +28,19 @@ if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark')) {
 } else {
   appConfig.theme.dark = getData('theme') === 'dark';
 }
+
+watch(
+  () => route.query.theme,
+  (queryTheme) => {
+    if (queryTheme !== 'light' && queryTheme !== 'dark') return;
+
+    appConfig.theme.dark = queryTheme === 'dark';
+    setData('theme', queryTheme, 100, 'd');
+  }
+);
+
 // console.log('appConfig.theme.dark', appConfig.theme.dark);
-const theme = appConfig.theme.dark ? 'dark' : 'light';
+const theme = computed(() => appConfig.theme.dark ? 'dark' : 'light');
 const navbarMenu = ref(null);
 const navbarToggler = ref(null);
 let closeAfterOpen = false;
@@ -110,20 +121,20 @@ watch(() => route.fullPath, closeMenu)
         <div class='navbar-nav flex-row order-md-last'>
           <div class='d-flex'>
             <div class='nav-item me-2'>
-              <a
+              <NuxtLink
                 v-tooltip='"Включить темный режим"'
-                href='?theme=dark'
+                :to='{ path: route.path, query: { ...route.query, theme: "dark" } }'
                 class='nav-link px-0 hide-theme-dark'
               >
                 <IconMoon size='20' stroke-width='1' />
-              </a>
-              <a
+              </NuxtLink>
+              <NuxtLink
                 v-tooltip='"Включить светлый режим"'
-                href='?theme=light'
+                :to='{ path: route.path, query: { ...route.query, theme: "light" } }'
                 class='nav-link px-0 hide-theme-light'
               >
                 <IconSun size='20' stroke-width='1' />
-              </a>
+              </NuxtLink>
             </div>
             <div class='nav-item'>
               <NuxtLink v-if='!isSignedIn' to='/sign_in' class='btn btn-outline-primary'>
