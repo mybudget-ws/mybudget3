@@ -5,6 +5,7 @@ import { CHART_COLORS, REPORTS_CHART_STORAGE_KEY } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
 import { useDevice } from '~/composables/use_device';
+import { useFilterOrder } from '~/composables/use_filter_order';
 
 const route = useRoute();
 const { token } = useAuth();
@@ -21,20 +22,17 @@ const {
   onPropertyClick,
   onKindClick,
 } = useChart();
+// В отчётах период выбирается в шапке, поэтому фильтр "period" скрыт.
+const {
+  filterOrder,
+  draggedFilter,
+  onFilterDragStart,
+  onFilterDragOver,
+  onFilterDragEnd,
+} = useFilterOrder({ exclude: ['period'] });
 
 const CHART_TYPE = 'bar';
-const REPORT_FILTERS_STORAGE_KEY = 'reports-filters-order';
 
-const defaultFilterOrder = [
-  'kinds',
-  'accounts',
-  'categories',
-  'projects',
-  'properties',
-];
-
-const filterOrder = ref([...defaultFilterOrder]);
-const draggedFilter = ref(null);
 const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
@@ -78,76 +76,8 @@ const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
 };
 
-const loadFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem(REPORT_FILTERS_STORAGE_KEY)
-    );
-
-    if (!Array.isArray(saved)) return;
-
-    const valid = saved.filter(key => defaultFilterOrder.includes(key));
-    const missing = defaultFilterOrder.filter(key => !valid.includes(key));
-
-    filterOrder.value = [...valid, ...missing];
-  } catch {
-    filterOrder.value = [...defaultFilterOrder];
-  }
-};
-
-const saveFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  localStorage.setItem(
-    REPORT_FILTERS_STORAGE_KEY,
-    JSON.stringify(filterOrder.value)
-  );
-};
-
-const onFilterDragStart = (filter, event) => {
-  draggedFilter.value = filter;
-
-  event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/plain', filter);
-
-  const filterItem = event.currentTarget.closest('.filter-item');
-
-  if (filterItem) {
-    event.dataTransfer.setDragImage(
-      filterItem,
-      event.clientX - filterItem.getBoundingClientRect().left,
-      event.clientY - filterItem.getBoundingClientRect().top
-    );
-  }
-};
-
-const onFilterDragOver = (filter) => {
-  if (!draggedFilter.value || draggedFilter.value === filter) return;
-
-  const order = [...filterOrder.value];
-
-  const fromIndex = order.indexOf(draggedFilter.value);
-  const toIndex = order.indexOf(filter);
-
-  if (fromIndex === -1 || toIndex === -1) return;
-
-  const [moved] = order.splice(fromIndex, 1);
-  order.splice(toIndex, 0, moved);
-
-  filterOrder.value = order;
-};
-
-const onFilterDragEnd = () => {
-  saveFilterOrder();
-  draggedFilter.value = null;
-};
-
 onMounted(() => {
   if (!import.meta.client) return;
-
-  loadFilterOrder();
 
   localStorage.setItem(
     REPORTS_CHART_STORAGE_KEY,
