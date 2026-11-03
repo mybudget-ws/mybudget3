@@ -133,14 +133,17 @@ watch(
   },
   { immediate: true }
 );
+
 watch(
-  () => props.ids[0],
-  (id) => {
-    if (id != null) {
-      selectedIds.value = [Number(id)];
+  () => props.ids,
+  (ids) => {
+    if (ids.length > 0) {
+      selectedIds.value = ids.map(Number);
     }
-  }
+  },
+  { deep: true }
 );
+
 watch(
   () => route.query.accounts,
   () => initSelectedIds(),
