@@ -12,11 +12,27 @@ import { KIND_EXPENSE, KIND_INCOME } from '~/lib/consts';
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
 import { useAuth } from '~/composables/use_auth';
 import { useDevice } from '~/composables/use_device';
+import { useFilterOrder } from '~/composables/use_filter_order';
+import { useQueryFilters } from '~/composables/use_query_filters';
 
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
 const { isMobile } = useDevice();
+const {
+  filterOrder,
+  draggedFilter,
+  onFilterDragStart,
+  onFilterDragOver,
+  onFilterDragEnd,
+} = useFilterOrder();
+const {
+  onCategoryClick,
+  onAccountClick,
+  onProjectClick,
+  onPropertyClick,
+  onKindClick,
+} = useQueryFilters();
 
 const PER_PAGE = 50;
 const hasMore = ref(true);
@@ -39,20 +55,6 @@ const selectedCategories = ref([]);
 const selectedKinds = ref([]);
 const selectedProjects = ref([]);
 const selectedProperties = ref([]);
-
-const FILTERS_STORAGE_KEY = 'transactions-filters-order';
-
-const defaultFilterOrder = [
-  'period',
-  'kinds',
-  'accounts',
-  'categories',
-  'projects',
-  'properties',
-];
-
-const filterOrder = ref([...defaultFilterOrder]);
-const draggedFilter = ref(null);
 
 const description = ref(route.query.description?.toString() || '');
 
@@ -150,72 +152,6 @@ const params = computed(() => ({
   perPage: PER_PAGE,
   filters: filters.value,
 }));
-
-const loadFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem(FILTERS_STORAGE_KEY)
-    );
-
-    if (!Array.isArray(saved)) return;
-
-    const valid = saved.filter((key) => defaultFilterOrder.includes(key));
-    const missing = defaultFilterOrder.filter((key) => !valid.includes(key));
-
-    filterOrder.value = [...valid, ...missing];
-  } catch {
-    filterOrder.value = [...defaultFilterOrder];
-  }
-};
-
-const saveFilterOrder = () => {
-  if (!import.meta.client) return;
-
-  localStorage.setItem(
-    FILTERS_STORAGE_KEY,
-    JSON.stringify(filterOrder.value)
-  );
-};
-
-const onFilterDragStart = (filter, event) => {
-  draggedFilter.value = filter;
-
-  event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/plain', filter);
-
-  const filterItem = event.currentTarget.closest('.filter-item');
-
-  if (filterItem) {
-    event.dataTransfer.setDragImage(
-      filterItem,
-      event.clientX - filterItem.getBoundingClientRect().left,
-      event.clientY - filterItem.getBoundingClientRect().top
-    );
-  }
-};
-
-const onFilterDragOver = (filter) => {
-  if (!draggedFilter.value || draggedFilter.value === filter) return;
-
-  const order = [...filterOrder.value];
-
-  const fromIndex = order.indexOf(draggedFilter.value);
-  const toIndex = order.indexOf(filter);
-
-  if (fromIndex === -1 || toIndex === -1) return;
-
-  const [moved] = order.splice(fromIndex, 1);
-  order.splice(toIndex, 0, moved);
-
-  filterOrder.value = order;
-};
-
-const onFilterDragEnd = () => {
-  saveFilterOrder();
-  draggedFilter.value = null;
-};
 
 const onCategoriesChange = (categories) => {
   selectedCategories.value = categories;
@@ -394,112 +330,10 @@ const onSaved = async () => {
   await load(true);
 };
 
-// TODO: Подумать, унифицировать, этот код с кодом
-//       в components/categories.vue
-const onCategoryClick = (id) => {
-  const current = route.query.categories ?
-    route.query.categories.toString().split(',').map(Number).filter(Boolean) :
-    [];
-
-  const newCategories = current.includes(id) ?
-    current.filter(c => c !== id) :
-    [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newCategories.length > 0) {
-    nextQuery.categories = newCategories.join(',');
-  } else {
-    delete nextQuery.categories;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
 const onAccountNew = () => {
   isShowModal.value = false;
   isShowModalTransfer.value = false;
   isShowModalAccount.value = true;
-};
-
-const onProjectClick = (id) => {
-  const current = route.query.projects
-    ? route.query.projects.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProjects = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProjects.length > 0) {
-    nextQuery.projects = newProjects.join(',');
-  } else {
-    delete nextQuery.projects;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onAccountClick = (id) => {
-  const current = route.query.accounts
-    ? route.query.accounts.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newAccounts = current.includes(id)
-    ? current.filter(a => a !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newAccounts.length > 0) {
-    nextQuery.accounts = newAccounts.join(',');
-  } else {
-    delete nextQuery.accounts;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onPropertyClick = (id) => {
-  const current = route.query.properties
-    ? route.query.properties.toString().split(',').map(Number).filter(Boolean)
-    : [];
-
-  const newProperties = current.includes(id)
-    ? current.filter(p => p !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newProperties.length > 0) {
-    nextQuery.properties = newProperties.join(',');
-  } else {
-    delete nextQuery.properties;
-  }
-
-  router.replace({ query: nextQuery });
-};
-
-const onKindClick = (id) => {
-  const current = route.query.kinds
-    ? route.query.kinds.toString().split(',').filter(Boolean)
-    : [];
-
-  const newKinds = current.includes(id)
-    ? current.filter(k => k !== id)
-    : [...current, id];
-
-  const nextQuery = { ...route.query };
-
-  if (newKinds.length > 0) {
-    nextQuery.kinds = newKinds.join(',');
-  } else {
-    delete nextQuery.kinds;
-  }
-
-  router.replace({ query: nextQuery });
 };
 
 const onDescriptionSearch = () => {
@@ -555,9 +389,6 @@ watch(
     description.value = value?.toString() || '';
   }
 );
-onMounted(() => {
-  loadFilterOrder();
-});
 </script>
 
 <template>

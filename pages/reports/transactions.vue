@@ -5,6 +5,7 @@ import { CHART_COLORS, REPORTS_CHART_STORAGE_KEY } from '~/lib/consts';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
 import { useDevice } from '~/composables/use_device';
+import { useFilterOrder } from '~/composables/use_filter_order';
 
 const route = useRoute();
 const { token } = useAuth();
@@ -21,8 +22,17 @@ const {
   onPropertyClick,
   onKindClick,
 } = useChart();
+// В отчётах период выбирается в шапке, поэтому фильтр "period" скрыт.
+const {
+  filterOrder,
+  draggedFilter,
+  onFilterDragStart,
+  onFilterDragOver,
+  onFilterDragEnd,
+} = useFilterOrder({ exclude: ['period'] });
 
 const CHART_TYPE = 'bar';
+
 const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
@@ -292,16 +302,54 @@ const chartOptions = computed(() => ({
         </div>
       </div>
     </div>
-
     <div
       v-show='!isMobile'
       class='col-sm-12 col-lg-3 col-xl-2'
     >
-      <FilterKinds @update:items='onKindsChange' />
-      <FilterAccounts @update:items='onAccountsChange' />
-      <FilterCategories @update:items='onCategoriesChange' />
-      <FilterProjects @update:items='onProjectsChange' />
-      <FilterProperties @update:items='onPropertiesChange' />
+      <div class='filter-list'>
+        <div
+          v-for='filter in filterOrder'
+          :key='filter'
+          class='filter-item'
+          :class='{ "filter-item-dragging": draggedFilter === filter }'
+          @dragover.prevent='onFilterDragOver(filter)'
+        >
+          <FilterKinds
+            v-if='filter === "kinds"'
+            @update:items='onKindsChange'
+            @drag-start='onFilterDragStart("kinds", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterAccounts
+            v-else-if='filter === "accounts"'
+            @update:items='onAccountsChange'
+            @drag-start='onFilterDragStart("accounts", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterCategories
+            v-else-if='filter === "categories"'
+            @update:items='onCategoriesChange'
+            @drag-start='onFilterDragStart("categories", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterProjects
+            v-else-if='filter === "projects"'
+            @update:items='onProjectsChange'
+            @drag-start='onFilterDragStart("projects", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+
+          <FilterProperties
+            v-else-if='filter === "properties"'
+            @update:items='onPropertiesChange'
+            @drag-start='onFilterDragStart("properties", $event)'
+            @drag-end='onFilterDragEnd'
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>

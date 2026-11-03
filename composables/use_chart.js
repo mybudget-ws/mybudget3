@@ -1,4 +1,5 @@
 import { parseNumberArray, parseStringArray } from '~/lib/helper_parsers';
+import { useQueryFilters } from '~/composables/use_query_filters';
 
 export const useChart = () => {
   const route = useRoute();
@@ -63,44 +64,13 @@ export const useChart = () => {
     });
   };
 
-  const toggleQueryFilter = (
-    queryKey,
-    id,
-    parser,
-    formatter = (arr) => arr.join(',')
-  ) => {
-    const current = parser(route.query[queryKey]);
-    const newValues = current.includes(id)
-      ? current.filter(item => item !== id)
-      : [...current, id];
-
-    const nextQuery = { ...route.query };
-
-    if (newValues.length) nextQuery[queryKey] = formatter(newValues);
-    else delete nextQuery[queryKey];
-
-    router.replace({ query: nextQuery });
-  };
-
-  const onCategoryClick = (id) => {
-    toggleQueryFilter('categories', id, parseNumberArray);
-  };
-
-  const onAccountClick = (id) => {
-    toggleQueryFilter('accounts', id, parseNumberArray);
-  };
-
-  const onProjectClick = (id) => {
-    toggleQueryFilter('projects', id, parseNumberArray);
-  };
-
-  const onPropertyClick = (id) => {
-    toggleQueryFilter('properties', id, parseNumberArray);
-  };
-
-  const onKindClick = (id) => {
-    toggleQueryFilter('kinds', id, parseStringArray);
-  };
+  const {
+    onCategoryClick,
+    onAccountClick,
+    onProjectClick,
+    onPropertyClick,
+    onKindClick,
+  } = useQueryFilters();
 
   const filters = computed(() => {
     return {
