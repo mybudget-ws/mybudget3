@@ -487,6 +487,8 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Счета'
+        :header-value='totalAccountsBalanceBase'
+        :currency='currencyBaseName'
         empty-text='Нет операций, или баланс счетов отрицательный'
         empty-icon='pie'
         empty-icon-color='text-blue'
@@ -601,6 +603,8 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Все активы'
+        :header-value='totalAssetsAmountBase'
+        :currency='currencyBaseName'
         empty-text='У вас пока нет активов'
         empty-icon='pie3'
         empty-icon-color='text-purple'
