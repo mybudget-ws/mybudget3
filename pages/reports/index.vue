@@ -134,7 +134,24 @@ const chartOptions = computed(() => ({
     animations: { enabled: false },
   },
   colors: CHART_COLORS,
-  tooltip: { theme: 'dark' },
+  tooltip: {
+    theme: 'dark',
+    x: {
+      formatter: (value, { dataPointIndex }) => {
+        const date = new Date(categories.value[dataPointIndex]);
+
+        if (Number.isNaN(date.getTime())) {
+          return value;
+        }
+
+        return new Intl.DateTimeFormat('ru-RU', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(date);
+      },
+    },
+  },
   stroke: {
     width: 3,
     lineCap: 'round',
