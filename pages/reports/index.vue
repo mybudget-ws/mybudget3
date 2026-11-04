@@ -180,7 +180,25 @@ const chartOptions = computed(() => ({
     type: 'datetime',
     categories: [...categories.value],
     labels: {
-      padding: 0,
+      formatter: (value, timestamp) => {
+        const date = new Date(timestamp);
+
+        if (Number.isNaN(date.getTime())) {
+          return value;
+        }
+
+        const month = new Intl.DateTimeFormat('ru-RU', {
+          month: 'short',
+        }).format(date);
+
+        if (date.getDate() === 1) {
+          const year = String(date.getFullYear()).slice(-2);
+
+          return `${month} '${year}`;
+        }
+
+        return `${date.getDate()} ${month}`;
+      },
       style: { colors: CHART_LABEL_COLOR },
     },
     tooltip: { enabled: false },
