@@ -487,6 +487,8 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Счета'
+        :header-value='totalAccountsBalanceBase'
+        :currency='currencyBaseName'
         empty-text='Нет операций, или баланс счетов отрицательный'
         empty-icon='pie'
         empty-icon-color='text-blue'
@@ -498,23 +500,6 @@ watch(token, (val) => {
         :chart-data='dashboard.accountsChart'
       >
         <div v-if='!isLoading && isMobile'>
-          <div class='card-header bg-surface-tertiary'>
-            <div class='flex-fill'>
-              <div class='card-title'>
-                Всего
-              </div>
-
-              <div class='mt-1'>
-                <Amount
-                  :value='totalAccountsBalanceBase'
-                  :currency='currencyBaseName'
-                  class='text-success'
-                  copyable
-                />
-              </div>
-            </div>
-          </div>
-
           <div
             v-for='(item, index) in accounts'
             :key='item.id'
@@ -559,18 +544,6 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr class='bg-surface-tertiary'>
-                <td class='text-secondary'><b>Всего</b></td>
-                <td class='text-end no-button-padding'>
-                  <Amount
-                    :value='totalAccountsBalanceBase'
-                    :currency='currencyBaseName'
-                    is-color
-                    copyable
-                  />
-                </td>
-                <td />
-              </tr>
               <tr v-for='item in accounts' :key='item.id'>
                 <td class='text-nowrap'>{{ item.name }}</td>
                 <td class='text-nowrap text-end'>
@@ -601,6 +574,8 @@ watch(token, (val) => {
     <div class='col-lg-6'>
       <DashboardBlock
         title='Все активы'
+        :header-value='totalAssetsAmountBase'
+        :currency='currencyBaseName'
         empty-text='У вас пока нет активов'
         empty-icon='pie3'
         empty-icon-color='text-purple'
@@ -656,7 +631,7 @@ watch(token, (val) => {
           </div>
         </div>
 
-        <div v-else class='card-table table-responsive border-bottom'>
+        <div v-else class='card-table table-responsive border-bottom-0'>
           <table class='table table-sm table-vcenter'>
             <thead>
               <tr>
