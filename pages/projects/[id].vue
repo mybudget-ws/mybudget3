@@ -147,6 +147,25 @@ const chartOptions = computed(() => ({
 
   xaxis: {
     labels: {
+      formatter: (value) => {
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return value;
+        }
+
+        const month = new Intl.DateTimeFormat('ru-RU', {
+          month: 'short',
+        }).format(date);
+
+        if (date.getDate() === 1) {
+          const year = String(date.getFullYear()).slice(-2);
+
+          return `${month} '${year}`;
+        }
+
+        return `${date.getDate()} ${month}`;
+      },
       padding: 0,
       style: {
         colors: textColor.value,
