@@ -147,6 +147,22 @@ const isTopFiltersVisible = computed(() => (
     || route.query.description
 ));
 
+const hasActiveFilters = computed(() => (
+  periodName.value
+    || selectedCategories.value.length
+    || selectedProjects.value.length
+    || selectedAccounts.value.length
+    || selectedProperties.value.length
+    || selectedKinds.value.length
+    || route.query.description
+));
+
+const clearAllFilters = () => {
+  description.value = '';
+
+  router.replace({ query: {} });
+};
+
 const params = computed(() => ({
   page: page.value,
   perPage: PER_PAGE,
@@ -508,54 +524,65 @@ watch(
             v-if='isTopFiltersVisible'
             class='card-body border-bottom'
           >
-            <div class='badges-list'>
-              <BadgeCategory
-                v-if='periodName'
-                :name='periodName'
-                :is-x='true'
-                @click='onPeriodClear'
-              />
-              <BadgeCategory
-                v-if='route.query.description'
-                :name='route.query.description'
-                :is-x='true'
-                @click='clearDescriptionSearch'
-              />
-              <BadgeCategory
-                v-for='kind in selectedKinds'
-                :key='kind.id'
-                :name='kind.name'
-                :is-x='true'
-                @click='onKindClick(kind.id)'
-              />
-              <BadgeAccount
-                v-for='account in selectedAccounts'
-                :key='account.id'
-                :name='account.name'
-                :is-x='true'
-                @click='onAccountClick(account.id)'
-              />
-              <BadgeCategory
-                v-for='category in selectedCategories'
-                :key='category.id'
-                :name='category.name'
-                :is-x='true'
-                @click='onCategoryClick(category.id)'
-              />
-              <BadgeProject
-                v-for='project in selectedProjects'
-                :key='project.id'
-                :name='project.name'
-                :is-x='true'
-                @click='onProjectClick(project.id)'
-              />
-              <BadgeProperty
-                v-for='property in selectedProperties'
-                :key='property.id'
-                :name='property.name'
-                :is-x='true'
-                @click='onPropertyClick(property.id)'
-              />
+            <div class='d-flex align-items-center justify-content-between gap-2'>
+              <div class='badges-list flex-grow-1'>
+                <BadgeCategory
+                  v-if='periodName'
+                  :name='periodName'
+                  :is-x='true'
+                  @click='onPeriodClear'
+                />
+                <BadgeCategory
+                  v-if='route.query.description'
+                  :name='route.query.description'
+                  :is-x='true'
+                  @click='clearDescriptionSearch'
+                />
+                <BadgeCategory
+                  v-for='kind in selectedKinds'
+                  :key='kind.id'
+                  :name='kind.name'
+                  :is-x='true'
+                  @click='onKindClick(kind.id)'
+                />
+                <BadgeAccount
+                  v-for='account in selectedAccounts'
+                  :key='account.id'
+                  :name='account.name'
+                  :is-x='true'
+                  @click='onAccountClick(account.id)'
+                />
+                <BadgeCategory
+                  v-for='category in selectedCategories'
+                  :key='category.id'
+                  :name='category.name'
+                  :is-x='true'
+                  @click='onCategoryClick(category.id)'
+                />
+                <BadgeProject
+                  v-for='project in selectedProjects'
+                  :key='project.id'
+                  :name='project.name'
+                  :is-x='true'
+                  @click='onProjectClick(project.id)'
+                />
+                <BadgeProperty
+                  v-for='property in selectedProperties'
+                  :key='property.id'
+                  :name='property.name'
+                  :is-x='true'
+                  @click='onPropertyClick(property.id)'
+                />
+              </div>
+
+              <button
+                v-if='hasActiveFilters'
+                class='btn btn-link btn-sm text-secondary text-nowrap text-decoration-none p-0'
+                type='button'
+                @click='clearAllFilters'
+              >
+                Сбросить
+              </button>
             </div>
           </div>
 
