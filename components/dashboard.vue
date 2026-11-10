@@ -584,23 +584,6 @@ watch(token, (val) => {
         :chart-data='dashboard.assetsChart'
       >
         <div v-if='!isLoading && isMobile'>
-          <div class='card-header bg-surface-tertiary'>
-            <div class='flex-fill'>
-              <div class='card-title'>
-                Всего
-              </div>
-
-              <div class='mt-1'>
-                <Amount
-                  :value='totalAssetsAmountBase'
-                  :currency='currencyBaseName'
-                  is-color
-                  copyable
-                />
-              </div>
-            </div>
-          </div>
-
           <div
             v-for='(item, index) in assets'
             :key='item.id'
@@ -640,17 +623,6 @@ watch(token, (val) => {
               </tr>
             </thead>
             <tbody>
-              <tr class='bg-surface-tertiary'>
-                <td class='text-secondary'><b>Всего</b></td>
-                <td class='text-end text-success no-button-padding'>
-                  <Amount
-                    :value='totalAssetsAmountBase'
-                    :currency='currencyBaseName'
-                    is-color
-                    copyable
-                  />
-                </td>
-              </tr>
               <tr v-for='item in assets' :key='item.id'>
                 <td class='no-button-padding'>
                   {{ item.name }}
