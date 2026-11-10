@@ -730,30 +730,29 @@ import {
     </main>
 
     <footer class='landing-footer'>
-      <div class='footer-content'>
-        <div class='footer-brand'>
-          <div class='footer-logo'>
-            M
+      <div class='container-xxl pt-4'>
+        <div class='row align-items-center'>
+          <div class='col'>
+            <div class='footer-brand'>
+              <div class='footer-logo'>
+                M
+              </div>
+
+              <div>
+                <strong>MyBudget</strong>
+                <span>Домашняя бухгалтерия</span>
+              </div>
+            </div>           
           </div>
+          <div class='col-auto'>
+            <NuxtLink class='link-secondary' to='/sign_in'>
+              Вход
+            </NuxtLink>
 
-          <div>
-            <strong>MyBudget</strong>
-            <span>Домашняя бухгалтерия</span>
+            <NuxtLink class='link-secondary ms-2' to='/sign_up'>
+              Регистрация
+            </NuxtLink>            
           </div>
-        </div>
-
-        <div class='footer-links'>
-          <NuxtLink to='/sign_in'>
-            Вход
-          </NuxtLink>
-
-          <NuxtLink to='/sign_up'>
-            Регистрация
-          </NuxtLink>
-        </div>
-
-        <div class='footer-copy'>
-          © 2026 MyBudget
         </div>
       </div>
     </footer>
@@ -1481,16 +1480,7 @@ import {
 
 .landing-footer {
   border-top: 1px solid var(--tblr-border-color);
-  background: var(--tblr-bg-surface-secondary);
-}
-
-.footer-content {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
+  background-color: var(--tblr-bg-surface-secondary);
 }
 
 .footer-brand {
@@ -1540,11 +1530,6 @@ import {
 
 .footer-links a:hover {
   color: var(--tblr-primary);
-}
-
-.footer-copy {
-  font-size: .75rem;
-  color: var(--tblr-secondary);
 }
 
 @media (max-width: 991.98px) {
@@ -1960,26 +1945,6 @@ import {
   .cta-glow {
     width: 450px;
     height: 280px;
-  }
-
-  /* Footer */
-
-  .footer-content {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding: 1.5rem 1rem;
-  }
-
-  .footer-links {
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-left: 0;
-  }
-
-  .footer-copy {
-    width: auto;
-    font-size: .7rem;
   }
 }
 </style>
