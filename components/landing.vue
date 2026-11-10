@@ -43,209 +43,7 @@ import {
       </div>
 
       <div class='dashboard-preview'>
-        <div class='preview-window'>
-          <div class='preview-header'>
-            <div class='preview-dots'>
-              <span/>
-              <span/>
-              <span/>
-            </div>
-
-            <div class='preview-title'>
-              MyBudget
-            </div>
-
-            <div class='preview-user'>
-              <span class='avatar avatar-sm'>
-                А
-              </span>
-            </div>
-          </div>
-
-          <div class='preview-body'>
-            <div class='preview-sidebar'>
-              <div class='preview-logo'>
-                <div class='preview-logo-icon'>
-                  M
-                </div>
-
-                <span>MyBudget</span>
-              </div>
-
-              <div class='preview-nav-item active'>
-                <IconChartHistogram :size='16' />
-                <span>Обзор</span>
-              </div>
-
-              <div class='preview-nav-item'>
-                <IconReceipt :size='16' />
-                <span>Операции</span>
-              </div>
-
-              <div class='preview-nav-item'>
-                <IconWallet :size='16' />
-                <span>Счета</span>
-              </div>
-
-              <div class='preview-nav-item'>
-                <IconTargetArrow :size='16' />
-                <span>Цели</span>
-              </div>
-            </div>
-
-            <div class='preview-main'>
-              <div class='preview-page-title'>
-                <div>
-                  <div class='preview-muted'>
-                    Добро пожаловать
-                  </div>
-
-                  <strong>
-                    Финансовый обзор
-                  </strong>
-                </div>
-
-                <span class='preview-date'>
-                  Август 2026
-                </span>
-              </div>
-
-              <div class='preview-stats'>
-                <div class='preview-stat'>
-                  <span>Общий баланс</span>
-                  <strong>684 500 ₽</strong>
-                  <small class='text-success'>
-                    +8,4%
-                  </small>
-                </div>
-
-                <div class='preview-stat'>
-                  <span>Доходы</span>
-                  <strong>286 000 ₽</strong>
-                  <small class='text-success'>
-                    +12,2%
-                  </small>
-                </div>
-
-                <div class='preview-stat'>
-                  <span>Расходы</span>
-                  <strong>142 800 ₽</strong>
-                  <small class='text-danger'>
-                    +3,7%
-                  </small>
-                </div>
-              </div>
-
-              <div class='preview-content-grid'>
-                <div class='preview-chart-card'>
-                  <div class='preview-card-header'>
-                    <span>Динамика баланса</span>
-                    <span class='preview-card-muted'>
-                      6 месяцев
-                    </span>
-                  </div>
-
-                  <div class='preview-chart'>
-                    <div class='chart-grid'/>
-
-                    <svg
-                      viewBox='0 0 600 180'
-                      preserveAspectRatio='none'
-                    >
-                      <defs>
-                        <linearGradient
-                          id='chartGradient'
-                          x1='0'
-                          y1='0'
-                          x2='0'
-                          y2='1'
-                        >
-                          <stop
-                            offset='0%'
-                            stop-color='var(--tblr-primary)'
-                            stop-opacity='.18'
-                          />
-                          <stop
-                            offset='100%'
-                            stop-color='var(--tblr-primary)'
-                            stop-opacity='0'
-                          />
-                        </linearGradient>
-                      </defs>
-
-                      <path
-                        d='M0,145 C50,135 65,142 100,125 C145,102 165,120 205,105 C245,90 260,100 300,82 C340,63 355,82 395,65 C435,48 450,57 490,38 C530,20 550,35 600,12 L600,180 L0,180 Z'
-                        fill='url(#chartGradient)'
-                      />
-
-                      <path
-                        d='M0,145 C50,135 65,142 100,125 C145,102 165,120 205,105 C245,90 260,100 300,82 C340,63 355,82 395,65 C435,48 450,57 490,38 C530,20 550,35 600,12'
-                        fill='none'
-                        stroke='var(--tblr-primary)'
-                        stroke-width='3'
-                        vector-effect='non-scaling-stroke'
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                <div class='preview-transactions'>
-                  <div class='preview-card-header'>
-                    <span>Последние операции</span>
-                    <span class='preview-card-muted'>
-                      Все
-                    </span>
-                  </div>
-
-                  <div class='preview-transaction'>
-                    <div class='transaction-icon income'>
-                      <IconArrowDownRight :size='15' />
-                    </div>
-
-                    <div class='transaction-info'>
-                      <strong>Зарплата</strong>
-                      <span>Сегодня</span>
-                    </div>
-
-                    <strong class='text-success'>
-                      +180 000 ₽
-                    </strong>
-                  </div>
-
-                  <div class='preview-transaction'>
-                    <div class='transaction-icon expense'>
-                      <IconShoppingCart :size='15' />
-                    </div>
-
-                    <div class='transaction-info'>
-                      <strong>Продукты</strong>
-                      <span>Сегодня</span>
-                    </div>
-
-                    <strong>
-                      −4 250 ₽
-                    </strong>
-                  </div>
-
-                  <div class='preview-transaction'>
-                    <div class='transaction-icon expense'>
-                      <IconCar :size='15' />
-                    </div>
-
-                    <div class='transaction-info'>
-                      <strong>Автомобиль</strong>
-                      <span>Вчера</span>
-                    </div>
-
-                    <strong>
-                      −3 500 ₽
-                    </strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <LandingDashboardMock />
       </div>
     </section>
 
@@ -932,30 +730,29 @@ import {
     </main>
 
     <footer class='landing-footer'>
-      <div class='footer-content'>
-        <div class='footer-brand'>
-          <div class='footer-logo'>
-            M
+      <div class='container-xxl pt-4'>
+        <div class='row align-items-center'>
+          <div class='col'>
+            <div class='footer-brand'>
+              <div class='footer-logo'>
+                M
+              </div>
+
+              <div>
+                <strong>MyBudget</strong>
+                <span>Домашняя бухгалтерия</span>
+              </div>
+            </div>           
           </div>
+          <div class='col-auto'>
+            <NuxtLink class='link-secondary' to='/sign_in'>
+              Вход
+            </NuxtLink>
 
-          <div>
-            <strong>MyBudget</strong>
-            <span>Домашняя бухгалтерия</span>
+            <NuxtLink class='link-secondary ms-2' to='/sign_up'>
+              Регистрация
+            </NuxtLink>            
           </div>
-        </div>
-
-        <div class='footer-links'>
-          <NuxtLink to='/sign_in'>
-            Вход
-          </NuxtLink>
-
-          <NuxtLink to='/sign_up'>
-            Регистрация
-          </NuxtLink>
-        </div>
-
-        <div class='footer-copy'>
-          © 2026 MyBudget
         </div>
       </div>
     </footer>
@@ -1044,198 +841,6 @@ import {
   margin: 5rem auto -1px;
 }
 
-.preview-window {
-  overflow: hidden;
-  border: 1px solid var(--tblr-border-color);
-  border-bottom: 0;
-  border-radius: 1rem 1rem 0 0;
-  background: var(--tblr-bg-surface);
-  box-shadow:
-    0 30px 80px color-mix(
-      in srgb,
-      var(--tblr-body-color) 12%,
-      transparent
-    ),
-    0 10px 30px color-mix(
-      in srgb,
-      var(--tblr-body-color) 6%,
-      transparent
-    );
-  text-align: left;
-}
-
-.preview-header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  height: 52px;
-  padding: 0 1rem;
-  border-bottom: 1px solid var(--tblr-border-color);
-}
-
-.preview-dots {
-  display: flex;
-  gap: .35rem;
-}
-
-.preview-dots span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--tblr-border-color);
-}
-
-.preview-title {
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--tblr-secondary);
-}
-
-.preview-user {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.preview-body {
-  display: grid;
-  grid-template-columns: 170px 1fr;
-  min-height: 480px;
-}
-
-.preview-sidebar {
-  padding: 1rem;
-  border-right: 1px solid var(--tblr-border-color);
-  background: var(--tblr-bg-surface-secondary);
-}
-
-.preview-logo {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  margin-bottom: 1.5rem;
-  font-size: .85rem;
-  font-weight: 600;
-}
-
-.preview-logo-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: .5rem;
-  color: var(--tblr-primary-fg);
-  background: var(--tblr-primary);
-}
-
-.preview-nav-item {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .55rem .65rem;
-  margin-bottom: .25rem;
-  border-radius: .4rem;
-  font-size: .75rem;
-  color: var(--tblr-secondary);
-}
-
-.preview-nav-item.active {
-  color: var(--tblr-primary);
-  background: var(--tblr-primary-lt);
-}
-
-.preview-main {
-  min-width: 0;
-  padding: 1.5rem;
-}
-
-.preview-page-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-}
-
-.preview-page-title strong {
-  display: block;
-  margin-top: .2rem;
-  font-size: 1.1rem;
-}
-
-.preview-muted {
-  font-size: .7rem;
-  color: var(--tblr-secondary);
-}
-
-.preview-date {
-  padding: .35rem .6rem;
-  border: 1px solid var(--tblr-border-color);
-  border-radius: .4rem;
-  font-size: .7rem;
-  color: var(--tblr-secondary);
-}
-
-.preview-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: .75rem;
-}
-
-.preview-stat {
-  padding: 1rem;
-  border: 1px solid var(--tblr-border-color);
-  border-radius: .6rem;
-}
-
-.preview-stat span,
-.preview-stat small {
-  display: block;
-  font-size: .7rem;
-  color: var(--tblr-secondary);
-}
-
-.preview-stat strong {
-  display: block;
-  margin: .35rem 0;
-  font-size: 1rem;
-}
-
-.preview-content-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: .75rem;
-  margin-top: .75rem;
-}
-
-.preview-chart-card,
-.preview-transactions {
-  min-width: 0;
-  padding: 1rem;
-  border: 1px solid var(--tblr-border-color);
-  border-radius: .6rem;
-}
-
-.preview-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: .75rem;
-  font-size: .75rem;
-  font-weight: 600;
-}
-
-.preview-card-muted {
-  font-size: .65rem;
-  font-weight: 400;
-  color: var(--tblr-secondary);
-}
-
-.preview-chart {
-  position: relative;
-  height: 180px;
-}
-
-.chart-grid,
 .analytics-grid {
   position: absolute;
   inset: 0;
@@ -1252,27 +857,12 @@ import {
   opacity: .5;
 }
 
-.preview-chart svg,
 .analytics-chart svg {
   position: relative;
   width: 100%;
   height: 100%;
 }
 
-.preview-transaction {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: .6rem;
-  padding: .65rem 0;
-  border-bottom: 1px solid var(--tblr-border-color);
-}
-
-.preview-transaction:last-child {
-  border-bottom: 0;
-}
-
-.transaction-icon,
 .operation-icon {
   display: flex;
   align-items: center;
@@ -1283,35 +873,13 @@ import {
   background: var(--tblr-bg-surface-secondary);
 }
 
-.transaction-icon.income,
 .operation-icon.income {
   color: var(--tblr-success);
   background: var(--tblr-success-lt);
 }
 
-.transaction-info,
 .operation-main {
   min-width: 0;
-}
-
-.transaction-info strong,
-.transaction-info span {
-  display: block;
-}
-
-.transaction-info strong {
-  font-size: .7rem;
-}
-
-.transaction-info span {
-  margin-top: .1rem;
-  font-size: .6rem;
-  color: var(--tblr-secondary);
-}
-
-.preview-transaction > strong {
-  font-size: .65rem;
-  white-space: nowrap;
 }
 
 .landing-content {
@@ -1912,16 +1480,7 @@ import {
 
 .landing-footer {
   border-top: 1px solid var(--tblr-border-color);
-  background: var(--tblr-bg-surface-secondary);
-}
-
-.footer-content {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
+  background-color: var(--tblr-bg-surface-secondary);
 }
 
 .footer-brand {
@@ -1973,11 +1532,6 @@ import {
   color: var(--tblr-primary);
 }
 
-.footer-copy {
-  font-size: .75rem;
-  color: var(--tblr-secondary);
-}
-
 @media (max-width: 991.98px) {
   .hero {
     padding-top: 4rem;
@@ -1985,15 +1539,6 @@ import {
 
   .dashboard-preview {
     margin-top: 3rem;
-  }
-
-  .preview-sidebar {
-    display: none;
-  }
-
-  .preview-body {
-    display: block;
-    min-height: auto;
   }
 
   .features-grid {
@@ -2073,108 +1618,6 @@ import {
     width: calc(100% + 1rem);
     margin-top: 2.25rem;
     margin-left: -.5rem;
-  }
-
-  .preview-window {
-    border-radius: .85rem .85rem 0 0;
-    box-shadow:
-      0 20px 50px color-mix(
-        in srgb,
-        var(--tblr-body-color) 10%,
-        transparent
-      ),
-      0 8px 20px color-mix(
-        in srgb,
-        var(--tblr-body-color) 5%,
-        transparent
-      );
-  }
-
-  .preview-header {
-    height: 44px;
-    padding: 0 .75rem;
-  }
-
-  .preview-dots span {
-    width: 6px;
-    height: 6px;
-  }
-
-  .preview-title {
-    font-size: .7rem;
-  }
-
-  .preview-user .avatar {
-    width: 24px;
-    height: 24px;
-    font-size: .65rem;
-  }
-
-  .preview-main {
-    padding: .75rem;
-  }
-
-  .preview-page-title {
-    margin-bottom: .75rem;
-  }
-
-  .preview-page-title strong {
-    font-size: .9rem;
-  }
-
-  .preview-muted {
-    font-size: .6rem;
-  }
-
-  .preview-date {
-    padding: .25rem .45rem;
-    font-size: .6rem;
-  }
-
-  .preview-stats {
-    grid-template-columns: 1fr 1fr;
-    gap: .5rem;
-  }
-
-  .preview-stat {
-    padding: .7rem;
-  }
-
-  .preview-stat:first-child {
-    grid-column: 1 / -1;
-  }
-
-  .preview-stat span,
-  .preview-stat small {
-    font-size: .6rem;
-  }
-
-  .preview-stat strong {
-    margin: .25rem 0;
-    font-size: .9rem;
-  }
-
-  .preview-content-grid {
-    grid-template-columns: 1fr;
-    gap: .5rem;
-    margin-top: .5rem;
-  }
-
-  .preview-chart-card {
-    padding: .75rem;
-  }
-
-  .preview-transactions {
-    display: none;
-  }
-
-  .preview-chart {
-    height: 130px;
-  }
-
-  .preview-card-header {
-    margin-bottom: .5rem;
-    font-size: .65rem;
   }
 
   /* Main sections */
@@ -2502,26 +1945,6 @@ import {
   .cta-glow {
     width: 450px;
     height: 280px;
-  }
-
-  /* Footer */
-
-  .footer-content {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding: 1.5rem 1rem;
-  }
-
-  .footer-links {
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-left: 0;
-  }
-
-  .footer-copy {
-    width: auto;
-    font-size: .7rem;
   }
 }
 </style>
