@@ -2,6 +2,7 @@
 import VueApexCharts from 'vue3-apexcharts';
 import api from '~/lib/api';
 import { CHART_COLORS, REPORTS_CHART_STORAGE_KEY } from '~/lib/consts';
+import { xaxisFormatter } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
 import { useDevice } from '~/composables/use_device';
@@ -180,25 +181,7 @@ const chartOptions = computed(() => ({
     type: 'datetime',
     categories: [...categories.value],
     labels: {
-      formatter: (value, timestamp) => {
-        const date = new Date(timestamp);
-
-        if (Number.isNaN(date.getTime())) {
-          return value;
-        }
-
-        const month = new Intl.DateTimeFormat('ru-RU', {
-          month: 'short',
-        }).format(date);
-
-        if (date.getDate() === 1) {
-          const year = String(date.getFullYear()).slice(-2);
-
-          return `${month} '${year}`;
-        }
-
-        return `${date.getDate()} ${month}`;
-      },
+      formatter: xaxisFormatter,
       style: { colors: CHART_LABEL_COLOR },
     },
     tooltip: { enabled: false },

@@ -11,7 +11,7 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
-import { formatDate } from '~/lib/helper_date';
+import { formatDate, xaxisFormatter } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS } from '~/lib/consts';
 import { useDevice } from '~/composables/use_device';
@@ -312,25 +312,7 @@ const chartOptions = computed(() => ({
   },
   xaxis: {
     labels: {
-      formatter: (value, timestamp) => {
-        const date = new Date(timestamp);
-
-        if (Number.isNaN(date.getTime())) {
-          return value;
-        }
-
-        const month = new Intl.DateTimeFormat('ru-RU', {
-          month: 'short',
-        }).format(date);
-
-        if (date.getDate() === 1) {
-          const year = String(date.getFullYear()).slice(-2);
-
-          return `${month} '${year}`;
-        }
-
-        return `${date.getDate()} ${month}`;
-      },
+      formatter: xaxisFormatter,
       padding: 0,
       style: {
         colors: textColor.value,
