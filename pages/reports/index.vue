@@ -2,6 +2,7 @@
 import VueApexCharts from 'vue3-apexcharts';
 import api from '~/lib/api';
 import { CHART_COLORS, REPORTS_CHART_STORAGE_KEY } from '~/lib/consts';
+import { xaxisFormatter } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { useChart } from '~/composables/use_chart';
 import { useDevice } from '~/composables/use_device';
@@ -180,7 +181,7 @@ const chartOptions = computed(() => ({
     type: 'datetime',
     categories: [...categories.value],
     labels: {
-      padding: 0,
+      formatter: xaxisFormatter,
       style: { colors: CHART_LABEL_COLOR },
     },
     tooltip: { enabled: false },

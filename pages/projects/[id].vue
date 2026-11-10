@@ -16,6 +16,7 @@ import {
   KIND_INCOME,
   CHART_COLORS,
 } from '~/lib/consts';
+import { xaxisFormatter } from '~/lib/helper_date';
 
 const appConfig = useAppConfig();
 const route = useRoute();
@@ -147,6 +148,7 @@ const chartOptions = computed(() => ({
 
   xaxis: {
     labels: {
+      formatter: xaxisFormatter,
       padding: 0,
       style: {
         colors: textColor.value,

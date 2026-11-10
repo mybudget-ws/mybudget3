@@ -11,7 +11,7 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
-import { formatDate } from '~/lib/helper_date';
+import { formatDate, xaxisFormatter } from '~/lib/helper_date';
 import { useAuth } from '~/composables/use_auth';
 import { KIND_EXPENSE, KIND_INCOME, CHART_COLORS } from '~/lib/consts';
 import { useDevice } from '~/composables/use_device';
@@ -312,10 +312,11 @@ const chartOptions = computed(() => ({
   },
   xaxis: {
     labels: {
+      formatter: xaxisFormatter,
       padding: 0,
       style: {
         colors: textColor.value,
-      }
+      },
     },
     tooltip: { enabled: false },
     type: 'datetime',
