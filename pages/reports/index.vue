@@ -37,6 +37,8 @@ const {
 
 const CHART_TYPE = 'line';
 
+const FILTER_QUERY_KEYS = ['kinds', 'accounts', 'categories', 'projects', 'properties'];
+
 const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
@@ -49,14 +51,6 @@ const selectedCategories = ref([]);
 const selectedKinds = ref([]);
 const selectedProjects = ref([]);
 const selectedProperties = ref([]);
-
-const isTopFiltersVisible = computed(() => (
-  selectedCategories.value.length
-    || selectedProjects.value.length
-    || selectedAccounts.value.length
-    || selectedProperties.value.length
-    || selectedKinds.value.length
-));
 
 const onAccountsChange = (accounts) => {
   selectedAccounts.value = accounts;
@@ -76,6 +70,17 @@ const onPropertiesChange = (properties) => {
 
 const onKindsChange = (kinds) => {
   selectedKinds.value = kinds;
+};
+
+// Сбрасываем только фильтры, период и выбранный график остаются.
+const clearAllFilters = () => {
+  const nextQuery = { ...route.query };
+
+  FILTER_QUERY_KEYS.forEach((key) => {
+    delete nextQuery[key];
+  });
+
+  router.replace({ query: nextQuery });
 };
 
 const load = async () => {
@@ -239,49 +244,21 @@ const chartOptions = computed(() => ({
           @change-period='setPeriod'
           @show-filters='isShowMobileFilters = true'
         />
-        <div v-if='isTopFiltersVisible' class='card-body border-top'>
-          <div class='badges-list'>
-            <BadgeCategory
-              v-for='kind in selectedKinds'
-              :key='kind.id'
-              :name='kind.name'
-              :is-x='true'              
-              @click='onKindClick(kind.id)'
-            />
 
-            <BadgeAccount
-              v-for='account in selectedAccounts'
-              :key='account.id'
-              :name='account.name'
-              :is-x='true'
-              @click='onAccountClick(account.id)'
-            />
-
-            <BadgeCategory
-              v-for='category in selectedCategories'
-              :key='category.id'
-              :name='category.name'
-              :is-x='true'
-              @click='onCategoryClick(category.id)'
-            />
-
-            <BadgeProject
-              v-for='project in selectedProjects'
-              :key='project.id'
-              :name='project.name'
-              :is-x='true'
-              @click='onProjectClick(project.id)'
-            />
-
-            <BadgeProperty
-              v-for='property in selectedProperties'
-              :key='property.id'
-              :name='property.name'
-              :is-x='true'
-              @click='onPropertyClick(property.id)'
-            />
-          </div>
-        </div>
+        <ResentFiltersBadge
+          border-class='border-top'
+          :kinds='selectedKinds'
+          :accounts='selectedAccounts'
+          :categories='selectedCategories'
+          :projects='selectedProjects'
+          :properties='selectedProperties'
+          @kind-click='onKindClick'
+          @account-click='onAccountClick'
+          @category-click='onCategoryClick'
+          @project-click='onProjectClick'
+          @property-click='onPropertyClick'
+          @clear-all='clearAllFilters'
+        />
       </div>
 
       <div class='card mt-3'>
