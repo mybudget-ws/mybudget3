@@ -735,9 +735,11 @@ import {
           <div class='col'>
             <div class='footer-brand'>
               <div class='footer-logo'>
-                M
+                <img
+                  src='/favicon.ico'
+                  alt='MyBudget'
+                >
               </div>
-
               <div>
                 <strong>MyBudget</strong>
                 <span>Домашняя бухгалтерия</span>
@@ -1495,7 +1497,7 @@ import {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: .6rem;
+  border-radius: .8rem;
   font-weight: 700;
   color: var(--tblr-primary-fg);
   background: var(--tblr-primary);
