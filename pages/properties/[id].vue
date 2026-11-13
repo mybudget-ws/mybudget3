@@ -712,7 +712,7 @@ const chartOptions = computed(() => ({
                   </tr>
                 </tbody>
               </table>
-              <div v-if='isShowFooter' class='card-footer bg-transparent border-0'>
+              <div v-if='isShowFooter' class='card-footer bg-transparent border-top'>
                 <button
                   class='btn btn-action btn-sm text-secondary w-100 p-2'
                   @click='isShowAllPrices = !isShowAllPrices'
