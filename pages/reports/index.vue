@@ -245,7 +245,7 @@ const chartOptions = computed(() => ({
           @show-filters='isShowMobileFilters = true'
         />
 
-        <ResentFiltersBadge
+        <FilterBadges
           border-class='border-top'
           :kinds='selectedKinds'
           :accounts='selectedAccounts'

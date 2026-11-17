@@ -500,7 +500,7 @@ watch(
             </div>
           </div>
 
-          <ResentFiltersBadge
+          <FilterBadges
             border-class='border-bottom'
             :period-name='periodName'
             :description='filters.description'
