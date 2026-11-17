@@ -121,7 +121,7 @@ const hasActiveFilters = computed(() => (
       </div>
 
       <button
-        class='btn btn-link btn-sm text-secondary text-nowrap text-decoration-none p-0'
+        class='btn btn-link btn-sm link-secondary text-nowrap text-decoration-none p-0'
         type='button'
         @click='emit("clear-all")'
       >
