@@ -734,10 +734,7 @@ import {
         <div class='row align-items-center'>
           <div class='col'>
             <div class='footer-brand'>
-              <div class='footer-logo'>
-                M
-              </div>
-
+              <div class='footer-logo'/>
               <div>
                 <strong>MyBudget</strong>
                 <span>Домашняя бухгалтерия</span>
@@ -1493,12 +1490,11 @@ import {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: .6rem;
-  font-weight: 700;
-  color: var(--tblr-primary-fg);
-  background: var(--tblr-primary);
+  width: 48px;
+  height: 48px;
+  border-radius: 0.3rem;
+  background-image: url('/favicon.ico');
+  background-size: contain;
 }
 
 .footer-brand strong,
