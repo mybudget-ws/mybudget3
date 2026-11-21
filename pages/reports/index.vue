@@ -9,6 +9,7 @@ import { useDevice } from '~/composables/use_device';
 import { useFilterOrder } from '~/composables/use_filter_order';
 
 const { isMobile } = useDevice();
+
 // В отчётах период выбирается в шапке, поэтому фильтр "period" скрыт.
 const {
   filterOrder,
@@ -17,10 +18,12 @@ const {
   onFilterDragOver,
   onFilterDragEnd,
 } = useFilterOrder({ exclude: ['period'] });
+
 const isShowMobileFilters = ref(false);
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();
+
 const {
   CHART_LABEL_COLOR,
   CHART_HEIGHT,
@@ -37,14 +40,62 @@ const {
 
 const CHART_TYPE = 'line';
 
-const FILTER_QUERY_KEYS = ['kinds', 'accounts', 'categories', 'projects', 'properties'];
+const FILTER_QUERY_KEYS = [
+  'kinds',
+  'accounts',
+  'categories',
+  'projects',
+  'properties',
+];
 
 const isLoading = ref(true);
 const isError = ref(false);
 const chartData = ref({});
 
-const series = computed(() => chartData.value.series);
-const categories = computed(() => chartData.value.categories);
+const categories = computed(() => chartData.value.categories ?? []);
+
+// Суммируем балансы всех счетов на каждую дату.
+const totalBalance = computed(() => {
+  const accounts = chartData.value.series ?? [];
+
+  return categories.value.map((_, index) => {
+    return accounts.reduce((sum, account) => {
+      return sum + Number(account.data[index] ?? 0);
+    }, 0);
+  });
+});
+
+// Добавляем общую сумму последней серией.
+const series = computed(() => {
+  const accounts = chartData.value.series ?? [];
+
+  return [
+    {
+      name: 'Всего',
+      data: totalBalance.value,
+    },
+    ...accounts,
+  ];
+});
+
+// Цвета счетов сохраняются, линия "Всего" получает primary.
+const chartColors = computed(() => {
+  const accounts = chartData.value.series ?? [];
+
+  return [
+    ...accounts.map((_, index) => {
+      return CHART_COLORS[index % CHART_COLORS.length];
+    }),
+    'var(--tblr-primary)',
+  ];
+});
+
+// Пунктир только у последней серии "Всего".
+const chartDashArray = computed(() => {
+  return series.value.map((item) => {
+    return item.name === 'Всего' ? 6 : 0;
+  });
+});
 
 const selectedAccounts = ref([]);
 const selectedCategories = ref([]);
@@ -89,6 +140,7 @@ const load = async () => {
 
   try {
     const result = await api.chartBalances(token.value, filters.value);
+
     if (result) {
       chartData.value = result;
     } else {
@@ -149,7 +201,7 @@ const chartOptions = computed(() => ({
     zoom: { enabled: false },
     animations: { enabled: false },
   },
-  colors: CHART_COLORS,
+  colors: chartColors.value,
   tooltip: {
     theme: 'dark',
     x: {
@@ -172,13 +224,14 @@ const chartOptions = computed(() => ({
     width: 3,
     lineCap: 'round',
     curve: 'straight',
+    dashArray: chartDashArray.value,
   },
   grid: {
     padding: {
       top: -20,
       right: 0,
       left: -4,
-      bottom: -4
+      bottom: -4,
     },
     strokeDashArray: 4,
   },
@@ -214,7 +267,7 @@ const chartOptions = computed(() => ({
     },
     itemMargin: {
       horizontal: 8,
-      vertical: 8
+      vertical: 8,
     },
     labels: {
       colors: CHART_LABEL_COLOR,
@@ -235,6 +288,7 @@ const chartOptions = computed(() => ({
     @projects-change='onProjectsChange'
     @properties-change='onPropertiesChange'
   />
+
   <div class='row'>
     <div class='col-sm-12 col-lg-9 col-xl-10'>
       <div class='card'>
@@ -264,6 +318,7 @@ const chartOptions = computed(() => ({
       <div class='card mt-3'>
         <div class='card-header'>
           <h3 class='card-title'>Баланс</h3>
+
           <NuxtLink
             :to='{ path: "/reports/transactions", query: { ...route.query, period, chart: "transactions" } }'
             class='card-title text-secondary ms-3'
@@ -280,7 +335,11 @@ const chartOptions = computed(() => ({
           >
             <PlaceholderLoading />
           </div>
-          <div v-else-if='!isError' class='w-full'>
+
+          <div
+            v-else-if='!isError'
+            class='w-full'
+          >
             <VueApexCharts
               :type='CHART_TYPE'
               :height='CHART_HEIGHT'
@@ -288,6 +347,7 @@ const chartOptions = computed(() => ({
               :series='series'
             />
           </div>
+
           <AlertWarning
             v-else
             title='Не удалось загрузить график'
@@ -296,6 +356,7 @@ const chartOptions = computed(() => ({
         </div>
       </div>
     </div>
+
     <div
       v-show='!isMobile'
       class='col-sm-12 col-lg-3 col-xl-2'
