@@ -1,6 +1,8 @@
 <script setup>
 import VueApexCharts from 'vue3-apexcharts';
+
 import ProjectPart from '~/pages/projects/project_part.vue';
+
 import {
   IconArrowUp,
   IconArrowDown,
@@ -9,19 +11,27 @@ import {
 } from '@tabler/icons-vue';
 
 import api from '~/lib/api';
+
 import { useAuth } from '~/composables/use_auth';
+
 import { useDevice } from '~/composables/use_device';
+
 import {
   KIND_EXPENSE,
   KIND_INCOME,
   CHART_COLORS,
 } from '~/lib/consts';
+
 import { xaxisFormatter } from '~/lib/helper_date';
 
 const appConfig = useAppConfig();
+
 const route = useRoute();
+
 const router = useRouter();
+
 const { token } = useAuth();
+
 const { isMobile } = useDevice();
 
 definePageMeta({
@@ -29,29 +39,50 @@ definePageMeta({
 });
 
 const project = ref(null);
+
 const transactions = ref([]);
+
 const PER_PAGE = 50;
 
 const hasMore = ref(true);
+
 const page = ref(1);
+
 const isLoadingMore = ref(false);
 
 const isLoading = ref(true);
+
 const isQuiteLoading = ref(false);
+
 const isError = ref(false);
 
 const isShowTransactionModal = ref(false);
+
 const currentKind = ref(KIND_EXPENSE);
+
 const editingTransaction = ref(null);
 
 const chartData = ref(null);
 
 const CHART_HEIGHT = 300;
+
 const CHART_TYPE = 'line';
 
 const textColor = computed(() =>
   appConfig.theme.dark ? '#e2e8f0' : '#334155'
 );
+
+const hasIncome = computed(() => {
+  return Number(project.value?.totalIncome || 0) !== 0;
+});
+
+const hasExpense = computed(() => {
+  return Number(project.value?.totalExpense || 0) !== 0;
+});
+
+const hasBalance = computed(() => {
+  return hasIncome.value && hasExpense.value;
+});
 
 const balance = computed(() => {
   if (!project.value) {
@@ -65,12 +96,11 @@ const budgetUsagePercentColor = computed(() => {
   if (!project.value?.budgetUsagePercent) return '';
 
   const percent = Math.abs(project.value.budgetUsagePercent);
+
   if (percent < 80) {
     return 'text-purple';
-
   } else if (percent < 100) {
     return 'text-yellow';
-    
   } else {
     return 'text-red';
   }
@@ -80,12 +110,11 @@ const budgetUsagePercentBackground = computed(() => {
   if (!project.value?.budgetUsagePercent) return '';
 
   const percent = Math.abs(project.value.budgetUsagePercent);
+
   if (percent < 80) {
     return 'bg-purple';
-
   } else if (percent < 100) {
     return 'bg-yellow';
-    
   } else {
     return 'bg-red';
   }
@@ -123,19 +152,15 @@ const chartOptions = computed(() => ({
       enabled: false,
     },
   },
-
   colors: CHART_COLORS,
-
   tooltip: {
     theme: 'dark',
   },
-
   stroke: {
     width: 3,
     lineCap: 'round',
     curve: 'straight',
   },
-
   grid: {
     padding: {
       top: -20,
@@ -145,7 +170,6 @@ const chartOptions = computed(() => ({
     },
     strokeDashArray: 4,
   },
-
   xaxis: {
     labels: {
       formatter: xaxisFormatter,
@@ -160,7 +184,6 @@ const chartOptions = computed(() => ({
     type: 'category',
     categories: [...categories.value],
   },
-
   yaxis: {
     labels: {
       padding: 4,
@@ -175,7 +198,6 @@ const chartOptions = computed(() => ({
       },
     },
   },
-
   legend: {
     show: true,
     position: 'bottom',
@@ -275,6 +297,7 @@ const loadMoreTransactions = async () => {
 
   try {
     const projectId = Number(route.params.id);
+
     const nextPage = page.value + 1;
 
     // Номер страницы увеличиваем только после успешной загрузки,
@@ -333,6 +356,7 @@ const load = async (isQuite = false) => {
     }
 
     page.value = 1;
+
     await Promise.all([
       loadProject(projectId),
       loadTransactions(projectId, 1, false),
@@ -373,7 +397,9 @@ const openCreateTransaction = (kind) => {
   }
 
   currentKind.value = kind;
+
   editingTransaction.value = null;
+
   isShowTransactionModal.value = true;
 };
 
@@ -400,8 +426,8 @@ const onEditTransaction = (transaction) => {
   }
 
   editingTransaction.value = transaction;
-  currentKind.value =
-    transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
+
+  currentKind.value = transaction.amount > 0 ? KIND_INCOME : KIND_EXPENSE;
 
   isShowTransactionModal.value = true;
 };
@@ -423,6 +449,7 @@ const onDeleteTransaction = async (transaction) => {
     await load(true);
   } catch (error) {
     console.error('Failed to delete transaction:', error);
+
     alert('Не удалось удалить операцию. Попробуйте еще раз.');
   }
 };
@@ -464,13 +491,11 @@ watch(
             class='placeholder placeholder-lg d-block mb-2'
             style='width: 180px'
           />
-
           <div
             class='placeholder placeholder-sm d-block'
             style='width: 70px'
           />
         </div>
-
         <div
           class='d-flex gap-3'
           :class='isMobile
@@ -483,13 +508,11 @@ watch(
             class='d-flex align-items-center placeholder-glow'
           >
             <div class='avatar placeholder' />
-
             <div class='ms-2'>
               <div
                 class='placeholder placeholder-lg d-block mb-2'
                 style='width: 80px'
               />
-
               <div
                 class='placeholder placeholder-sm d-block'
                 style='width: 60px'
@@ -498,7 +521,6 @@ watch(
           </div>
         </div>
       </div>
-
       <div class='card-body'>
         <div class='placeholder-glow'>
           <div
@@ -515,7 +537,6 @@ watch(
           style='width: 100px'
         />
       </div>
-
       <div
         v-for='index in [1, 2, 3]'
         :key='index'
@@ -526,7 +547,6 @@ watch(
             class='placeholder placeholder-sm'
             style='width: 120px'
           />
-
           <div
             class='placeholder placeholder-sm'
             style='width: 60px'
@@ -536,7 +556,10 @@ watch(
     </div>
   </div>
 
-  <div v-else-if='isError' class='alert alert-danger'>
+  <div
+    v-else-if='isError'
+    class='alert alert-danger'
+  >
     Ошибка загрузки проекта
   </div>
 
@@ -551,72 +574,70 @@ watch(
         <div>
           <h2 class='mb-1'>
             {{ project?.name || 'Проект' }}
-
             <PlaceholderLoading
               v-if='isQuiteLoading'
               class='spinner-border-sm ms-2'
             />
           </h2>
-
           <div class='text-secondary'>
             Проект
           </div>
         </div>
-
         <div
           v-if='project'
           :class='isMobile
             ? "d-flex flex-column gap-3 mt-2 mb-3"
             : "d-flex gap-4 mb-3"'
         >
-          <div class='d-flex align-items-center gap-2'>
+          <div
+            v-if='hasIncome'
+            class='d-flex align-items-center gap-2'
+          >
             <div class='bg-green-lt avatar shadow-none'>
               <IconArrowUp size='24' />
             </div>
-
             <div>
               <Amount
                 class='fw-medium'
                 :value='project.totalIncome'
                 copyable
               />
-
               <div class='text-secondary small'>
                 Доходы
               </div>
             </div>
           </div>
-
-          <div class='d-flex align-items-center gap-2'>
+          <div
+            v-if='hasExpense'
+            class='d-flex align-items-center gap-2'
+          >
             <div class='bg-red-lt avatar shadow-none'>
               <IconArrowDown size='24' />
             </div>
-
             <div>
               <Amount
                 class='fw-medium'
                 :value='Math.abs(project.totalExpense)'
                 copyable
               />
-
               <div class='text-secondary small'>
                 Расходы
               </div>
             </div>
           </div>
-
-          <div class='d-flex align-items-center gap-2'>
+          <div
+            v-if='hasBalance'
+            class='d-flex align-items-center gap-2'
+          >
             <div class='bg-primary-lt avatar shadow-none'>
               <IconCoins size='24' />
             </div>
-
             <div>
               <Amount
                 class='fw-medium'
                 :value='balance'
                 copyable
               />
-
               <div class='text-secondary small'>
                 Баланс
               </div>
@@ -629,7 +650,6 @@ watch(
             <div class='bg-purple-lt avatar shadow-none'>
               <IconMoneybag size='24' />
             </div>
-
             <div class='position-relative'>
               <Amount
                 class='fw-medium'
@@ -637,13 +657,11 @@ watch(
                 :currency='project.budgetCurrency?.name'
                 copyable
               />
-
               <div class='text-secondary small'>
                 Бюджет
               </div>
-
               <div
-                v-tooltip.bottom='`Израсходовано ${budgetUsagePercent}%&nbsp;бюджета`'
+                v-tooltip.bottom='`Израсходовано ${budgetUsagePercent}% бюджета`'
                 class='d-flex align-items-center gap-1 position-absolute'
                 style='top: 100%; left: 0'
               >
@@ -654,7 +672,6 @@ watch(
                     :style='{ width: `${Math.min(budgetUsagePercent, 100)}%` }'
                   />
                 </div>
-
                 <span
                   class='small'
                   :class='budgetUsagePercentColor'
@@ -666,7 +683,6 @@ watch(
           </div>
         </div>
       </div>
-
       <div class='card-body'>
         <div class='w-full'>
           <VueApexCharts
@@ -676,7 +692,6 @@ watch(
             :options='chartOptions'
             :series='series'
           />
-
           <div
             v-else-if='!isLoading'
             class='text-secondary text-center py-5'
@@ -686,12 +701,10 @@ watch(
         </div>
       </div>
     </div>
-
     <ProjectPart
       v-if='project'
       :project='project'
     />
-
     <div class='card'>
       <div class='card-table'>
         <div class='card-header pe-0'>
@@ -701,7 +714,6 @@ watch(
                 Операции
               </h2>
             </div>
-
             <div class='col-auto'>
               <div class='d-flex gap-2'>
                 <button
@@ -711,7 +723,6 @@ watch(
                 >
                   <IconArrowUp stroke-width='2' />
                 </button>
-
                 <button
                   class='btn btn-primary'
                   type='button'
@@ -723,7 +734,6 @@ watch(
             </div>
           </div>
         </div>
-
         <div v-if='!isLoading && isMobile'>
           <TransactionItem
             v-for='(transaction, index) in transactions'
@@ -734,10 +744,11 @@ watch(
             @edit='onEditTransaction'
             @delete='onDeleteTransaction'
           />
-
         </div>
-
-        <div v-if='!isLoading && !isMobile' class='advanced-table'>
+        <div
+          v-if='!isLoading && !isMobile'
+          class='advanced-table'
+        >
           <div class='table-responsive'>
             <table class='table table-vcenter table-selectable'>
               <thead>
@@ -745,27 +756,21 @@ watch(
                   <th class='w-1 text-nowrap'>
                     Дата
                   </th>
-
                   <th class='w-1 text-nowrap text-end'>
                     Величина
                   </th>
-
                   <th class='w-1 text-nowrap'>
                     Счёт
                   </th>
-
                   <th>
                     Категории
                   </th>
-
                   <th>
                     Описание
                   </th>
-
-                  <th class='w-1'/>
+                  <th class='w-1' />
                 </tr>
               </thead>
-
               <tbody class='table-tbody'>
                 <TransactionItem
                   v-for='transaction in transactions'
@@ -778,7 +783,6 @@ watch(
             </table>
           </div>
         </div>
-
         <div
           v-if='!transactions.length'
           class='card-footer bg-transparent border-0'
@@ -787,7 +791,6 @@ watch(
             Похоже, операций ещё нет
           </div>
         </div>
-
         <div
           v-else
           class='card-footer bg-transparent border-top'
@@ -800,11 +803,9 @@ watch(
             <template v-if='isLoadingMore'>
               Загрузка...
             </template>
-
             <template v-else-if='hasMore'>
               Загрузить ещё
             </template>
-
             <template v-else>
               Операций больше нет
             </template>
