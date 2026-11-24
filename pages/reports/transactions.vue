@@ -132,17 +132,7 @@ const chartOptions = computed(() => ({
     theme: 'dark',
     x: {
       formatter: (value, { dataPointIndex }) => {
-        const date = new Date(categories.value[dataPointIndex]);
-
-        if (Number.isNaN(date.getTime())) {
-          return value;
-        }
-
-        return new Intl.DateTimeFormat('ru-RU', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }).format(date);
+        return categories.value[dataPointIndex] ?? value;
       },
     },
   },
