@@ -65,7 +65,7 @@ const totalBalance = computed(() => {
   });
 });
 
-// Добавляем общую сумму последней серией.
+// Добавляем общую сумму первой серией.
 const series = computed(() => {
   const accounts = chartData.value.series ?? [];
 
@@ -78,19 +78,19 @@ const series = computed(() => {
   ];
 });
 
-// Цвета счетов сохраняются, линия "Всего" получает primary.
+// Цвета счетов сохраняются, линия "Всего" получает secondary.
 const chartColors = computed(() => {
   const accounts = chartData.value.series ?? [];
 
   return [
+    'var(--tblr-secondary)', // CHART_COLORS[0]
     ...accounts.map((_, index) => {
       return CHART_COLORS[index % CHART_COLORS.length];
     }),
-    'var(--tblr-primary)',
   ];
 });
 
-// Пунктир только у последней серии "Всего".
+// Пунктир только у вычислимой серии "Всего".
 const chartDashArray = computed(() => {
   return series.value.map((item) => {
     return item.name === 'Всего' ? 6 : 0;
