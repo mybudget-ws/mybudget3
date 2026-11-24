@@ -1,4 +1,3 @@
-
 <script setup>
 import { useBlog } from '~/composables/useBlog';
 
@@ -43,9 +42,13 @@ useSeoMeta({
       }).format(new Date(`${post.date}T00:00:00`)) }}
     </div>
 
-    <div
-      class='blog-content-body'
-      v-html='post.html'
-    />
+    <div class='card'>
+      <div class='card-body'>
+        <div
+          class='prose'
+          v-html='post.html'
+        />
+      </div>
+    </div>
   </article>
 </template>
