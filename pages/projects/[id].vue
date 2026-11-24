@@ -661,7 +661,7 @@ watch(
                 Бюджет
               </div>
               <div
-                v-tooltip.bottom='`Израсходовано ${budgetUsagePercent}% бюджета`'
+                v-tooltip.bottom='`Израсходовано ${budgetUsagePercent}%&nbsp;бюджета`'
                 class='d-flex align-items-center gap-1 position-absolute'
                 style='top: 100%; left: 0'
               >
