@@ -20,6 +20,11 @@ const appConfig = useAppConfig()
         <div class='col-lg-auto ms-lg-auto'>
           <ul class='list-inline list-inline-dots mb-0'>
             <li class='list-inline-item'>
+              <NuxtLink to='/blog/' class='link-secondary'>
+                Блог
+              </NuxtLink>
+            </li>
+            <li class='list-inline-item ms-1'>
               <NuxtLink to='/terms' class='link-secondary'>
                 Пользовательское соглашение
               </NuxtLink>
