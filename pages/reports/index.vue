@@ -97,6 +97,34 @@ const chartDashArray = computed(() => {
   });
 });
 
+// Таблица балансов по каждому счету.
+const balanceRows = computed(() => {
+  const accounts = chartData.value.series ?? [];
+
+  return accounts.map((account) => {
+    const data = account.data ?? [];
+
+    const startBalance = data.length
+      ? Number(data[0] ?? 0)
+      : null;
+
+    const endBalance = data.length
+      ? Number(data[data.length - 1] ?? 0)
+      : null;
+
+    const change = startBalance !== null && endBalance !== null
+      ? endBalance - startBalance
+      : null;
+
+    return {
+      name: account.name,
+      startBalance,
+      change,
+      endBalance,
+    };
+  });
+});
+
 const selectedAccounts = ref([]);
 const selectedCategories = ref([]);
 const selectedKinds = ref([]);
@@ -315,6 +343,7 @@ const chartOptions = computed(() => ({
         />
       </div>
 
+      <!-- График балансов -->
       <div class='card mt-3'>
         <div class='card-header'>
           <h3 class='card-title'>Баланс</h3>
@@ -353,6 +382,158 @@ const chartOptions = computed(() => ({
             title='Не удалось загрузить график'
             description='Попробуйте обновить страницу'
           />
+        </div>
+      </div>
+
+      <!-- Балансы по счетам -->
+      <div class='card mt-3'>
+        <div class='card-header'>
+          <h3 class='card-title'>Баланс по счетам</h3>
+        </div>
+
+        <div v-if='isLoading' class='card-body text-center'>
+          <PlaceholderLoading />
+        </div>
+
+        <div v-else-if='!isError'>
+          <!-- Мобильный список -->
+          <div
+            v-if='isMobile'
+            class='list-group list-group-flush'
+          >
+            <div
+              v-for='(account, index) in balanceRows'
+              :key='`${account.name}-${index}`'
+              class='list-group-item px-3 py-3'
+            >
+              <div class='fw-medium text-truncate mb-2'>
+                {{ account.name }}
+              </div>
+
+              <div class='d-flex flex-column gap-2'>
+                <div class='d-flex align-items-center justify-content-between gap-3'>
+                  <span class='text-secondary'>
+                    Начало периода
+                  </span>
+
+                  <Amount
+                    v-if='account.startBalance !== null'
+                    :value='account.startBalance'
+                  />
+                </div>
+
+                <div class='d-flex align-items-center justify-content-between gap-3'>
+                  <span class='text-secondary'>
+                    Изменение
+                  </span>
+
+                  <span
+                    :class='{
+                      "text-success": account.change > 0,
+                      "text-danger": account.change < 0,
+                    }'
+                  >
+                    <span v-if='account.change > 0'>+</span>
+
+                    <Amount
+                      v-if='account.change !== null'
+                      :value='account.change'
+                    />
+                  </span>
+                </div>
+
+                <div class='d-flex align-items-center justify-content-between gap-3'>
+                  <span class='text-secondary'>
+                    Итого
+                  </span>
+
+                  <Amount
+                    v-if='account.endBalance !== null'
+                    :value='account.endBalance'
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-if='!balanceRows.length'
+              class='text-center text-secondary py-4'
+            >
+              Нет данных за выбранный период
+            </div>
+          </div>
+          <div v-else class='advanced-table'>
+            <div class='table-responsive'>
+              <table class='table table-vcenter table-selectable'>
+                <thead>
+                  <tr>
+                    <th>Название счета</th>
+                    <th class='w-1 text-nowrap text-end'>Начало периода</th>
+                    <th class='w-1 text-nowrap text-end'>Изменение</th>
+                    <th class='w-1 text-nowrap text-end'>Итого</th>
+                  </tr>
+                </thead>
+
+                <tbody class='table-tbody'>
+                  <tr
+                    v-for='(account, index) in balanceRows'
+                    :key='`${account.name}-${index}`'
+                  >
+                    <td>
+                      <span class='fw-medium'>
+                        {{ account.name }}
+                      </span>
+                    </td>
+
+                    <td class='text-nowrap text-end'>
+                      <Amount
+                        v-if='account.startBalance !== null'
+                        :value='account.startBalance'
+                      />
+                    </td>
+
+                    <td class='text-nowrap text-end'>
+                      <span
+                        :class='{
+                          "text-success": account.change > 0,
+                          "text-danger": account.change < 0,
+                        }'
+                      >
+                        <span v-if='account.change > 0'>+</span>
+
+                        <Amount
+                          v-if='account.change !== null'
+                          :value='account.change'
+                        />
+                      </span>
+                    </td>
+
+                    <td class='text-nowrap text-end'>
+                      <Amount
+                        v-if='account.endBalance !== null'
+                        :value='account.endBalance'
+                      />
+                    </td>
+                  </tr>
+
+                  <tr v-if='!balanceRows.length'>
+                    <td
+                      colspan='4'
+                      class='text-center text-secondary py-4'
+                    >
+                      Нет данных за выбранный период
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class='card-body text-center'>
+          <div class='text-danger'>
+            Не удалось загрузить данные
+          </div>
         </div>
       </div>
     </div>
